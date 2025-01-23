@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>View Feedback</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+  <div class="container mt-5">
+    <h1 class="text-center mb-4">Student Feedback</h1>
+
+    <!-- Check if there is any feedback -->
+    <% if (feedbacks.length > 0) { %>
+      <table class="table table-bordered table-hover bg-white">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Student Name</th>
+            <th>Feedback</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% feedbacks.forEach((feedback, index) => { %>
+            <tr>
+              <td><%= index + 1 %></td>
+              <td><%= feedback.studentName.name %></td>
+              <td><%= feedback.feedback %></td>
+              <td><%= new Date(feedback.date).toLocaleString() %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } else { %>
+      <p class="text-center">No feedback submitted yet.</p>
+    <% } %>
+  </div>
+</body>
+</html>

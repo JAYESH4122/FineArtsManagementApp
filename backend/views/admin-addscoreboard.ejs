@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Scoreboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+  <div class="container mt-5">
+    <h1 class="text-center mb-4">Add to Scoreboard</h1>
+
+    <% if (error) { %>
+      <div class="alert alert-danger text-center" role="alert">
+        <%= error %>
+      </div>
+    <% } %>
+
+    <% if (success) { %>
+      <div class="alert alert-success text-center" role="alert">
+        <%= success %>
+      </div>
+    <% } %>
+
+    <form action="/admin/add-scoreboard" method="POST">
+      <!-- Event Name -->
+      <div class="mb-3">
+        <label for="eventName" class="form-label">Event Name</label>
+        <input 
+          type="text" 
+          name="eventName" 
+          id="eventName" 
+          class="form-control" 
+          placeholder="Enter event name" 
+          required>
+      </div>
+      
+      <!-- Category -->
+      <div class="mb-3">
+        <label for="category" class="form-label">Category</label>
+        <input 
+          type="text" 
+          name="category" 
+          id="category" 
+          class="form-control" 
+          placeholder="Enter category (e.g., Solo Singing, Group Dance)" 
+          required>
+      </div>
+
+      <!-- Winning Student -->
+      <div class="mb-3">
+        <label for="studentName" class="form-label">Winning Student Name</label>
+        <input 
+          type="text" 
+          name="studentName" 
+          id="studentName" 
+          class="form-control" 
+          placeholder="Enter winner's name" 
+          required>
+      </div>
+
+      <!-- Prize -->
+      <div class="mb-3">
+        <label for="prize" class="form-label">Prize</label>
+        <input 
+          type="text" 
+          name="prize" 
+          id="prize" 
+          class="form-control" 
+          placeholder="Prize.." 
+          required>
+      </div>
+
+      <!-- Class -->
+      <div class="mb-3">
+        <label for="className" class="form-label">Class</label>
+        <input 
+          type="text" 
+          name="className" 
+          id="className" 
+          class="form-control" 
+          placeholder="Enter class (e.g., 2nd Year CSE)" 
+          required>
+      </div>
+
+      <!-- Department -->
+      <div class="mb-3">
+        <label for="departmentname" class="form-label">Department</label>
+        <select 
+          name="departmentname" 
+          id="departmentname" 
+          class="form-control" 
+          required>
+          <option value="">Select Department</option>
+          <% departments.forEach(department => { %>
+            <option value="<%= department._id %>"><%= department.departmentname %></option>
+          <% }) %>
+        </select>
+      </div>
+
+      <!-- Points -->
+      <div class="mb-3">
+        <label for="points" class="form-label">Points</label>
+        <input 
+          type="number" 
+          name="points" 
+          id="points" 
+          class="form-control" 
+          placeholder="Enter points awarded" 
+          required>
+      </div>
+
+      <!-- Submit Button -->
+      <button type="submit" class="btn btn-primary w-100">Add to Scoreboard</button>
+    </form>
+  </div>
+</body>
+</html>

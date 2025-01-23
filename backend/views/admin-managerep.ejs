@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Manage Representatives</title>
+</head>
+<body>
+  <h1>Manage Representatives</h1>
+
+  <% if (success) { %>
+    <p style="color: green;"><%= success %></p>
+  <% } %>
+
+  <% if (error) { %>
+    <p style="color: red;"><%= error %></p>
+  <% } %>
+
+  <!-- Form to add a new representative -->
+  <h2>Add Representative</h2>
+  <form action="/admin/manage-rep" method="POST">
+    <label>Username:</label>
+    <input type="text" name="username" required><br>
+    <label>Password:</label>
+    <input type="text" name="password" required><br>
+    <label>Name:</label>
+    <input type="text" name="name" required><br>
+    <label>Department:</label>
+    <select name="departmentname" required>
+      <option value="">Select Department</option>
+      <% departments.forEach(department => { %>
+        <option value="<%= department._id %>"><%= department.departmentname %></option>
+      <% }) %>
+    </select><br>
+    <button type="submit">Add Representative</button>
+  </form>
+
+  <h2>Existing Representatives</h2>
+  <table border="1">
+    <thead>
+      <tr>
+        <th>Username</th>
+        <th>Name</th>
+        <th>Department</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% representatives.forEach(rep => { %>
+        <tr>
+          <td><%= rep.username %></td>
+          <td><%= rep.name %></td>
+          <td><%= rep.departmentname ? rep.departmentname.departmentname : 'No Department' %></td>
+          <td>
+            <!-- Add a form to delete the representative -->
+            <form action="/admin/remove-rep/<%= rep._id %>" method="POST" style="display:inline;">
+              <button type="submit" style="color:red;">Remove</button>
+            </form>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</body>
+</html>

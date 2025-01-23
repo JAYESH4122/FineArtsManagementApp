@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Profile</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+  <div class="container mt-5">
+    <h1 class="text-center mb-4">Manage Profile</h1>
+
+    <form action="/rep/manage-profile" method="get" class="border p-4 rounded shadow-sm">
+      <!-- Full Name -->
+      <div class="mb-3">
+        <label for="name" class="form-label">Full Name</label>
+        <input 
+          type="text" 
+          id="name" 
+          name="name" 
+          class="form-control" 
+          value="<%= rep.name %>" 
+          required>
+      </div>
+
+      <!-- Department (Read-only) -->
+      <div class="mb-3">
+        <label for="department" class="form-label">Department</label>
+        <input 
+          type="text" 
+          id="department" 
+          name="department" 
+          class="form-control" 
+          value="<%= rep.department %>" 
+          readonly>
+      </div>
+
+      <!-- Email -->
+      <div class="mb-3">
+        <label for="email" class="form-label">Email</label>
+        <input 
+          type="email" 
+          id="email" 
+          name="email" 
+          class="form-control" 
+          value="<%= rep.email %>" 
+          required>
+      </div>
+
+      <!-- Phone Number -->
+      <div class="mb-3">
+        <label for="phone" class="form-label">Phone Number</label>
+        <input 
+          type="text" 
+          id="phone" 
+          name="phone" 
+          class="form-control" 
+          value="<%= rep.phone %>" 
+          required>
+      </div>
+
+      <!-- Password -->
+      <div class="mb-3">
+        <label for="password" class="form-label">Password</label>
+        <input 
+          type="password" 
+          id="password" 
+          name="password" 
+          class="form-control" 
+          placeholder="Enter a new password (leave blank to keep current)">
+      </div>
+
+      <!-- Submit Button -->
+      <button type="submit" class="btn btn-primary w-100">Update Profile</button>
+    </form>
+  </div>
+</body>
+</html>

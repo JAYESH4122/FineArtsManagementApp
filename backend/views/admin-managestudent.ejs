@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Manage Students</title>
+</head>
+<body>
+  <h1>Manage Students</h1>
+
+  <% if (success) { %>
+    <p style="color: green;"><%= success %></p>
+  <% } %>
+
+  <% if (error) { %>
+    <p style="color: red;"><%= error %></p>
+  <% } %>
+
+  <!-- Form to add a new student -->
+  <h2>Add student</h2>
+  <form action="/admin/manage-student" method="POST">
+    <label>Username:</label>
+    <input type="text" name="username" required><br>
+    <label>Password:</label>
+    <input type="text" name="password" required><br>
+    <label>Name:</label>
+    <input type="text" name="name" required><br>
+    <label>Admission no:</label>
+    <input type="text" name="admno" required><br>
+    
+    <!-- Department Dropdown -->
+    <label>Department:</label>
+    <select name="departmentname" id="departmentname" onchange="updateClasses(this.value)" required>
+      <option value="">Select Department</option>
+      <% departments.forEach(department => { %>
+        <option value="<%= department._id %>"><%= department.departmentname %></option>
+      <% }) %>
+    </select><br>
+
+    <!-- Class Dropdown (Initially empty, filled by JavaScript) -->
+    <label>Class:</label>
+    <select name="className" id="className" required>
+      <option value="">Select Class</option>
+    </select><br>
+
+    <button type="submit">Add Student</button>
+  </form>
+
+  <h2>Existing Students</h2>
+  <table border="1">
+    <thead>
+      <tr>
+        <th>Username</th>
+        <th>Name</th>
+        <th>Admission no</th>
+        <th>Department</th>
+        <th>Class</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% students.forEach(student => { %>
+        <tr>
+          <td><%= student.username %></td>
+          <td><%= student.name %></td>
+          <td><%= student.admno %></td>
+          <td><%= student.departmentname ? student.departmentname.departmentname : '' %></td>
+          <!-- Display class name -->
+          <td>
+            <%= student.className ? student.className.className : 'No Class Assigned' %>
+          </td>
+          
+          
+          <td>
+            <form action="/admin/remove-student/<%= student._id %>" method="POST" style="display:inline;">
+              <button type="submit" style="color:red;">Remove</button>
+            </form>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+
+  <script>
+    // Function to update class names based on selected department
+    function updateClasses(departmentId) {
+      // Reset class options
+      const classSelect = document.getElementById("className");
+      classSelect.innerHTML = '<option value="">Select Class</option>'; // Clear previous options
+
+      // Fetch classes for the selected department
+      fetch(`/admin/get-classes/${departmentId}`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.classes && data.classes.length > 0) {
+            data.classes.forEach(classItem => {
+              const option = document.createElement('option');
+              option.value = classItem._id;
+              option.textContent = classItem.className;
+              classSelect.appendChild(option);
+            });
+          }
+        })
+        .catch(err => {
+          console.error('Error fetching classes:', err);
+        });
+    }
+  </script>
+</body>
+</html>

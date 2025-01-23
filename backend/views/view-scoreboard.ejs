@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>View Scoreboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+  <div class="container mt-5">
+    <h1 class="text-center mb-4">Scoreboard</h1>
+
+    <% if (error) { %>
+      <div class="alert alert-danger text-center" role="alert">
+        <%= error %>
+      </div>
+    <% } %>
+
+    <% if (success) { %>
+      <div class="alert alert-success text-center" role="alert">
+        <%= success %>
+      </div>
+    <% } %>
+
+    <div class="table-responsive">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Event Name</th>
+            <th>Category</th>
+            <th>Winning Student</th>
+            <th>Prize</th>
+            <th>Class</th>
+            <th>Department</th>
+            <th>Points</th>
+            <th>Last Updated</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (scoreboards.length > 0) { %>
+            <% scoreboards.forEach(scoreboard => { %>
+              <tr>
+                <td><%= scoreboard.eventName %></td>
+                <td><%= scoreboard.category %></td>
+                <td><%= scoreboard.studentName %></td>
+                <td><%= scoreboard.prize %></td>
+                <td><%= scoreboard.className %></td>
+                <td><%= scoreboard.departmentname ? scoreboard.departmentname.departmentname : 'N/A' %></td>
+                <td><%= scoreboard.points %></td>
+                <td><%= scoreboard.lastUpdated.toDateString() %></td>
+              </tr>
+            <% }) %>
+          <% } else { %>
+            <tr>
+              <td colspan="8" class="text-center">No scoreboard entries found.</td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+</html>

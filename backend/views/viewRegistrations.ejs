@@ -1,0 +1,29 @@
+<% for (const [department, registrations] of Object.entries(groupedByDepartment)) { %>
+    <h2>Department: <%= department %></h2>
+    <table>
+        <tr>
+            <th>Event</th>
+            <th>Category</th>
+            <th>Number of Participants</th>
+            <th>Students</th>
+        </tr>
+        <% registrations.forEach(registration => { %>
+            <tr>
+                <td><%= registration.event.eventname %></td>
+                <td><%= registration.category %></td>
+                <td><%= registration.participants %></td>
+                <td>
+                    <ul>
+                        <% registration.students.forEach(studentEntry => { %>
+                            <li>
+                                <%= studentEntry.studentId.name %> - 
+                                Class: <%= studentEntry.className ? studentEntry.className.className : 'N/A' %>
+                            </li>
+                        <% }) %>
+                    </ul>
+                </td>
+            </tr>
+        <% }) %>
+    </table>
+    <br>
+<% } %>

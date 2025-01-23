@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Registration</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.js"></script>
+</head>
+<body>
+    <h1>Event Registration</h1>
+    <form action="/deptrep/register" method="POST">
+        <!-- Event Selection -->
+        <label for="event">Select Event:</label>
+        <select name="event" id="event" required onchange="updateEventDetails()">
+            <% events.forEach(event => { %>
+                <option value="<%= event._id %>"><%= event.eventname %></option>
+            <% }) %>
+        </select><br><br>
+
+        <!-- Category Auto-fill -->
+        <label for="category">Category:</label>
+        <input type="text" id="category" readonly><br><br>
+
+        <!-- Participants Auto-fill -->
+        <label for="participants">Number of Participants:</label>
+        <input type="number" id="participants" readonly><br><br>
+
+        <!-- Department Auto-fill -->
+        <label for="department">Department:</label>
+        <input type="text" id="department" readonly value="<%= departmentName %>"><br><br>
+
+        <!-- Autocomplete Search for Students -->
+        <label for="studentSearch">Search Student:</label>
+        <input type="text" id="studentSearch" placeholder="Type a student's name">
+        <br><br>
+
+        <!-- Selected Students Section -->
+        <div id="selectedStudentsContainer">
+            <h3>Selected Students:</h3>
+            <ul id="selectedStudentsList"></ul>
+        </div>
+
+        <!-- Team Name -->
+        <label for="teamName">Team Name (Optional):</label>
+        <input type="text" name="teamName" id="teamName"><br><br>
+
+        <!-- Submit Button -->
+        <button type="submit">Register</button>
+    </form>
+
+    <script>
+        const eventsData = <%- JSON.stringify(events) %>;
+        const studentsData = <%- JSON.stringify(students) %>;
+        let maxParticipants = 0;
+        let selectedStudents = [];
+
+        // Update Event Details
+        function updateEventDetails() {
+            const eventId = document.getElementById("event").value;
+            const event = eventsData.find(e => e._id === eventId);
+
+            if (event) {
+                document.getElementById("category").value = event.cateogory;
+                document.getElementById("participants").value = event.participants;
+                maxParticipants = event.participants;
+                selectedStudents = [];
+                document.getElementById("selectedStudentsList").innerHTML = "";
+                document.getElementById("studentSearch").disabled = false;
+            }
+        }
+
+        // Autocomplete Search for Students
+        const studentSearch = document.getElementById("studentSearch");
+        const awesomplete = new Awesomplete(studentSearch, {
+            list: studentsData.map(student => student.name),
+            minChars: 1
+        });
+
+        studentSearch.addEventListener("awesomplete-selectcomplete", function () {
+            if (selectedStudents.length >= maxParticipants) {
+                alert(`You can select a maximum of ${maxParticipants} students.`);
+                studentSearch.disabled = true;
+                return;
+            }
+
+            const selectedStudent = studentsData.find(student => student.name === studentSearch.value);
+            if (selectedStudent && !selectedStudents.includes(selectedStudent._id)) {
+                addSelectedStudent(selectedStudent);
+                selectedStudents.push(selectedStudent._id);
+                studentSearch.value = "";
+            }
+        });
+
+        // Selected Students Handling
+        const selectedStudentsList = document.getElementById("selectedStudentsList");
+
+        function addSelectedStudent(student) {
+            const li = document.createElement("li");
+            li.id = `selected-${student._id}`;
+            li.innerHTML = `
+                ${student.name} - <strong>${student.className ? student.className.className : 'N/A'}</strong>
+                <input type="hidden" name="selectedStudents[]" value="${student._id}">
+                <button type="button" onclick="removeSelectedStudent('${student._id}')">Remove</button>
+            `;
+            selectedStudentsList.appendChild(li);
+        }
+
+        function removeSelectedStudent(studentId) {
+            const studentItem = document.getElementById(`selected-${studentId}`);
+            if (studentItem) {
+                selectedStudentsList.removeChild(studentItem);
+                selectedStudents = selectedStudents.filter(id => id !== studentId);
+            }
+        }
+    </script>
+</body>
+</html>

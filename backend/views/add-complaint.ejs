@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Complaint</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+  <div class="container mt-5">
+    <h1 class="text-center mb-4">Submit a Complaint</h1>
+
+    <!-- Display the department representative details -->
+    <div class="border p-3 rounded bg-light mb-4">
+      <strong>To:</strong> <%= repName %>  
+      <p>Association Secretary of <strong><%= departmentName %></strong> Department</p>
+    </div>
+
+    <!-- Complaint form -->
+    <form action="/student/add-complaint" method="POST" class="border p-4 rounded shadow-sm">
+      <!-- Subject -->
+      <div class="mb-3">
+        <label for="subject" class="form-label">Subject</label>
+        <input type="text" id="subject" name="subject" class="form-control" required>
+      </div>
+
+      <!-- Description -->
+      <div class="mb-3">
+        <label for="description" class="form-label">Description</label>
+        <textarea id="description" name="description" class="form-control" rows="5" required></textarea>
+      </div>
+
+      <!-- Submit Button -->
+      <button type="submit" class="btn btn-primary w-100">Submit Complaint</button>
+    </form>
+
+    <!-- Display submitted complaints -->
+    <% if (complaints && complaints.length > 0) { %>
+      <h2 class="text-center mt-5">Your Complaints</h2>
+      <% complaints.forEach(complaint => { %>
+        <div class="border p-3 rounded bg-light mb-3">
+          <strong>Subject:</strong> <%= complaint.subject %><br>
+          <strong>Description:</strong> <%= complaint.complaintText %><br>
+          <strong>Reply:</strong>
+          <% if (complaint.reply) { %>
+            <div class="alert alert-success">
+              <strong>Reply:</strong> <%= complaint.reply %>
+              <br><small>Replied on: <%= complaint.repliedAt ? complaint.repliedAt.toLocaleDateString() : '' %></small>
+            </div>
+          <% } else { %>
+            <span class="text-danger">No reply yet</span>
+          <% } %>
+          <br>
+          <small class="text-muted">Submitted on: <%= new Date(complaint.createdAt).toLocaleString() %></small>
+        </div>
+      <% }) %>
+    <% } else { %>
+      <p class="text-center mt-5">No complaints submitted yet.</p>
+    <% } %>
+  </div>
+</body>
+</html>
