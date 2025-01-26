@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import 'bootstrap/dist/css/bootstrap.min.css'; // Bootstrap CSS
+import 'bootstrap/dist/css/bootstrap.min.css';
+import '../styles/StudentDashboard.css'; // Import the custom CSS file
 
 const StudentDashboard = () => {
   const navigate = useNavigate();
   const [studentInfo, setStudentInfo] = useState({});
 
-  // Fetch student data when the component loads
   useEffect(() => {
     const fetchStudentInfo = async () => {
       try {
@@ -15,14 +15,13 @@ const StudentDashboard = () => {
         setStudentInfo(response.data);
       } catch (error) {
         console.error('Error fetching student info:', error);
-        navigate('/student/login'); // Redirect to login if not authenticated
+        navigate('/student/login');
       }
     };
 
     fetchStudentInfo();
   }, [navigate]);
 
-  // Handle logout
   const handleLogout = async () => {
     try {
       await axios.post('/student/logout');
@@ -33,57 +32,32 @@ const StudentDashboard = () => {
   };
 
   return (
-    <div className="container mt-5">
-      <h1 className="text-center text-success">Student Dashboard</h1>
-      <p className="text-center text-muted">Welcome, {studentInfo.name}</p>
-      <hr />
+    <div className="dashboard-container">
+      <h1 className="dashboard-title">Student Dashboard</h1>
+      <p className="dashboard-subtitle">Welcome, {studentInfo.name || "Student"}</p>
+      <hr className="dashboard-divider" />
 
       <div className="row g-4 mt-4">
-        <div className="col-md-4">
-          <a href="/student/view-enrollments" className="card text-bg-primary text-white text-center p-4 shadow">
-            <h5>View Registrations</h5>
-          </a>
-        </div>
-
-        <div className="col-md-4">
-          <a href="/view-announcements" className="card text-bg-success text-white text-center p-4 shadow">
-            <h5>View Announcements</h5>
-          </a>
-        </div>
-
-        <div className="col-md-4">
-          <a href="/view-scoreboard" className="card text-bg-warning text-white text-center p-4 shadow">
-            <h5>View Scoreboard</h5>
-          </a>
-        </div>
-
-        <div className="col-md-4">
-          <a href="/student/enroll" className="card text-bg-danger text-white text-center p-4 shadow">
-            <h5>Enroll in Events</h5>
-          </a>
-        </div>
-
-        <div className="col-md-4">
-          <a href="/student/add-complaint" className="card text-bg-warning text-white text-center p-4 shadow">
-            <h5>Add Complaints</h5>
-          </a>
-        </div>
-
-        <div className="col-md-4">
-          <a href="/student/manage-profile" className="card text-bg-info text-white text-center p-4 shadow">
-            <h5>View Profile</h5>
-          </a>
-        </div>
-
-        <div className="col-md-4">
-          <a href="/student/feedback" className="card text-bg-info text-white text-center p-4 shadow">
-            <h5>Give Feedback</h5>
-          </a>
-        </div>
+        {[
+          { href: '/student/view-registrations', title: 'View Registrations', class: 'primary' },
+          { href: '/student/view-announcements', title: 'View Announcements', class: 'success' },
+          { href: '/student/view-scoreboard', title: 'View Scoreboard', class: 'warning' },
+          { href: '/student/view-departmentwise-rankings', title: 'View Department-wise Rankings', class: 'secondary' },
+          { href: '/student/enroll', title: 'Enroll in Events', class: 'danger' },
+          { href: '/student/view-complaints', title: 'Add Complaints', class: 'warning' },
+          { href: '/student/manage-profile', title: 'View Profile', class: 'info' },
+          { href: '/student/view-feedback', title: 'Give Feedback', class: 'dark' },
+        ].map((card, index) => (
+          <div className="col-md-4" key={index}>
+            <a href={card.href} className={`card custom-card bg-${card.class} text-white text-center`}>
+              <h5>{card.title}</h5>
+            </a>
+          </div>
+        ))}
       </div>
 
       <div className="text-center mt-5">
-        <button className="btn btn-danger btn-lg" onClick={handleLogout}>
+        <button className="btn btn-logout" onClick={handleLogout}>
           Logout
         </button>
       </div>

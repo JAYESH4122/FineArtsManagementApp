@@ -35,8 +35,6 @@ exports.handleStudentLogin = async (req, res) => {
       className: student.className?.className, // Add class name for completeness
     };
 
-    console.log('Session user:', req.session.user);
-
     return res.status(200).json({ message: 'Login successful' });
   } catch (error) {
     console.error('Error during login:', error);
@@ -168,10 +166,33 @@ exports.requestEnrollment = async (req, res) => {
       return res.status(401).json({ message: 'User not logged in or session expired' });
     }
 
-    // Check if the student has already submitted a request for this event
+    const studentName = participantDetails[0].name;
+
+    // Fetch the student details
+    const student = await Student.findOne({ name: studentName }).populate('className', 'className');
+
+    if (!student) {
+      return res.status(404).json({ message: `Student with name "${studentName}" not found.` });
+    }
+
+    // Check if the student has already registered for 3 single events
+    const singleEventCount = await EnrollmentRequest.countDocuments({
+      'participants.admno': student.admno,
+    }).populate({
+      path: 'eventId',
+      match: { participants: 1 }, // Only count events where participants = 1
+    });
+
+    if (singleEventCount >= 3) {
+      return res.status(400).json({
+        message: `You have already registered for the maximum of 3 single events.`,
+      });
+    }
+
+    // Check if the student has already submitted a request for this specific event
     const existingRequest = await EnrollmentRequest.findOne({
       eventId,
-      'participants.name': participantDetails[0].name, // Match participant name
+      'participants.admno': student.admno,
     });
 
     if (existingRequest) {
@@ -180,12 +201,10 @@ exports.requestEnrollment = async (req, res) => {
       });
     }
 
-    // Resolve the class name into its ObjectId
-    const className = participantDetails[0].className;
-    const classRecord = await Class.findOne({ className });
-
+    // Ensure the student's class exists
+    const classRecord = student.className;
     if (!classRecord) {
-      return res.status(404).json({ message: `Class with name "${className}" not found.` });
+      return res.status(404).json({ message: `Class not found for student "${studentName}".` });
     }
 
     // Create the enrollment request
@@ -193,24 +212,25 @@ exports.requestEnrollment = async (req, res) => {
       eventId,
       participants: [
         {
-          name: participantDetails[0].name,
-          className: classRecord._id, // Use the ObjectId
+          name: student.name,
+          admno: student.admno, // Automatically include admission number
+          className: classRecord._id, // Use the ObjectId for class
         },
       ],
-      participantHash: `${eventId}-${participantDetails[0].name}`, // Generate unique hash
-      department: req.session.user.departmentId,
+      participantHash: `${eventId}-${student.admno}`, // Generate unique hash using event ID and admission number
+      department: student.departmentname, // Use student's department
     });
 
-    // Save the request and populate the event details
+    // Save the request
     const savedRequest = await enrollmentRequest.save();
 
     // Populate event details after saving
     await savedRequest.populate({
       path: 'eventId',
-      select: 'eventname category date', // Correct fields
+      select: 'eventname participants date',
     });
 
-    console.log('savedRequest', savedRequest); // This should print the populated event details
+    console.log('savedRequest', savedRequest); // Debugging
 
     return res.status(200).json({
       message: 'Enrollment request sent successfully!',
@@ -221,6 +241,10 @@ exports.requestEnrollment = async (req, res) => {
     return res.status(500).json({ message: 'Server Error' });
   }
 };
+
+
+
+
 
 
 
@@ -271,42 +295,37 @@ exports.getAllEnrollmentRequests = async (req, res) => {
 
 
 
+// Get complaints for a student
 
-
-// GET request: Load the Add Complaint page and display submitted complaints
-exports.addComplaintPage = async (req, res) => {
+exports.getStudentComplaints = async (req, res) => {
   try {
-    // Get the student's department and ID from the session
     const { id: studentId, departmentId } = req.session.user;
 
-    // Fetch department representative details for the student's department
-    const departmentRep = await DeptRep.findOne({ departmentname: departmentId }).populate('departmentname');
-
-    // Fetch all complaints submitted by this student
+    // Fetch complaints by student
     const complaints = await Complaint.find({ studentId })
       .populate('department', 'departmentname')
-      .sort({ createdAt: -1 }); // Sort by newest first
+      .sort({ createdAt: -1 });
 
-    // Render the page with department representative details and complaints
-    res.render('add-complaint', {
-      repName: departmentRep ? departmentRep.name : 'N/A',
-      departmentName: departmentRep ? departmentRep.departmentname.departmentname : 'N/A',
+    // Fetch department representative for the student's department
+    const departmentRep = await DeptRep.findOne({ departmentname: departmentId });
+
+    res.json({
       complaints,
+      departmentRepName: departmentRep ? departmentRep.name : 'N/A', // Send the representative's name
     });
   } catch (error) {
     console.error(error);
-    res.status(500).send('Server Error');
+    res.status(500).json({ message: 'Error fetching complaints.' });
   }
 };
 
-// POST request: Handle new complaint submission
+
+// Add a new complaint
 exports.addComplaint = async (req, res) => {
   const { subject, description } = req.body;
-  const studentId = req.session.user.id;
-  const departmentId = req.session.user.departmentId;
+  const { id: studentId, departmentId } = req.session.user;
 
   try {
-    // Create a new complaint
     const newComplaint = new Complaint({
       studentId,
       department: departmentId,
@@ -315,73 +334,119 @@ exports.addComplaint = async (req, res) => {
     });
 
     await newComplaint.save();
-
-    res.redirect('/student/add-complaint');
+    res.status(201).json({ message: 'Complaint submitted successfully.' });
   } catch (error) {
     console.error(error);
-    res.status(500).send('Error submitting complaint');
+    res.status(500).json({ message: 'Error submitting complaint.' });
   }
 };
 
 
-// Render the feedback form
-exports.showFeedbackForm = (req, res) => {
+// GET request: Provide student's name for the feedback form
+// GET request: Provide student's name and department for the feedback form
+exports.getFeedbackFormData = (req, res) => {
   const studentId = req.session.user?.id; // Get student ID from session
 
   if (!studentId) {
-    return res.redirect('/student/login'); // Redirect if not logged in
+    return res.status(401).json({ message: 'Unauthorized' }); // Return 401 if not logged in
   }
 
-  // Fetch the student data
+  // Fetch the student's name and department
   Student.findById(studentId)
+    .populate('departmentname', 'departmentname') // Populate the department name
     .then(student => {
       if (!student) {
-        return res.status(404).send('Student not found');
+        return res.status(404).json({ message: 'Student not found' });
       }
 
-      // Render the feedback form with the student's name
-      res.render('feedbackForm', { studentName: student.name });
+      // Send the student's name and department as JSON
+      res.status(200).json({
+        studentName: student.name,
+        departmentName: student.departmentname?.departmentname || 'Unknown Department',
+      });
     })
     .catch(err => {
       console.error(err);
-      res.status(500).send('Error fetching student data');
+      res.status(500).json({ message: 'Error fetching student data', error: err.message });
     });
 };
 
-// Handle feedback form submission
+
+
+// API to handle feedback submission
 exports.submitFeedback = (req, res) => {
   const { feedback } = req.body;
-  const studentId = req.session.user?.id; // Get student ID from session
+  const studentId = req.session.user?.id;
 
   if (!studentId) {
-    return res.redirect('/student/login'); // Redirect if not logged in
+    return res.status(401).json({ error: 'Unauthorized' });
   }
 
-  // Fetch the student data to get their name
   Student.findById(studentId)
     .then(student => {
       if (!student) {
-        return res.status(404).send('Student not found');
+        return res.status(404).json({ error: 'Student not found' });
       }
 
-      // Create a new feedback document
       const newFeedback = new Feedback({
         studentName: student._id,
         feedback,
       });
 
-      // Save feedback to the database
-      newFeedback.save()
-        .then(() => {
-          res.render('thankYou'); // Redirect to thank you page
-        })
-        .catch(err => {
-          console.error(err);
-          res.status(500).send('Error submitting feedback');
-        });
+      return newFeedback.save();
+    })
+    .then(() => {
+      res.status(201).json({ message: 'Feedback submitted successfully' });
     })
     .catch(err => {
       console.error(err);
-      res.status(500).send('Error fetching student data');
+      res.status(500).json({ error: 'Error submitting feedback' });
     });
+};
+
+// GET: Fetch the student profile
+exports.getStudentProfile = async (req, res) => {
+  const studentId = req.session.user?.id; // Get student ID from session
+
+  if (!studentId) {
+    return res.status(401).json({ message: 'Unauthorized' });
+  }
+
+  try {
+    const student = await Student.findById(studentId).populate('departmentname').populate('className');
+    if (!student) {
+      return res.status(404).json({ message: 'Student not found' });
+    }
+    res.status(200).json({ student });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error fetching student profile', error: error.message });
+  }
+};
+
+// POST: Update the student profile
+exports.updateStudentProfile = async (req, res) => {
+  const studentId = req.session.user?.id; // Get student ID from session
+  const { phno, rollno } = req.body;
+
+  if (!studentId) {
+    return res.status(401).json({ message: 'Unauthorized' });
+  }
+
+  try {
+    const updatedStudent = await Student.findByIdAndUpdate(
+      studentId,
+      { phno, rollno },
+      { new: true } // Return the updated document
+    );
+
+    if (!updatedStudent) {
+      return res.status(404).json({ message: 'Student not found' });
+    }
+
+    res.status(200).json({ message: 'Profile updated successfully', student: updatedStudent });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error updating profile', error: error.message });
+  }
 };

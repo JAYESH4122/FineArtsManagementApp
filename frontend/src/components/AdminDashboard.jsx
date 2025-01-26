@@ -71,7 +71,7 @@ const AdminDashboard = () => {
 
           {/* View Department-wise Rankings */}
           <div className="col-md-4">
-            <Link to="/admin/view-department-rankings" className="card dashboard-card text-bg-danger shadow">
+            <Link to="/admin/view-departmentwise-rankings" className="card dashboard-card text-bg-danger shadow">
               <i className="fas fa-list-ol fa-3x mb-3"></i>
               <h5>View Department-wise Rankings</h5>
             </Link>
@@ -87,7 +87,7 @@ const AdminDashboard = () => {
 
           {/* View Registrations */}
           <div className="col-md-4">
-            <Link to="/view-registrations" className="card dashboard-card text-bg-primary shadow">
+            <Link to="/admin/view-registrations" className="card dashboard-card text-bg-primary shadow">
               <i className="fas fa-users fa-3x mb-3"></i>
               <h5>View Registrations</h5>
             </Link>

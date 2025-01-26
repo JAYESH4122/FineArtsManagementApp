@@ -57,7 +57,7 @@ const DeptRepLogin = () => {
       // Check if login was successful (response status 200)
       if (response.status === 200) {
         console.log('Logged in successfully:', response.data);
-        navigate('/deptrep/dashboard'); // Redirect after successful login
+        navigate('/deptrep/view-dashboard'); // Redirect after successful login
       } else {
         setError(response.data.error || 'Invalid credentials or server error!');
       }

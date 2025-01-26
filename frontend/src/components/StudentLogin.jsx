@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import 'bootstrap-icons/font/bootstrap-icons.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles/StudentLogin.css';
 
@@ -10,11 +11,16 @@ function StudentLogin() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false); // State for toggling password visibility
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     if (name === 'username') setUsername(value);
     else setPassword(value);
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword((prev) => !prev);
   };
 
   const handleSubmit = async (e) => {
@@ -26,7 +32,7 @@ function StudentLogin() {
 
       if (response.data.message === 'Login successful') {
         // On success, navigate to student dashboard
-        navigate('/student/dashboard');
+        navigate('/student/view-dashboard');
       }
     } catch (err) {
       setError('Invalid credentials or server error!');
@@ -63,12 +69,12 @@ function StudentLogin() {
             />
           </div>
 
-          <div className="mb-3">
+          <div className="mb-3 position-relative">
             <label htmlFor="password" className="form-label">
               Password
             </label>
             <input
-              type="password"
+              type={showPassword ? 'text' : 'password'}
               className="form-control"
               id="password"
               name="password"
@@ -76,6 +82,17 @@ function StudentLogin() {
               onChange={handleInputChange}
               required
             />
+            <span
+              onClick={togglePasswordVisibility}
+              className="position-absolute end-0 top-50 translate-middle-y me-3"
+              style={{ cursor: 'pointer', color: 'black', fontSize: '1.2rem', zIndex: '10' }}
+            >
+              {showPassword ? (
+                <i className="bi bi-eye-slash"></i>
+              ) : (
+                <i className="bi bi-eye"></i>
+              )}
+            </span>
           </div>
 
           <button type="submit" className="btn btn-success w-100 fw-bold btn-lg mt-3">

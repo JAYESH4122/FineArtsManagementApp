@@ -10,6 +10,7 @@ const Complaint = require('../models/compaintmodel');
 const EnrollmentRequest = require("../models/EnrollmentRequest");
 const crypto = require("crypto");
 const mongoose = require('mongoose');
+const { v4: uuidv4 } = require("uuid"); // Import UUID for unique team names
 
 
 
@@ -44,7 +45,6 @@ exports.handleRepLogin = async (req, res) => {
       departmentId: deptRep.departmentname._id,
       departmentName: deptRep.departmentname.departmentname,
     };
-    console.log(req.session.user)
 
     return res.status(200).json({ message: 'Login successful' }); // Login successful response
   } catch (error) {
@@ -167,143 +167,53 @@ exports.getClassesByDepartment = async (req, res) => {
 
 
 
-//Department wise Rankings
-
-//get department-wise rankings
-exports.getDepartmentRankings = async (req, res) => {
-    try {
-      // Aggregate points by department
-      const departmentRankings = await Scoreboard.aggregate([
-        {
-          $group: {
-            _id: "$departmentname", // Group by department ID
-            totalPoints: { $sum: "$points" } // Sum the points for each department
-          }
-        },
-        {
-          $lookup: {
-            from: "departmentdetails", // Lookup the department details collection
-            localField: "_id", // Match department ID
-            foreignField: "_id", // Match department ID in the departmentdetails collection
-            as: "department" // The result will be in the "department" field
-          }
-        },
-        {
-          $unwind: "$department" // Unwind the array to get the department name
-        },
-        {
-          $project: {
-            departmentName: "$department.departmentname", // Department name
-            totalPoints: 1, // Total points
-          }
-        },
-        {
-          $sort: { totalPoints: -1 } // Sort by total points in descending order
-        }
-      ]);
-  
-  
-      // Render the EJS page and pass the department rankings data
-      res.render('view-department-rank', { 
-        error: null, 
-        success: null, 
-        departmentRankings: departmentRankings 
-      });
-    } catch (error) {
-      console.error('Error fetching department rankings:', error);
-      res.render('view-department-rank', { 
-        error: 'Failed to load department rankings.', 
-        success: null, 
-        departmentRankings: [] 
-      });
-    }
-  };
-
-//view announcements page
-exports.getViewAnnouncements = async (req, res) => {
-    try {
-      // Fetch all announcements from the database
-      const announcements = await Announcement.find().sort({ datePosted: -1 }); // Sort by latest posted first
-  
-      // Render the EJS page and pass the announcements data
-      res.render('view-announcements', { 
-        error: null, 
-        success: null, 
-        announcements: announcements
-      });
-    } catch (error) {
-      console.error('Error fetching announcements:', error);
-      res.render('view-announcements', { 
-        error: 'Failed to load announcements.', 
-        success: null, 
-        announcements: [] 
-      });
-    }
-  };
-
-//view scoreboard
-exports.getViewScoreboard = async (req, res) => {
-  try {
-    // Fetch all scoreboards and populate the department name
-    const scoreboards = await Scoreboard.find()
-      .populate('departmentname', 'departmentname') // Populate the department name field
-      .sort({ lastUpdated: -1 }); // Sort by the last updated time, latest first
-
-    // Render the EJS page and pass the scoreboards data
-    res.render('view-scoreboard', { 
-      error: null, 
-      success: null, 
-      scoreboards: scoreboards
-    });
-  } catch (error) {
-    console.error('Error fetching scoreboards:', error);
-    res.render('view-scoreboard', { 
-      error: 'Failed to load scoreboards.', 
-      success: null, 
-      scoreboards: [] 
-    });
-  }
-};
-
-
 // Get Registration Form
 // Controller to handle registration
+
 exports.registerEvent = async (req, res) => {
   try {
-    const { eventId, participants, participantHash, department } = req.body;
+    const { eventId, participants } = req.body;
 
-    // Validate event existence
+    const department = req.session.user.departmentId;
+    if (!department) {
+      return res.status(400).json({ error: "Department is not defined in the session" });
+    }
+
     const event = await Event.findById(eventId);
     if (!event) {
       return res.status(404).json({ error: "Event not found" });
     }
 
-    // Check if all participants are valid
-    const participantsData = await Promise.all(participants.map(async (participant) => {
-      const student = await Student.findOne({ name: participant.name });
-      if (!student) {
-        throw new Error(`Student with name ${participant.name} not found`);
-      }
+    const participantsData = await Promise.all(
+      participants.map(async (participant) => {
+        const student = await Student.findOne({ name: participant.name });
+        if (!student) {
+          throw new Error(`Student with name ${participant.name} not found`);
+        }
 
-      const className = await Class.findById(student.className); // assuming className is an ObjectId
-      if (!className) {
-        throw new Error(`Class not found for student ${participant.name}`);
-      }
+        const classData = await Class.findOne({ className: participant.className });
+        if (!classData) {
+          throw new Error(`Class "${participant.className}" not found`);
+        }
 
-      return {
-        name: student.name,
-        className: className.name, // assuming class has a `name` field
-      };
-    }));
+        return {
+          name: student.name,
+          admno: student.admno,
+          className: classData._id,
+        };
+      })
+    );
 
-    // Validate participant limit
-    if (participantsData.length > event.participants) {
-      return res
-        .status(400)
-        .json({ error: `The event allows a maximum of ${event.participants} participants` });
+    if (participantsData.length > 1) {
+      // Generate a unique team name for team events
+      const teamName = `Team-${uuidv4().slice(0, 8)}`; // Short UUID for readability
+      participantsData.forEach((participant) => (participant.teamName = teamName));
     }
 
-    // Create enrollment request
+    const participantHash = participantsData
+      .map((participant) => `${eventId}-${participant.admno}`)
+      .join("-");
+
     const enrollmentRequest = new EnrollmentRequest({
       eventId,
       participants: participantsData,
@@ -312,6 +222,7 @@ exports.registerEvent = async (req, res) => {
     });
 
     await enrollmentRequest.save();
+
     res.status(201).json({ message: "Event registration successful!" });
   } catch (error) {
     console.error("Error in registerEvent:", error);
@@ -322,18 +233,21 @@ exports.registerEvent = async (req, res) => {
 
 
 
+
 // Controller to fetch students for autocomplete
 exports.getAllStudents = async (req, res) => {
   try {
-    const { departmentId } = req.session.user; // Department ID from session
-    const students = await Student.find({ departmentname: departmentId })
-      .populate('departmentname className', 'name') // Populate only the 'name' field from className
-      .select('name className'); // Select only the name and className fields
+    const { departmentId } = req.session.user; // Assuming departmentId comes from the session
 
-    // Extract class name as a string for each student
-    const formattedStudents = students.map(student => ({
+    const students = await Student.find({ departmentname: departmentId })
+      .populate('departmentname', 'departmentname') // Populate department name
+      .populate('className', 'className') // Populate className
+      .select('name className'); // Select only relevant fields
+
+    // Map className to a string
+    const formattedStudents = students.map((student) => ({
       ...student.toObject(),
-      className: student.className.name, // Assuming className has a 'name' field
+      className: student.className.className, // Ensure it's the class name, not the ObjectId
     }));
 
     res.json({ students: formattedStudents });
@@ -342,6 +256,7 @@ exports.getAllStudents = async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch students' });
   }
 };
+
 
 
 exports.getAllEvents = async (req, res) => {
@@ -355,56 +270,93 @@ exports.getAllEvents = async (req, res) => {
 };
 
 
-// View complaints for the logged-in department representative
-exports.viewComplaints = async (req, res) => {
+// Get complaints for department representative
+exports.getDeptRepComplaints = async (req, res) => {
   try {
-    const departmentId = req.session.user.departmentId;
+    const { departmentId } = req.session.user;
 
-    // Find complaints for the department
     const complaints = await Complaint.find({ department: departmentId })
-      .populate('studentId', 'name rollno') // Populate student details
-      .sort({ createdAt: -1 }); // Sort by newest first
+      .populate('studentId', 'name rollno')
+      .sort({ createdAt: -1 });
 
-    res.render('view-complaints', { complaints });
+    res.json(complaints);
   } catch (error) {
     console.error(error);
-    res.status(500).send('Error fetching complaints');
+    res.status(500).json({ message: 'Error fetching complaints.' });
   }
 };
 
-// Handle reply to a complaint
+// Reply to a complaint
 exports.replyToComplaint = async (req, res) => {
   const { complaintId, replyText } = req.body;
 
   try {
-    // Find the complaint and update the reply
-    const complaint = await Complaint.findByIdAndUpdate(
-      complaintId,
-      {
-        reply: replyText,
-        repliedAt: new Date(),
-      },
-      { new: true }
-    );
+    const complaint = await Complaint.findById(complaintId);
 
     if (!complaint) {
-      return res.status(404).send('Complaint not found');
+      return res.status(404).json({ message: 'Complaint not found.' });
     }
 
-    res.redirect('/deptrep/view-complaints');
+    complaint.reply = replyText;
+    complaint.repliedAt = new Date();
+    await complaint.save();
+
+    res.json({ message: 'Reply submitted successfully.' });
   } catch (error) {
     console.error(error);
-    res.status(500).send('Error replying to complaint');
+    res.status(500).json({ message: 'Error submitting reply.' });
   }
 };
 
- 
+// Controller to fetch all event registrations
+exports.getAllRegistrations = async (req, res) => {
+  try {
+    const registrations = await EnrollmentRequest.find()
+      .populate('eventId', 'eventname') // Populate event details
+      .populate('participants.className', 'className') // Populate class name
+      .populate('department', 'departmentname') // Populate department name
+      .exec();
 
-exports.manageProfile = (req, res) => {
-    res.render('manage-rep-profile');
-};
+    // Group participants by event name
+    const groupedRegistrations = {};
 
-exports.viewRegistrations = (req, res) => {
-    res.render('view-registrations');
+    registrations.forEach((registration) => {
+      const eventname = registration.eventId.eventname;
+
+      if (!groupedRegistrations[eventname]) {
+        groupedRegistrations[eventname] = [];
+      }
+
+      // Check if this is a team event
+      const isTeamEvent = registration.participants.length > 1;
+      const teamName = isTeamEvent ? registration.participants[0].teamName : null;
+
+      // Add participants under the event, grouping by team name if applicable
+      groupedRegistrations[eventname].push({
+        teamName: isTeamEvent ? teamName : null,
+        participants: registration.participants.map((participant) => ({
+          name: participant.name,
+          className: participant.className.className,
+          department: registration.department.departmentname,
+        })),
+      });
+    });
+
+    // Format the response as an array
+    const formattedResponse = Object.entries(groupedRegistrations).map(
+      ([eventname, teams]) => ({
+        eventname,
+        teams,
+      })
+    );
+
+    // Sort the array by event name
+    formattedResponse.sort((a, b) => a.eventname.localeCompare(b.eventname));
+
+    res.status(200).json({ registrations: formattedResponse });
+  } catch (error) {
+    console.error("Error fetching registrations:", error);
+    res.status(500).json({ error: "An error occurred while fetching registrations." });
+  }
 };
 

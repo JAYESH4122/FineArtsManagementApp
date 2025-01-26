@@ -1,0 +1,68 @@
+.registrations-container {
+    padding: 20px;
+  }
+  
+  h1 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .error-message {
+    color: red;
+    text-align: center;
+  }
+  
+  .registration-card {
+    margin: 20px 0;
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+  }
+  
+  .event-name {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    color: #333;
+  }
+  
+  .participant-list {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .participant-item {
+    margin-bottom: 10px;
+  }
+  
+  .participant-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .participant-name {
+    font-weight: bold;
+  }
+  
+  .participant-class,
+  .participant-department {
+    font-size: 0.9rem;
+    color: #666;
+  }
+
+  .team-section {
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+  }
+  
+  .team-name {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  

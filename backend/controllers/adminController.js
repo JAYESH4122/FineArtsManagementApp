@@ -273,7 +273,6 @@ exports.getViewAnnouncements = async (req, res) => {
   try {
     // Fetch announcements from the database
     const announcements = await Announcement.find().sort({ datePosted: -1 });
-    console.log(announcements)
 
     if (!announcements || announcements.length === 0) {
       return res.status(404).json({ message: 'No announcements found' });
@@ -312,7 +311,6 @@ exports.getDepartmentsAndClasses = async (req, res) => {
       return res.status(404).json({ message: 'No departments found' });
     }
 
-    console.log('Departments fetched:', departments); // Debug log
 
     // Ensure the response is an array
     return res.json(departments);
@@ -335,7 +333,6 @@ exports.addScoreboard = async (req, res) => {
     points,
   } = req.body;
 
-  console.log('Payload received:', req.body);
 
   try {
     // Validate required fields
@@ -424,8 +421,6 @@ exports.getViewScoreboard = async (req, res) => {
       })
       .sort({ lastUpdated: -1 });
 
-    console.log("Scoreboards fetched:", scoreboards); // Debug log
-
     const formattedScoreboards = scoreboards.map(scoreboard => ({
       _id: scoreboard._id,
       eventName: scoreboard.eventName,
@@ -444,8 +439,6 @@ exports.getViewScoreboard = async (req, res) => {
     res.status(500).json({ message: 'Failed to load scoreboards.' });
   }
 };
-
-
 
 //Department wise Rankings
 

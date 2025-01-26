@@ -1,5 +1,8 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import 'bootstrap-icons/font/bootstrap-icons.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 import LoginPage from './components/LoginPage';
 import AdminLogin from './components/AdminLogin';
 import DeptRepLogin from './components/DeptRepLogin';
@@ -18,8 +21,12 @@ import ManageRepresentatives from './components/ManageRepresentatives';
 import AdminViewFeedback from './components/AdminViewFeedback';
 import DeptRepManageStudents from './components/DeptRepManageStudents';
 import StudentEnrollment from './components/StudentEnrollment';
-import EnrollmentRequestsPage from './components/EnrollmentRequestsPage';
 import EventRegistrationForm from './components/EventRegistrationForm';
+import ViewRegistrations from './components/ViewRegistrations';
+import StudentComplaintPage from './components/StudentComplaintPage';
+import DeptRepComplaintPage from './components/DeptRepComplaintPage';
+import FeedbackForm from './components/FeedbackForm';
+import StudentProfile from './components/StudentProfile';
 
 const App = () => {
   return (
@@ -30,27 +37,39 @@ const App = () => {
 
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
-        <Route path="/admin/manage-student" element={<AdminManageStudents />} />
         <Route path="/admin/add-announcement" element={<AdminPostAnnouncement />} />
         <Route path="/admin/view-announcements" element={<ViewAnnouncements />} />
         <Route path="/admin/add-scoreboard" element={<AdminAddScoreboard />} />
         <Route path="/admin/view-scoreboard" element={<ScoreboardPage />} />
-        <Route path="/admin/view-department-rankings" element={<DepartmentRankings />} />
+        <Route path="/admin/view-departmentwise-rankings" element={<DepartmentRankings />} />
         <Route path="/admin/add-event" element={<AddEvent />} />
+        <Route path="/admin/view-registrations" element={<ViewRegistrations />} />
         <Route path="/admin/manage-representatives" element={<ManageRepresentatives />} />
+        <Route path="/admin/manage-student" element={<AdminManageStudents />} />
         <Route path="/admin/feedback" element={<AdminViewFeedback />} />
 
         <Route path="/deptrep/login" element={<DeptRepLogin />} />
-        <Route path="/deptrep/dashboard" element={<RepDashboard />} />
+        <Route path="/deptrep/view-dashboard" element={<RepDashboard />} />
         <Route path="/deptrep/manage-student" element={< DeptRepManageStudents/>} />
         <Route path="/deptrep/register-events" element={< EventRegistrationForm />} />
-
+        <Route path="/deptrep/view-departmentwise-rankings" element={<DepartmentRankings />} />
+        <Route path="/deptrep/view-registrations" element={<ViewRegistrations />} />
+        <Route path="/deptrep/view-announcements" element={<ViewAnnouncements />} />
+        <Route path="/deptrep/view-scoreboard" element={<ScoreboardPage />} />
+        <Route path="/deptrep/reply-complaints" element={<DeptRepComplaintPage />} />
 
 
         <Route path="/student/login" element={<StudentLogin />} />
-        <Route path="/student/dashboard" element={<StudentDashboard />} />
+        <Route path="/student/view-dashboard" element={<StudentDashboard />} />
+        <Route path="/student/view-registrations" element={<ViewRegistrations />} />
+        <Route path="/student/view-announcements" element={<ViewAnnouncements />} />
+        <Route path="/student/view-scoreboard" element={<ScoreboardPage />} />
+        <Route path="/student/view-departmentwise-rankings" element={<DepartmentRankings />} />
         <Route path="/student/enroll" element={<StudentEnrollment />} />
-        <Route path="/student/view-enrollments" element={<EnrollmentRequestsPage />} />
+        <Route path="/student/view-complaints" element={<StudentComplaintPage />} />
+        <Route path="/student/manage-profile" element={<StudentProfile />} />
+        <Route path="/student/view-feedback" element={<FeedbackForm />} />
+        
 
       </Routes>
     </Router>

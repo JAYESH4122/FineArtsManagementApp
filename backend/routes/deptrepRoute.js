@@ -21,24 +21,9 @@ router.post("/register", deptrepController.registerEvent);
 // Route to fetch students by department
 router.get("/get-students-reg", deptrepController.getAllStudents);
 
-//view department wise-rankings
-router.get('/view-department-rankings', deptrepController.getDepartmentRankings);
+router.get('/registrations', deptrepController.getAllRegistrations);
 
-//view announcement
-router.get('/view-announcements', deptrepController.getViewAnnouncements);
-
-//view scoreboard
-router.get('/view-scoreboard', deptrepController.getViewScoreboard);
-
-// View complaints
-router.get('/view-complaints', deptrepController.viewComplaints);
-
-// Reply to a complaint
+router.get('/complaints', deptrepController.getDeptRepComplaints);
 router.post('/reply-to-complaint', deptrepController.replyToComplaint);
-
-
-router.get('/manage-profile', deptrepController.manageProfile);
-
-
 
 module.exports = router;

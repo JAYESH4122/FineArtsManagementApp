@@ -6,12 +6,15 @@ const enrollmentRequestSchema = new Schema({
   participants: [
     {
       name: { type: String, required: true },
+      admno: { type: String, required: true }, // Ensure admission number is stored
       className: { type: mongoose.Schema.Types.ObjectId, ref: 'Class', required: true },
     },
   ],
-  participantHash: { type: String, required: true }, // Unique identifier for the group
+  participantHash: { type: String, required: true, unique: true }, // Enforce uniqueness
   department: { type: mongoose.Schema.Types.ObjectId, ref: 'DepartmentDetails', required: true },
-  requestedAt: { type: Date, default: Date.now }, // Use default Date.now to store UTC time
+  requestedAt: { type: Date, default: Date.now },
 });
 
+
 module.exports = mongoose.model('EnrollmentRequest', enrollmentRequestSchema);
+

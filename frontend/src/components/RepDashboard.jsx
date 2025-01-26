@@ -68,13 +68,13 @@ const RepDashboard = () => {
             </div>
 
             <div className="col-md-4">
-              <a href="/deptrep/view-department-rankings" className="card text-bg-warning text-white text-center p-4 shadow-lg">
+              <a href="/deptrep/view-departmentwise-rankings" className="card text-bg-warning text-white text-center p-4 shadow-lg">
                 <h5>View Department-wise Rankings</h5>
               </a>
             </div>
 
             <div className="col-md-4">
-              <a href="/deptrep/registrations" className="card text-bg-primary text-white text-center p-4 shadow-lg">
+              <a href="/deptrep/view-registrations" className="card text-bg-primary text-white text-center p-4 shadow-lg">
                 <h5>View Registrations</h5>
               </a>
             </div>
@@ -92,7 +92,7 @@ const RepDashboard = () => {
             </div>
 
             <div className="col-md-4">
-              <a href="/deptrep/view-complaints" className="card text-bg-warning text-white text-center p-4 shadow-lg">
+              <a href="/deptrep/reply-complaints" className="card text-bg-warning text-white text-center p-4 shadow-lg">
                 <h5>View Complaints</h5>
               </a>
             </div>

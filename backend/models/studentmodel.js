@@ -1,16 +1,16 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-// Assuming 'DepartmentDetails' schema has an array of 'classes' as you mentioned
 const StudentSchema = new Schema({
     username: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     name: { type: String },
     departmentname: { type: mongoose.Schema.Types.ObjectId, ref: 'DepartmentDetails', required: true },
-    className: { type: mongoose.Schema.Types.ObjectId, ref: 'Class', required: true }, // Referring to the 'Class' model now
+    className: { type: mongoose.Schema.Types.ObjectId, ref: 'Class', required: true },
     rollno: { type: String },
     admno: { type: String, unique: true, required: true },
-    phno: { type: String }
+    phno: { type: String },
+    gmail: { type: String}, // Added Gmail field
 });
 
 const Student = mongoose.model('StudentDetails', StudentSchema);

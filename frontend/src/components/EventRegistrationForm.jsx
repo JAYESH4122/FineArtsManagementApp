@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import "../styles/EventRegistrationForm.css";
 
 const RegisterEvent = () => {
@@ -7,7 +7,7 @@ const RegisterEvent = () => {
   const [students, setStudents] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [participants, setParticipants] = useState([]);
-  const [departmentName, setDepartmentName] = useState(""); // Example: set dynamically
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -25,43 +25,50 @@ const RegisterEvent = () => {
   }, []);
 
   const handleEventChange = (eventId) => {
-    const selected = events.find(event => event._id === eventId);
+    const selected = events.find((event) => event._id === eventId);
     setSelectedEvent(selected);
-    setParticipants(new Array(selected.participants).fill({ name: '', className: '' }));
+    setParticipants(new Array(selected.participants).fill({ name: "", className: "" }));
   };
 
-  // Handle student name change and class name update for the correct participant
   const handleStudentNameChange = (index, name) => {
-    const newParticipants = [...participants]; // Create a copy of participants array
-    newParticipants[index].name = name; // Update the name for the selected participant
-
-    // Find the corresponding student object by name
-    const student = students.find(student => student.name === name);
+    const newParticipants = [...participants];
+    newParticipants[index] = { ...newParticipants[index], name };
+  
+    const student = students.find((student) => student.name === name);
     if (student) {
-      newParticipants[index].className = student.className; // Update the className based on the selected student
+      newParticipants[index].className = student.className;
+      newParticipants[index].admno = student.admno; // Include admno
+    } else {
+      newParticipants[index].className = "";
+      newParticipants[index].admno = ""; // Clear admno if no match
     }
-
-    setParticipants(newParticipants); // Set the updated state for participants
+  
+    setParticipants(newParticipants);
   };
-
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    setErrorMessage(""); // Clear any previous error messages
+  
     try {
-      const response = await axios.post('/deptrep/register', {
+      const response = await axios.post("/deptrep/register", {
         eventId: selectedEvent._id,
         participants,
-        participantHash: 'some-unique-hash',
-        departmentName,
       });
-      console.log('Event registered successfully:', response.data);
+      window.location.reload();
     } catch (error) {
-      console.error('Error registering event:', error);
+      if (error.response && error.response.data.error) {
+        setErrorMessage(error.response.data.error); // Show backend error messages
+      } else {
+        setErrorMessage("An unexpected error occurred. Please try again.");
+      }
     }
   };
+  
 
   return (
     <form onSubmit={handleSubmit}>
+      {errorMessage && <div className="error-message">{errorMessage}</div>}
       <div>
         <label>Select Event</label>
         <select onChange={(e) => handleEventChange(e.target.value)} required>
@@ -80,7 +87,6 @@ const RegisterEvent = () => {
             <label>Number of Participants: {selectedEvent.participants}</label>
           </div>
 
-          {/* Dynamic participant input fields */}
           {participants.map((_, index) => (
             <div key={index}>
               <label>Student {index + 1} Name</label>
