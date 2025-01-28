@@ -7,5 +7,12 @@ export default defineConfig({
   plugins: [react(),],
   build: {
     outDir: 'build', // Custom output folder
+    rollupOptions: {
+      external: ['@mui/material/Unstable_Grid2'], // Add this line
+    },
+    optimizeDeps: {
+      include: ["@mui/material/Unstable_Grid2"],
+    },
+    
   },
 })

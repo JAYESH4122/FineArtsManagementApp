@@ -1,64 +1,76 @@
-/* Container styling */
 .dashboard-container {
-    padding: 40px 20px;
-    background: #f9f9f9;
-    border-radius: 15px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  /* Title and subtitle */
-  .dashboard-title {
-    font-size: 2.5rem;
-    font-weight: bold;
-    color: #333;
-    text-align: center;
-  }
-  
-  .dashboard-subtitle {
-    font-size: 1.2rem;
-    color: #666;
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  
-  .dashboard-divider {
-    border-top: 2px solid #ddd;
-    width: 60%;
-    margin: 20px auto;
-  }
-  
-  /* Card styling */
-  .custom-card {
-    border-radius: 12px;
-    padding: 20px;
-    transition: transform 0.3s, box-shadow 0.3s;
-    text-decoration: none;
-  }
-  
-  .custom-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-  }
-  
-  .custom-card h5 {
-    font-size: 1.1rem;
-    font-weight: 600;
-    margin: 0;
-  }
-  
-  /* Logout button */
-  .btn-logout {
-    font-size: 1.2rem;
-    font-weight: bold;
-    padding: 12px 30px;
-    color: #fff;
-    background: #e63946;
-    border: none;
-    border-radius: 8px;
-    transition: background-color 0.3s ease-in-out;
-  }
-  
-  .btn-logout:hover {
-    background: #c62828;
-  }
-  
+  font-family: 'Inter', sans-serif;
+  background-image: url('https://your-background-image-url.com');
+  background-size: cover;
+  background-position: center;
+  padding: 20px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #fff;
+}
+
+/* AppBar Styling */
+.MuiAppBar-root {
+  background: linear-gradient(135deg, #1e293b, #0ea5e9) !important;
+  padding: 10px 40px;
+  border-radius: 16px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.MuiToolbar-root {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.dashboard-main {
+  width: 100%;
+  max-width: 1200px;
+  margin-top: 30px;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.dashboard-card {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  text-align: center;
+  transition: transform 0.3s, box-shadow 0.3s;
+  cursor: pointer;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.card-icon {
+  font-size: 3rem;
+  color: #0ea5e9;
+  margin-bottom: 10px;
+}
+
+.dashboard-card h3 {
+  font-size: 1.2rem;
+  color: #334155;
+  margin-top: 10px;
+}
+
+.footer-actions {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.footer-text {
+  font-size: 0.9rem;
+  color: #64748b;
+}

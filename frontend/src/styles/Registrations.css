@@ -1,68 +1,49 @@
 .registrations-container {
-    padding: 20px;
-  }
-  
-  h1 {
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  
-  .error-message {
-    color: red;
-    text-align: center;
-  }
-  
-  .registration-card {
-    margin: 20px 0;
+  padding: 20px;
+  background-color: #f8fafc;
+}
+
+.team-section {
+  margin-bottom: 20px;
+}
+
+.participant-list {
+  list-style: none;
+  padding: 0;
+}
+
+.participant-item {
+  background-color: #f3f4f6;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.individual-registration {
+  padding: 10px;
+  background-color: #eef2f7;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 960px) {
+  .registrations-container {
     padding: 15px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: #f9f9f9;
   }
-  
-  .event-name {
-    font-size: 1.5rem;
-    margin-bottom: 10px;
-    color: #333;
-  }
-  
-  .participant-list {
-    list-style-type: none;
-    padding: 0;
-  }
-  
+}
+
+@media (max-width: 600px) {
   .participant-item {
-    margin-bottom: 10px;
-  }
-  
-  .participant-info {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .participant-name {
-    font-weight: bold;
-  }
-  
-  .participant-class,
-  .participant-department {
-    font-size: 0.9rem;
-    color: #666;
+    padding: 8px;
+    font-size: 14px;
   }
 
-  .team-section {
-    margin-top: 10px;
+  .registrations-container {
     padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    background-color: #f9f9f9;
   }
-  
-  .team-name {
-    font-size: 16px;
-    font-weight: bold;
-    color: #333;
+
+  .participant-list {
+    margin-bottom: 10px;
   }
-  
-  
+}

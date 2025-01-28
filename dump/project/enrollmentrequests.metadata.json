@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"participantHash":{"$numberInt":"1"}},"name":"participantHash_1","background":true,"unique":true}],"uuid":"eee519273cef4b30a0bb2ae4979eb168","collectionName":"enrollmentrequests","type":"collection"}

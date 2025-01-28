@@ -1,0 +1,59 @@
+.announcements-container {
+    padding: 20px;
+    background-color: #f8fafc;
+  }
+  
+  .announcement-list {
+    margin-top: 30px;
+  }
+  
+  .alert {
+    margin-top: 20px;
+    font-size: 1rem;
+    padding: 15px;
+    border-radius: 8px;
+  }
+  
+  @media (max-width: 600px) {
+    .announcements-container {
+      padding: 10px;
+    }
+  
+    .announcement-list {
+      margin-top: 20px;
+    }
+  }
+  
+  /* Card Styling */
+  .MuiCard-root {
+    background-color: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .MuiCardContent-root {
+    padding: 20px;
+  }
+  
+  .MuiTypography-root {
+    font-family: 'Poppins', sans-serif;
+  }
+  
+  .MuiTypography-h5 {
+    font-weight: bold;
+    color: #0ea5e9;
+  }
+  
+  .MuiTypography-body1 {
+    margin-top: 10px;
+  }
+  
+  .MuiTypography-body2 {
+    margin-top: 10px;
+    color: #64748b;
+  }
+  
+  .MuiCircularProgress-root {
+    margin-top: 50px;
+  }
+  
