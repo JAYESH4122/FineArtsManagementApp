@@ -7,35 +7,37 @@ const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const bodyParser = require('body-parser');
 
+require('dotenv').config();
+
+const mongoUrl = process.env.MONGO_URI;
+const frontendOrigin = process.env.FRONTEND_ORIGIN;
+const sessionSecret = process.env.SESSION_SECRET;
+
 // Middleware
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
 app.use(cors({
-  origin: 'http://localhost:3000', // Replace with the frontend's origin
-  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Define allowed methods
-  allowedHeaders: ['Content-Type', 'Authorization'] // Define allowed headers
+  origin: frontendOrigin,
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
-// Session setup
 app.use(session({
-  secret: 'jayesh',
+  secret: sessionSecret,
   resave: false,
   saveUninitialized: false,
-  store: MongoStore.create({
-    mongoUrl: 'mongodb://127.0.0.1:27017/project',
-  }),
+  store: MongoStore.create({ mongoUrl }),
   cookie: {
-    secure: false, // Set to true in production
-    maxAge: 24 * 60 * 60 * 1000, // 1 day
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: 24 * 60 * 60 * 1000,
   },
 }));
 
-// MongoDB connection
-mongoose
-  .connect('mongodb://127.0.0.1:27017/project')
+mongoose.connect(mongoUrl)
   .then(() => console.log('Connected to MongoDB'))
-  .catch((err) => console.log('Error connecting to MongoDB:', err));
-
+  .catch(err => console.error('Error connecting to MongoDB:', err));
+  
 // Routes for your API
 const adminRoutes = require('./routes/adminRoute');
 app.use('/admin', adminRoutes);
