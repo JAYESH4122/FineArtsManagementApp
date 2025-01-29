@@ -7,6 +7,7 @@ const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const bodyParser = require('body-parser');
 
+
 require('dotenv').config();
 
 const mongoUrl = process.env.MONGO_URI;
@@ -20,17 +21,24 @@ app.use(express.json());
 app.use(cors({
   origin: frontendOrigin,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true, // Allow cookies to be sent
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
 app.use(session({
-  secret: sessionSecret,
+  secret: process.env.SESSION_SECRET || 'your_default_secret',
   resave: false,
   saveUninitialized: false,
-  store: MongoStore.create({ mongoUrl }),
+  store: MongoStore.create({
+    mongoUrl: process.env.MONGO_URI,  // Make sure this is set in Render
+    collectionName: 'sessions',  // Stores sessions in the 'sessions' collection
+    ttl: 24 * 60 * 60,  // Session expiration (1 day)
+  }),
   cookie: {
-    secure: process.env.NODE_ENV === 'production',
-    maxAge: 24 * 60 * 60 * 1000,
+    secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
+    httpOnly: true,  // Prevents client-side JS from accessing the session cookie
+    sameSite: 'Lax',  // Allows cookies across subdomains
+    maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
   },
 }));
 
