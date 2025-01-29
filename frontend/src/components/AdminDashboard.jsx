@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
+const backendUrl = process.env.REACT_APP_API_URL;
 import '../styles/AdminDashboard.css'; // Create a custom CSS file if needed
 
 const AdminDashboard = () => {
@@ -10,7 +11,7 @@ const AdminDashboard = () => {
   // Logout handler
   const handleLogout = async () => {
     try {
-      await axios.post('/admin/logout');
+      await axios.post(`${backendUrl}/admin/logout`);
       navigate('/admin/login'); // Redirect to login page after logout
     } catch (err) {
       console.error('Error logging out:', err);

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
+const backendUrl = process.env.REACT_APP_API_URL;
 import '../styles/RepDashboard.css';
 
 const RepDashboard = () => {
@@ -11,7 +12,7 @@ const RepDashboard = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await axios.get('http://localhost:4000/deptrep/session', {
+        const response = await axios.get(`${backendUrl}/deptrep/session`, {
           withCredentials: true, // Ensure cookies are included for session
         });
 
@@ -29,7 +30,7 @@ const RepDashboard = () => {
 
   const handleLogout = async () => {
     try {
-      const response = await axios.post('http://localhost:4000/deptrep/logout', null, {
+      const response = await axios.post(`${backendUrl}/deptrep/logout`, null, {
         withCredentials: true,
       });
 

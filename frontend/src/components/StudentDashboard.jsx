@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { AppBar, Toolbar, Typography, Box, Grid, Button } from "@mui/material";
 import 'bootstrap/dist/css/bootstrap.min.css';
+const backendUrl = process.env.REACT_APP_API_URL;
 import '../styles/StudentDashboard.css';
 import { FaClipboardList, FaBullhorn, FaTrophy, FaUniversity, FaRegEdit, FaCommentDots, FaUserCircle, FaPen, FaPaintBrush } from 'react-icons/fa';
 
@@ -13,7 +14,7 @@ const StudentDashboard = () => {
   useEffect(() => {
     const fetchStudentInfo = async () => {
       try {
-        const response = await axios.get('/student/dashboard');
+        const response = await axios.get(`${backendUrl}/student/dashboard`);
         setStudentInfo(response.data);
       } catch (error) {
         console.error('Error fetching student info:', error);
@@ -26,7 +27,7 @@ const StudentDashboard = () => {
 
   const handleLogout = async () => {
     try {
-      await axios.post('/student/logout');
+      await axios.post(`${backendUrl}/student/logout`);
       navigate('/student/login');
     } catch (error) {
       console.error('Error during logout:', error);
