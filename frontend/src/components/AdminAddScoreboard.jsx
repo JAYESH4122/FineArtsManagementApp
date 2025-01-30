@@ -67,7 +67,7 @@ function AdminAddScoreboard() {
     setFormData((prevData) => ({
       ...prevData,
       eventName: e.target.value,
-      category: selectedEvent ? selectedEvent.cateogory : ''
+      category: selectedEvent ? selectedEvent.category : ''
     }));
     setParticipants(selectedEvent ? selectedEvent.participants : 0);
   };

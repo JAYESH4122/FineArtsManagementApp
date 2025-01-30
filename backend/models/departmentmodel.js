@@ -8,3 +8,5 @@ const DepartmentSchema = new Schema({
 
 const Department = mongoose.model('DepartmentDetails', DepartmentSchema);
 module.exports = Department;
+
+
