@@ -8,10 +8,11 @@ const MongoStore = require('connect-mongo');
 const bodyParser = require('body-parser');
 
 
+
 require('dotenv').config();
 
 const mongoUrl = process.env.MONGO_URI;
-const frontendOrigin = process.env.FRONTEND_ORIGIN;
+const frontendOrigin = process.env.NODE_ENV === 'production' ? 'https://fine-arts-management-87t8je13m-jayesh-pjs-projects.vercel.app/' : 'http://localhost:5173';
 const sessionSecret = process.env.SESSION_SECRET;
 
 // Middleware

@@ -3,8 +3,14 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-const backendUrl = process.env.REACT_APP_API_URL;
+
+const backendUrl = import.meta.env.VITE_API_URL;
+console.log("Backend URL:", process.env.REACT_APP_API_URL);  // For create-react-app
+// or
+console.log("Backend URL:", import.meta.env.VITE_API_URL);  // For Vite
 import '../styles/StudentLogin.css';
+console.log("Request URL:", `${backendUrl}/admin/login`);
+
 
 function StudentLogin() {
   const navigate = useNavigate(); // useNavigate hook to navigate programmatically
@@ -29,7 +35,7 @@ function StudentLogin() {
 
     try {
       // Make the login request
-      const response = await axios.post(`${backendUrl}/student/login`, { username, password });
+      const response = await axios.post('/student/login', { username, password });
 
       if (response.data.message === 'Login successful') {
         // On success, navigate to student dashboard

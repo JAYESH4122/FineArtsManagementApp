@@ -11,7 +11,7 @@ const AdminDashboard = () => {
   // Logout handler
   const handleLogout = async () => {
     try {
-      await axios.post(`${backendUrl}/admin/logout`);
+      await axios.post('/admin/logout');
       navigate('/admin/login'); // Redirect to login page after logout
     } catch (err) {
       console.error('Error logging out:', err);

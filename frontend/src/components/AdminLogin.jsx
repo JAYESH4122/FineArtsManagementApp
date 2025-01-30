@@ -17,7 +17,7 @@ const AdminLogin = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post(`${backendUrl}/admin/login`, { username, password });
+      const response = await axios.post('/admin/login', { username, password });
       console.log('Logged in successfully:', response.data);
       navigate('/admin/dashboard'); // Redirect on success
     } catch (err) {

@@ -12,7 +12,7 @@ const RepDashboard = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await axios.get(`${backendUrl}/deptrep/session`, {
+        const response = await axios.get('/deptrep/session', {
           withCredentials: true, // Ensure cookies are included for session
         });
 
@@ -30,7 +30,7 @@ const RepDashboard = () => {
 
   const handleLogout = async () => {
     try {
-      const response = await axios.post(`${backendUrl}/deptrep/logout`, null, {
+      const response = await axios.post('/deptrep/logout', null, {
         withCredentials: true,
       });
 
