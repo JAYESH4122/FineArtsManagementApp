@@ -35,10 +35,10 @@ app.use(session({
     ttl: 24 * 60 * 60,  // Session expiration (1 day)
   }),
   cookie: {
-    secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
-    httpOnly: true,  // Prevents client-side JS from accessing the session cookie
-    sameSite: 'Lax',  // Allows cookies across subdomains
-    maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
+    secure: true,         // ✅ Must be true because Render uses HTTPS
+    httpOnly: true,       // ✅ Prevent client-side access
+    sameSite: 'None',     // ✅ Required for cross-origin sessions
+    maxAge: 24 * 60 * 60 * 1000, // 1 day
   },
 }));
 
