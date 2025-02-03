@@ -18,7 +18,7 @@ const DeptRepLogin = () => {
     const fetchDepartments = async () => {
       try {
         setLoading(true); // Set loading state to true while waiting for data
-        const response = await axios.get(`${backendUrl}/deptrep/login`); // Make API request
+        const response = await axios.get('/deptrep/login'); // Make API request
         
         // Log the response for debugging purposes
         console.log('Fetched departments:', response.data);
@@ -53,7 +53,7 @@ const DeptRepLogin = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post(`${backendUrl}/deptrep/login`, { username, password, department });
+      const response = await axios.post('/deptrep/login', { username, password, department });
 
       // Check if login was successful (response status 200)
       if (response.status === 200) {

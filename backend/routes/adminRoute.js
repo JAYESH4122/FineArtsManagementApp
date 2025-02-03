@@ -26,6 +26,9 @@ router.get('/get-departments', adminController.getDepartmentsAndClasses);
 // Route to get events and categories
 router.get('/get-events', adminController.getEventsAndCategories);
 
+// Route to get all students for autocomplete
+router.get('/get-students', adminController.getStudents);
+
 // Route to add a scoreboard entry
 router.post('/add-scoreboard', adminController.addScoreboard);
 

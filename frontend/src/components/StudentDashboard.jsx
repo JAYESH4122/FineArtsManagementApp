@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { AppBar, Toolbar, Typography, Box, Grid, Button } from "@mui/material";
-import 'bootstrap/dist/css/bootstrap.min.css';
-const backendUrl = process.env.REACT_APP_API_URL;
+import { Typography, Box, Button, Avatar, Grid } from "@mui/material";
+import { FaSignOutAlt, FaRegEdit, FaBullhorn, FaTrophy, FaUniversity, FaPen, FaCommentDots, FaUserCircle, FaPaintBrush } from "react-icons/fa";
+import { motion } from 'framer-motion';
 import '../styles/StudentDashboard.css';
-import { FaClipboardList, FaBullhorn, FaTrophy, FaUniversity, FaRegEdit, FaCommentDots, FaUserCircle, FaPen, FaPaintBrush } from 'react-icons/fa';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const StudentDashboard = () => {
   const navigate = useNavigate();
@@ -14,7 +14,7 @@ const StudentDashboard = () => {
   useEffect(() => {
     const fetchStudentInfo = async () => {
       try {
-        const response = await axios.get(`${backendUrl}/student/dashboard`);
+        const response = await axios.get('/student/dashboard');
         setStudentInfo(response.data);
       } catch (error) {
         console.error('Error fetching student info:', error);
@@ -27,7 +27,7 @@ const StudentDashboard = () => {
 
   const handleLogout = async () => {
     try {
-      await axios.post(`${backendUrl}/student/logout`);
+      await axios.post('/student/logout');
       navigate('/student/login');
     } catch (error) {
       console.error('Error during logout:', error);
@@ -36,82 +36,59 @@ const StudentDashboard = () => {
 
   return (
     <div className="dashboard-container">
-      {/* AppBar Header */}
-      <AppBar position="static" sx={{ background: "linear-gradient(135deg, #1e293b, #0ea5e9)", padding: "10px 40px", borderRadius: "16px", boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)" }}>
-        <Toolbar sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap" }}>
-          <Box sx={{ display: "flex", alignItems: "center" }}>
-            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSJCVDYYtTmG7b32A4HOqDRC8YTaoeIEOfvjQ&s" alt="College Logo" style={{ width: 50, height: 50, marginRight: 16 }} />
-            <Typography variant="h5" sx={{ fontWeight: "bold", color: "white" }}>Fine Arts Festival 2025</Typography>
+      {/* Fixed Header */}
+      <header className="dashboard-header">
+        <Box display="flex" alignItems="center" justifyContent="center" className="header-content">
+          <Avatar src="https://i.pravatar.cc/300" className="profile-avatar" />
+          <Box ml={2} textAlign="center">
+            <Typography variant="h6" className="profile-name">
+              Welcome, {studentInfo.name}
+            </Typography>
+            <Typography variant="body2" className="profile-subtext">
+              Fine Arts Festival 2025
+            </Typography>
           </Box>
-          <Box sx={{ textAlign: "center", flex: 1, minWidth: "250px" }}>
-            <Typography variant="h6" sx={{ color: "#dbeafe" }}>Welcome, {studentInfo.name}</Typography>
-            <Typography variant="body2" sx={{ color: "#dbeafe" }}>Step into the vibrant world of Fine Arts!</Typography>
-          </Box>
-        </Toolbar>
-      </AppBar>
-
+        </Box>
+      </header>
+  
       {/* Main Dashboard Content */}
       <main className="dashboard-main">
-        <Grid container spacing={3}>
-          <Grid item xs={12} sm={6} md={4}>
-            <div className="dashboard-card" onClick={() => navigate('/student/view-registrations')}>
-              <FaRegEdit className="card-icon" />
-              <h3>View Registrations</h3>
-            </div>
-          </Grid>
-          <Grid item xs={12} sm={6} md={4}>
-            <div className="dashboard-card" onClick={() => navigate('/student/view-announcements')}>
-              <FaBullhorn className="card-icon" />
-              <h3>View Announcements</h3>
-            </div>
-          </Grid>
-          <Grid item xs={12} sm={6} md={4}>
-            <div className="dashboard-card" onClick={() => navigate('/student/view-scoreboard')}>
-              <FaTrophy className="card-icon" />
-              <h3>View Scoreboard</h3>
-            </div>
-          </Grid>
-          <Grid item xs={12} sm={6} md={4}>
-            <div className="dashboard-card" onClick={() => navigate('/student/view-departmentwise-rankings')}>
-              <FaUniversity className="card-icon" />
-              <h3>View Department-wise Rankings</h3>
-            </div>
-          </Grid>
-          <Grid item xs={12} sm={6} md={4}>
-            <div className="dashboard-card" onClick={() => navigate('/student/enroll')}>
-              <FaPen className="card-icon" />
-              <h3>Enroll in Events</h3>
-            </div>
-          </Grid>
-          <Grid item xs={12} sm={6} md={4}>
-            <div className="dashboard-card" onClick={() => navigate('/student/view-complaints')}>
-              <FaCommentDots className="card-icon" />
-              <h3>Add Complaints</h3>
-            </div>
-          </Grid>
-          <Grid item xs={12} sm={6} md={4}>
-            <div className="dashboard-card" onClick={() => navigate('/student/manage-profile')}>
-              <FaUserCircle className="card-icon" />
-              <h3>View Profile</h3>
-            </div>
-          </Grid>
-          <Grid item xs={12} sm={6} md={4}>
-            <div className="dashboard-card" onClick={() => navigate('/student/view-feedback')}>
-              <FaPaintBrush className="card-icon" />
-              <h3>Give Feedback</h3>
-            </div>
-          </Grid>
+        <Grid container spacing={3} className="dashboard-grid">
+          {[
+            { icon: <FaRegEdit />, text: "View Registrations", path: "/student/view-registrations" },
+            { icon: <FaBullhorn />, text: "View Announcements", path: "/student/view-announcements" },
+            { icon: <FaTrophy />, text: "View Scoreboard", path: "/student/view-scoreboard" },
+            { icon: <FaUniversity />, text: "Department-wise Rankings", path: "/student/view-departmentwise-rankings" },
+            { icon: <FaPen />, text: "Enroll in Events", path: "/student/enroll" },
+            { icon: <FaCommentDots />, text: "Add Complaints", path: "/student/view-complaints" },
+            { icon: <FaUserCircle />, text: "View Profile", path: "/student/manage-profile" },
+            { icon: <FaPaintBrush />, text: "Give Feedback", path: "/student/view-feedback" }
+          ].map((item, index) => (
+            <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
+              <motion.div
+                className="dashboard-card"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => navigate(item.path)}
+              >
+                <div className="card-icon">{item.icon}</div>
+                <h3>{item.text}</h3>
+              </motion.div>
+            </Grid>
+          ))}
         </Grid>
       </main>
-
-      {/* Footer */}
-      <footer className="dashboard-footer">
-        <div className="footer-actions">
-          <Button variant="contained" sx={{ backgroundColor: '#0ea5e9', '&:hover': { backgroundColor: '#1e293b' } }} onClick={handleLogout}>Logout</Button>
-        </div>
-      </footer>
+  
+      {/* Fixed Logout Button */}
+      <div className="dashboard-logout">
+        <motion.div whileTap={{ scale: 0.95 }}>
+          <Button variant="contained" className="logout-button" onClick={handleLogout}>
+            <FaSignOutAlt className="logout-icon" /> Logout
+          </Button>
+        </motion.div>
+      </div>
     </div>
-  );
+  );  
 };
 
 export default StudentDashboard;

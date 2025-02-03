@@ -314,9 +314,10 @@ exports.getAllRegistrations = async (req, res) => {
     const registrations = await EnrollmentRequest.find()
       .populate('eventId', 'eventname') // Populate event details
       .populate('participants.className', 'className') // Populate class name
-      .populate('department', 'departmentname') // Populate department name
+      .populate({path: 'department', select: 'departmentname',}) // Populate department name
       .exec();
 
+      console.log(registrations.departmentname)
     // Group participants by event name
     const groupedRegistrations = {};
 

@@ -14,7 +14,4 @@ const enrollmentRequestSchema = new Schema({
   department: { type: mongoose.Schema.Types.ObjectId, ref: 'DepartmentDetails', required: true },
   requestedAt: { type: Date, default: Date.now },
 });
-
-
 module.exports = mongoose.model('EnrollmentRequest', enrollmentRequestSchema);
-

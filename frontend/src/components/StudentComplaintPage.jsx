@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import '../styles/StudentComplaintPage.css';
+import { Container, TextField, MenuItem, Button, Card, CardContent, Typography, Grid, Alert, Box } from '@mui/material';
+
+const subjects = ["Appeal for an event", "Register a group event", "Other"];
 
 const StudentComplaintPage = () => {
   const [complaints, setComplaints] = useState([]);
@@ -14,7 +18,7 @@ const StudentComplaintPage = () => {
     try {
       const { data } = await axios.get('/student/complaints');
       setComplaints(data.complaints);
-      setDepartmentRepName(data.departmentRepName); // Store department rep name
+      setDepartmentRepName(data.departmentRepName);
     } catch (error) {
       console.error('Error fetching complaints:', error);
     }
@@ -32,61 +36,89 @@ const StudentComplaintPage = () => {
   };
 
   return (
-    <div className="container mt-5">
-      <h1>Student Complaints</h1>
-      <h5 className="text-secondary mb-4">
-        Complaints will be sent to: <strong>{departmentRepName}</strong>
-      </h5>
-      <form onSubmit={handleSubmit}>
-        <div className="mb-3">
-          <label className="form-label">Subject</label>
-          <input
-            type="text"
-            className="form-control"
-            value={form.subject}
-            onChange={(e) => setForm({ ...form, subject: e.target.value })}
-            required
-          />
-        </div>
-        <div className="mb-3">
-          <label className="form-label">Description</label>
-          <textarea
-            className="form-control"
-            rows="3"
-            value={form.description}
-            onChange={(e) => setForm({ ...form, description: e.target.value })}
-            required
-          ></textarea>
-        </div>
-        <button type="submit" className="btn btn-primary">Submit Complaint</button>
-      </form>
+    <Container maxWidth="md" sx={{ py: 5 }}>
+      <Typography variant="h4" align="center" gutterBottom>
+        Student Complaints
+      </Typography>
+      <Typography variant="subtitle1" color="textSecondary" align="center" gutterBottom>
+        Complaints will be sent to : <br /> Your Association Secretary: <strong>{departmentRepName}</strong>
+      </Typography>
 
-      <hr />
+      {/* Complaint Form */}
+      <Box component="form" onSubmit={handleSubmit} sx={{ backgroundColor: '#f9f9f9', p: 3, borderRadius: 2, boxShadow: 2 }}>
+        <TextField
+          fullWidth
+          select
+          label="Subject"
+          value={form.subject}
+          onChange={(e) => setForm({ ...form, subject: e.target.value })}
+          required
+          sx={{ mb: 2 }}
+        >
+          {subjects.map((option) => (
+            <MenuItem key={option} value={option}>
+              {option}
+            </MenuItem>
+          ))}
+        </TextField>
 
-      <h2>Your Complaints</h2>
+        <TextField
+          fullWidth
+          label="Description"
+          multiline
+          rows={4}
+          value={form.description}
+          onChange={(e) => setForm({ ...form, description: e.target.value })}
+          required
+          sx={{ mb: 2 }}
+        />
+
+        <Button type="submit" variant="contained" fullWidth size="large" sx={{ backgroundColor: '#1976d2' }}>
+          Submit Complaint
+        </Button>
+      </Box>
+
+      <Typography variant="h5" sx={{ mt: 5 }}>
+        Your Complaints
+      </Typography>
       {complaints.length === 0 ? (
-        <p>No complaints found.</p>
+        <Typography variant="body1" color="textSecondary">
+          No complaints found.
+        </Typography>
       ) : (
-        complaints.map((complaint) => (
-          <div className="card mb-4 shadow-sm" key={complaint._id}>
-            <div className="card-body">
-              <h5 className="card-title"><strong>Subject:</strong> {complaint.subject}</h5>
-              <p className="card-text"><strong>Description:</strong> {complaint.complaintText}</p>
-              <p className="card-text"><strong>Submitted on:</strong> {new Date(complaint.createdAt).toLocaleDateString()}</p>
-              {complaint.reply ? (
-                <div className="alert alert-success">
-                  <strong>Reply:</strong> {complaint.reply}
-                  <br />
-                  <small>Replied on: {new Date(complaint.repliedAt).toLocaleDateString()}</small>
-                </div>
-              ) : (
-                <p className="text-danger">Not replied yet</p>
-              )}
-            </div>
-          </div>
-        ))
+        <Grid container spacing={2} sx={{ mt: 2 }}>
+          {complaints.map((complaint) => (
+            <Grid item xs={12} sm={6} key={complaint._id}>
+              <Card sx={{ boxShadow: 3, borderRadius: 2 }}>
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    <strong>Subject:</strong> {complaint.subject}
+                  </Typography>
+                  <Typography variant="body2" gutterBottom>
+                    <strong>Description:</strong> {complaint.complaintText}
+                  </Typography>
+                  <Typography variant="caption" color="textSecondary">
+                    Submitted on: {new Date(complaint.createdAt).toLocaleDateString()}
+                  </Typography>
+
+                  {complaint.reply ? (
+                    <Alert severity="success" sx={{ mt: 2 }}>
+                      <strong>Reply:</strong> {complaint.reply}
+                      <br />
+                      <small>Replied on: {new Date(complaint.repliedAt).toLocaleDateString()}</small>
+                    </Alert>
+                  ) : (
+                    <Typography variant="body2" color="error" sx={{ mt: 2 }}>
+                      Not replied yet
+                    </Typography>
+                  )}
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
       )}
-    </div>
+    </Container>
   );
 };
 

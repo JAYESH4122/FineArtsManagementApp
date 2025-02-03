@@ -1,0 +1,19 @@
+@media (max-width: 600px) {
+    .MuiContainer-root {
+      padding: 16px;
+    }
+  
+    .MuiTypography-h4 {
+      font-size: 1.8rem;
+    }
+  
+    .MuiButton-root {
+      font-size: 0.875rem;
+      padding: 10px;
+    }
+  
+    .MuiCard-root {
+      margin-bottom: 12px;
+    }
+  }
+  

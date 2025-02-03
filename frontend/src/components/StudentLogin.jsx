@@ -5,11 +5,8 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const backendUrl = import.meta.env.VITE_API_URL;
-console.log("Backend URL:", process.env.REACT_APP_API_URL);  // For create-react-app
-// or
-console.log("Backend URL:", import.meta.env.VITE_API_URL);  // For Vite
 import '../styles/StudentLogin.css';
-console.log("Request URL:", `${backendUrl}/admin/login`);
+
 
 
 function StudentLogin() {

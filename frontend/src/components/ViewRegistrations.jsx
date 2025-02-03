@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Card, CardContent, Typography, Box, Grid, CircularProgress, Alert } from "@mui/material";
+import { Card, CardContent, Typography, Box, Grid, CircularProgress, Alert, IconButton, Collapse } from "@mui/material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import "../styles/Registrations.css";
 
 const ViewRegistrations = () => {
   const [registrations, setRegistrations] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(true);
+  const [expanded, setExpanded] = useState({});
 
   useEffect(() => {
     const fetchRegistrations = async () => {
@@ -24,28 +26,26 @@ const ViewRegistrations = () => {
     fetchRegistrations();
   }, []);
 
+  const handleExpandClick = (eventname) => {
+    setExpanded((prevExpanded) => ({
+      ...prevExpanded,
+      [eventname]: !prevExpanded[eventname],
+    }));
+  };
+
   return (
     <div className="registrations-container">
-      {/* Header Section */}
-      <Box
-        sx={{
-          backgroundColor: "#0ea5e9",
-          padding: "30px",
-          borderRadius: "8px",
-          marginBottom: "40px",
-          textAlign: "center",
-        }}
-      >
-        <Typography variant="h3" sx={{ fontWeight: "bold", color: "#ffffff" }}>
+      <Box className="header-box">
+        <Typography variant="h3" className="header-title">
           Event Registrations
         </Typography>
-        <Typography variant="h6" sx={{ color: "#ffffff", marginTop: "10px" }}>
-          View the list of registered events and participants below.
+        <Typography variant="h6" className="header-subtitle">
+          Click on an event to view participants
         </Typography>
       </Box>
 
       {loading ? (
-        <Box sx={{ display: "flex", justifyContent: "center", marginTop: "50px" }}>
+        <Box className="loading-box">
           <CircularProgress />
         </Box>
       ) : errorMessage ? (
@@ -56,99 +56,72 @@ const ViewRegistrations = () => {
         <Grid container spacing={3}>
           {registrations.map((registration, index) => (
             <Grid item xs={12} sm={6} md={4} key={index}>
-              <Card sx={{ backgroundColor: "#ffffff", borderRadius: "16px", boxShadow: 3 }}>
+              <Card className="event-card">
                 <CardContent>
-                  {/* Event Name Styling */}
-                  <Box
-                    sx={{
-                      padding: "15px",
-                      backgroundColor: "#f0f9ff",
-                      borderRadius: "8px",
-                      marginBottom: "20px",
-                    }}
-                  >
-                    <Typography
-                      variant="h6"
-                      align="center"
-                      sx={{
-                        fontWeight: "bold",
-                        color: "#0ea5e9",
-                        fontFamily: "'Poppins', sans-serif",
-                        fontSize: "1.4rem",
-                      }}
-                    >
+                  <Box className="event-header" onClick={() => handleExpandClick(registration.eventname)}>
+                    <Typography variant="h6" className="event-title">
                       {registration.eventname}
                     </Typography>
+                    <IconButton className={expanded[registration.eventname] ? "expand-icon expanded" : "expand-icon"}>
+                      <ExpandMoreIcon />
+                    </IconButton>
                   </Box>
 
-                  {/* Participant Section */}
-                  {registration.teams.length > 0 ? (
-                    registration.teams.map((team, teamIndex) => (
-                      <div key={teamIndex} className="team-section">
-                        {team.participants.length > 1 && (
-                          <Typography
-                            variant="subtitle1"
-                            sx={{
-                              fontWeight: "bold",
-                              color: "#1e293b",
-                              marginTop: "10px",
-                              fontSize: "1.2rem",
-                            }}
-                          >
-                            Team: {team.teamName}
+                  <Collapse in={expanded[registration.eventname]} timeout="auto" unmountOnExit>
+                    <Box className={registration.teams.length > 1 ? "team-container" : "individual-container"}>
+                      {registration.teams.length > 0 ? (
+                        registration.teams.map((team, teamIndex) => (
+                          <div key={teamIndex} className="team-section">
+                            {team.participants.length > 1 && (
+                              <Typography variant="subtitle1" className="team-title">
+                                Team: {team.teamName}
+                              </Typography>
+                            )}
+                            <ul className="participant-list">
+                              {team.participants.map((participant, i) => (
+                                <li key={i} className="participant-item">
+                                  <Box className="participant-box">
+                                    <Typography variant="body1" className="participant-name">
+                                      {participant.name}
+                                    </Typography>
+                                    <Typography variant="body2" className="participant-detail">
+                                      Class: {participant.className}
+                                    </Typography>
+                                    <Typography variant="body2" className="participant-detail">
+                                      Department: {participant.department}
+                                    </Typography>
+                                  </Box>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="individual-registration">
+                          <Typography variant="subtitle1" className="individual-title">
+                            Individual Participant
                           </Typography>
-                        )}
-                        <ul className="participant-list">
-                          {team.participants.map((participant, i) => (
-                            <li key={i} className="participant-item team-participant">
-                              <Box sx={{ display: "flex", flexDirection: "column", marginBottom: "10px" }}>
-                                <Typography variant="body1" sx={{ fontWeight: "bold", color: "#0ea5e9" }}>
-                                  {participant.name}
-                                </Typography>
-                                <Typography variant="body2" sx={{ color: "#64748b" }}>
-                                  Class: {participant.className}
-                                </Typography>
-                                <Typography variant="body2" sx={{ color: "#64748b" }}>
-                                  Department: {participant.department}
-                                </Typography>
-                              </Box>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    ))
-                  ) : (
-                    // For individual events, show participant list without team
-                    <div className="individual-registration">
-                      <Typography
-                        variant="subtitle1"
-                        sx={{
-                          fontWeight: "bold",
-                          color: "#1e293b",
-                          fontSize: "1.2rem",
-                        }}
-                      >
-                        Individual Participant
-                      </Typography>
-                      <ul className="participant-list">
-                        {registration.participants.map((participant, i) => (
-                          <li key={i} className="participant-item individual-participant">
-                            <Box sx={{ display: "flex", flexDirection: "column", marginBottom: "10px" }}>
-                              <Typography variant="body1" sx={{ fontWeight: "bold", color: "#0ea5e9" }}>
-                                {participant.name}
-                              </Typography>
-                              <Typography variant="body2" sx={{ color: "#64748b" }}>
-                                Class: {participant.className}
-                              </Typography>
-                              <Typography variant="body2" sx={{ color: "#64748b" }}>
-                                Department: {participant.department}
-                              </Typography>
-                            </Box>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
+                          <ul className="participant-list">
+                            {registration.participants.map((participant, i) => (
+                              <li key={i} className="participant-item">
+                                <Box className="participant-box">
+                                  <Typography variant="body1" className="participant-name">
+                                    {participant.name}
+                                  </Typography>
+                                  <Typography variant="body2" className="participant-detail">
+                                    Class: {participant.className}
+                                  </Typography>
+                                  <Typography variant="body2" className="participant-detail">
+                                    Department: {participant.departmentname}
+                                  </Typography>
+                                </Box>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </Box>
+                  </Collapse>
                 </CardContent>
               </Card>
             </Grid>

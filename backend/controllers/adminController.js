@@ -291,6 +291,7 @@ exports.getViewAnnouncements = async (req, res) => {
 //Add Scoreboard GET/POST/VIEW
 
 //get Scoreboard
+// Get events and categories
 exports.getEventsAndCategories = async (req, res) => {
   try {
     const events = await Event.find();
@@ -311,8 +312,6 @@ exports.getDepartmentsAndClasses = async (req, res) => {
       return res.status(404).json({ message: 'No departments found' });
     }
 
-
-    // Ensure the response is an array
     return res.json(departments);
   } catch (error) {
     console.error('Error fetching departments and classes:', error);
@@ -320,118 +319,169 @@ exports.getDepartmentsAndClasses = async (req, res) => {
   }
 };
 
+// Get students with populated department and class details
+exports.getStudents = async (req, res) => {
+  try {
+    const students = await Student.find({}, 'name departmentname className')
+      .populate('departmentname', 'departmentname')
+      .populate('className', 'className');
+    return res.json(students);
+  } catch (error) {
+    console.error('Error fetching students:', error);
+    return res.status(500).json({ error: 'Server error fetching students.' });
+  }
+};
 
-// Add a scoreboard entry (example, adjust based on your logic)
+// Add a scoreboard entry with nested winners
 exports.addScoreboard = async (req, res) => {
-  const {
-    eventName,
-    category,
-    studentNames,
-    classNames,
-    prize,
-    departmentname,
-    points,
-  } = req.body;
-
+  const { eventName, category, winners, departmentname } = req.body;
 
   try {
     // Validate required fields
-    if (!eventName || !category || !studentNames || !classNames || !prize || !departmentname || !points) {
+    if (!eventName || !category || !winners || !departmentname) {
       return res.status(400).json({ error: 'All fields are required.' });
     }
 
-    const mongoose = require('mongoose');
+    // Validate that winners object has all three positions
+    const positions = ['first', 'second', 'third'];
+    for (const pos of positions) {
+      if (
+        !winners[pos] ||
+        !winners[pos].studentNames ||
+        !winners[pos].classNames ||
+        !winners[pos].grade ||
+        winners[pos].points === undefined
+      ) {
+        return res
+          .status(400)
+          .json({ error: `Missing or incomplete data for ${pos} winner.` });
+      }
 
-    // Validate ObjectIDs
+      // Validate that studentNames and classNames arrays match in length.
+      if (winners[pos].studentNames.length !== winners[pos].classNames.length) {
+        return res
+          .status(400)
+          .json({ error: `Mismatch between students and classes for ${pos} winner.` });
+      }
+    }
+
+    // Validate department ObjectId
     if (!mongoose.Types.ObjectId.isValid(departmentname)) {
       return res.status(400).json({ error: 'Invalid department ID.' });
     }
 
-    const invalidClassIds = classNames.filter((id) => !mongoose.Types.ObjectId.isValid(id));
-    if (invalidClassIds.length > 0) {
-      return res.status(400).json({ error: 'Invalid class ID(s) provided.' });
+    // Validate each classId for every position using a loop instead of forEach
+    for (const pos of positions) {
+      for (const classId of winners[pos].classNames) {
+        if (!mongoose.Types.ObjectId.isValid(classId)) {
+          return res
+            .status(400)
+            .json({ error: `Invalid class ID(s) provided for ${pos} winner.` });
+        }
+      }
     }
 
-    // Check if the department exists
-    const department = await Department.findById(departmentname).populate('classes');
-    if (!department) {
-      return res.status(404).json({ error: 'Department not found.' });
+    // Validate and transform points to a number for each position
+    for (const pos of positions) {
+      winners[pos].points = parseInt(winners[pos].points, 10);
+      if (isNaN(winners[pos].points)) {
+        return res.status(400).json({ error: `Invalid points value for ${pos} winner.` });
+      }
     }
 
-    // Validate that classNames belong to the selected department
-    const departmentClassIds = department.classes.map((cls) => cls._id.toString());
-    const invalidClasses = classNames.filter((id) => !departmentClassIds.includes(id));
-    if (invalidClasses.length > 0) {
-      return res
-        .status(400)
-        .json({ error: 'Some classes do not belong to the selected department.' });
-    }
-
-    // Validate that studentNames and classNames lengths match
-    if (studentNames.length !== classNames.length) {
-      return res.status(400).json({ error: 'Mismatch between students and classes.' });
-    }
-
-    // Validate and transform points to a number
-    const parsedPoints = parseInt(points, 10);
-    if (isNaN(parsedPoints)) {
-      return res.status(400).json({ error: 'Invalid points value.' });
-    }
+    // Optionally, you could validate that the department exists or that classes belong to that department
 
     // Create and save the scoreboard entry
     const scoreboard = new Scoreboard({
       eventName,
       category,
-      studentNames,
-      classNames,
-      prize,
+      winners,
       departmentname,
-      points: parsedPoints,
     });
 
     console.log('Scoreboard object created:', scoreboard);
 
     await scoreboard.save();
 
-    res.status(201).json({
+    return res.status(201).json({
       success: 'Scoreboard entry added successfully.',
       data: scoreboard,
     });
   } catch (err) {
     console.error('Error adding scoreboard:', err);
-    res.status(500).json({ error: 'Server error while adding scoreboard entry.' });
+    return res
+      .status(500)
+      .json({ error: 'Server error while adding scoreboard entry.' });
   }
 };
 
 
 
 //View scoreboard
+// controllers/adminController.js
 exports.getViewScoreboard = async (req, res) => {
   try {
     console.log("Fetching scoreboard data...");
-    
+
+    // Populate department and the nested winners' classNames.
     const scoreboards = await Scoreboard.find()
-      .populate({
-        path: 'departmentname',
-        select: 'departmentname', // Only populate the department name
+      .populate('departmentname', 'departmentname')
+      .populate({ 
+        path: 'winners.first.classNames', 
+        model: 'Class', 
+        select: 'className' 
       })
-      .populate({
-        path: 'classNames',
-        select: 'className', // Populate class names
+      .populate({ 
+        path: 'winners.second.classNames', 
+        model: 'Class', 
+        select: 'className' 
+      })
+      .populate({ 
+        path: 'winners.third.classNames', 
+        model: 'Class', 
+        select: 'className' 
       })
       .sort({ lastUpdated: -1 });
 
-    const formattedScoreboards = scoreboards.map(scoreboard => ({
-      _id: scoreboard._id,
-      eventName: scoreboard.eventName,
-      category: scoreboard.category,
-      studentNames: scoreboard.studentNames,
-      prize: scoreboard.prize,
-      classNames: scoreboard.classNames.map(cls => cls.className), // Class names
-      departmentname: typeof scoreboard.departmentname === 'string' ? { departmentname: scoreboard.departmentname }  : scoreboard.departmentname,
-      points: scoreboard.points,
-      lastUpdated: scoreboard.lastUpdated,
-    }));
+    // Helper function to safely format a winner object.
+    const formatWinner = (winner) => {
+      if (!winner || !winner.studentNames || !Array.isArray(winner.studentNames)) {
+        return [];
+      }
+      return winner.studentNames.map((studentName, index) => {
+        let className = "";
+        if (winner.classNames && winner.classNames[index] && typeof winner.classNames[index] === 'object') {
+          className = winner.classNames[index].className;
+        } else if (winner.classNames && winner.classNames[index]) {
+          className = winner.classNames[index].toString();
+        }
+        return {
+          studentName,
+          grade: winner.grade,
+          points: winner.points,
+          className,
+        };
+      });
+    };
+
+    // Format each scoreboard document so that winners are grouped and formatted.
+    const formattedScoreboards = scoreboards.map(scoreboard => {
+      return {
+        _id: scoreboard._id,
+        eventName: scoreboard.eventName,
+        category: scoreboard.category,
+        lastUpdated: scoreboard.lastUpdated,
+        winners: {
+          first: formatWinner(scoreboard.winners ? scoreboard.winners.first : null),
+          second: formatWinner(scoreboard.winners ? scoreboard.winners.second : null),
+          third: formatWinner(scoreboard.winners ? scoreboard.winners.third : null)
+        },
+        // Ensure department is an object with departmentname
+        department: typeof scoreboard.departmentname === 'string'
+          ? { departmentname: scoreboard.departmentname }
+          : scoreboard.departmentname,
+      };
+    });
 
     res.status(200).json({ scoreboards: formattedScoreboards });
   } catch (error) {
@@ -439,6 +489,8 @@ exports.getViewScoreboard = async (req, res) => {
     res.status(500).json({ message: 'Failed to load scoreboards.' });
   }
 };
+
+
 
 //Department wise Rankings
 

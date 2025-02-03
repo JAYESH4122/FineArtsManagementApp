@@ -1,76 +1,173 @@
+/* General Styling */
 .dashboard-container {
-  font-family: 'Inter', sans-serif;
-  background-image: url('https://your-background-image-url.com');
-  background-size: cover;
-  background-position: center;
-  padding: 20px;
+  font-family: Tahoma, sans-serif;
+  background: linear-gradient(132deg, #00577e, #1e293b);
   min-height: 100vh;
+  padding: 20px;
+  text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-  color: #fff;
 }
 
-/* AppBar Styling */
-.MuiAppBar-root {
-  background: linear-gradient(135deg, #1e293b, #0ea5e9) !important;
-  padding: 10px 40px;
-  border-radius: 16px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-}
-
-.MuiToolbar-root {
+/* Fixed Header */
+.dashboard-header {
+  background: linear-gradient(180deg, #04283b, #042641);
+  font-family: Tahoma, sans-serif;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border-radius: 9px;
+  margin: 20px auto;
+  width: 95%;
+  padding: 15px 20px;
   display: flex;
-  justify-content: space-between;
+  height: 100px;
+  justify-content: center;
   align-items: center;
-  flex-wrap: wrap;
+  text-align: center;
 }
 
-.dashboard-main {
+/* Header Content */
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
   max-width: 1200px;
-  margin-top: 30px;
+}
+
+/* Profile Avatar */
+.profile-avatar {
+  width: 55px;
+  height: 55px;
+  border: 2px solid white;
+  border-radius: 50%;
+}
+
+/* Profile Name */
+.profile-name {
+  font-weight: bold;
+  color: white;
+  font-size: 1.5rem;
+}
+
+/* Profile Subtext */
+.profile-subtext {
+  font-size: 1rem;
+  color: #dbeafe;
+  margin-top: 4px;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .dashboard-header {
+    width: 100%;
+    padding: 10px;
+    border-radius: 0;
+  }
+
+  .profile-avatar {
+    width: 45px;
+    height: 45px;
+  }
+
+  .profile-name {
+    font-size: 1.2rem;
+  }
+
+  .profile-subtext {
+    font-size: 0.9rem;
+  }
+}
+
+/* Main Dashboard */
+.dashboard-main {
+  max-width: 1200px;
+  margin: 35px auto 70px;
+  padding-top: 30px;
+  width: 100%;
 }
 
 .dashboard-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 20px;
+  justify-content: center;
 }
 
+/* Dashboard Cards */
 .dashboard-card {
-  background: #ffffff;
+  background: linear-gradient(181deg, #ffffff, #b1b9ca);
+  backdrop-filter: blur(10px);
   border-radius: 16px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   padding: 20px;
   text-align: center;
-  transition: transform 0.3s, box-shadow 0.3s;
+  transition: all 0.3s ease;
   cursor: pointer;
 }
 
 .dashboard-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
 }
 
 .card-icon {
   font-size: 3rem;
-  color: #0ea5e9;
+  color: #151414ec;
   margin-bottom: 10px;
 }
 
 .dashboard-card h3 {
   font-size: 1.2rem;
-  color: #334155;
+  color: #151414ec;
   margin-top: 10px;
+  font-weight: bold;
 }
 
-.footer-actions {
-  text-align: center;
-  margin-top: 30px;
+/* Fixed Logout Button */
+.fixed-logout {
+  position: fixed;
+  bottom: 20px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
 }
 
-.footer-text {
-  font-size: 0.9rem;
-  color: #64748b;
+.logout-button {
+  background: linear-gradient(358deg, #080a0d, #132c37);
+  font-weight: bold;
+  font-size: 16px;
+  padding: 12px 24px;
+  border-radius: 50px;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.3s ease;
+}
+
+.logout-button:hover {
+  background: #0ea5e9;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.logout-icon {
+  font-size: 20px;
+}
+
+/* Responsive Adjustments */
+@media (min-width: 768px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 30px;
+  }
 }
