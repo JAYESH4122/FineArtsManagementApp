@@ -1,19 +1,117 @@
-@media (max-width: 600px) {
-    .MuiContainer-root {
-      padding: 16px;
-    }
-  
-    .MuiTypography-h4 {
-      font-size: 1.8rem;
-    }
-  
-    .MuiButton-root {
-      font-size: 0.875rem;
-      padding: 10px;
-    }
-  
-    .MuiCard-root {
-      margin-bottom: 12px;
-    }
-  }
-  
+/* Container */
+.complaint-container {
+  font-family: Tahoma, sans-serif;
+  background: linear-gradient(132deg, #00577e, #1e293b);
+  min-height: 100vh;
+  padding: 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Header */
+.complaint-header {
+  background: linear-gradient(180deg, #04283b, #042641);
+  padding: 15px 20px;
+  width: 95%;
+  max-width: 1200px;
+  border-radius: 9px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  text-align: center;
+}
+
+.complaint-icon {
+  font-size: 2.5rem;
+  color: white;
+  margin-bottom: 10px;
+}
+
+.complaint-title {
+  color: white;
+  font-size: 1.8rem;
+  font-weight: bold;
+}
+
+.complaint-subtext {
+  color: #dbeafe;
+  font-size: 1rem;
+}
+
+/* Form */
+.complaint-form {
+  max-width: 600px;
+  width: 100%;
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  margin-top: 20px;
+}
+
+.form-input {
+  margin-bottom: 15px;
+}
+
+/* Submit Button */
+.submit-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 12px;
+  font-size: 1rem;
+  font-weight: bold;
+  background: linear-gradient(358deg, #080a0d, #132c37);
+  color: white;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.submit-button:hover {
+  background: #0ea5e9;
+}
+
+/* Complaints List */
+.complaint-list-title {
+  color: white;
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 30px;
+}
+
+.no-complaints {
+  color: white;
+  font-size: 1.2rem;
+}
+
+/* Complaint Cards */
+.complaint-grid {
+  width: 100%;
+  max-width: 1200px;
+  margin-top: 20px;
+}
+
+.complaint-card {
+  background: white;
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  text-align: left;
+}
+
+.complaint-date {
+  font-size: 0.85rem;
+  color: gray;
+}
+
+.complaint-reply {
+  margin-top: 10px;
+}
+
+.no-reply {
+  color: red;
+  margin-top: 10px;
+}

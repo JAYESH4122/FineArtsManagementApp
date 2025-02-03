@@ -9,8 +9,12 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Typography
+  Typography,
+  CircularProgress,
+  Alert,
+  Box
 } from '@mui/material';
+import { motion } from 'framer-motion';
 import '../styles/ScoreboardPage.css';
 
 const ScoreboardPage = () => {
@@ -43,16 +47,23 @@ const ScoreboardPage = () => {
   };
 
   return (
-    <div className="scoreboard-container">
-      <Typography variant="h3" align="center" className="scoreboard-title">
-        Scoreboard
-      </Typography>
+    <Box className="scoreboard-container">
+      <div className="scoreboard-header">
+        <Typography variant="h3" align="center" className="scoreboard-title">
+          Results
+        </Typography>
+        <Typography variant="h6" align="center" className="scoreboard-subtitle">
+          Click to view competition results
+        </Typography>
+      </div>
 
       {loading ? (
-        <div className="loading-spinner">Loading...</div>
+        <Box className="loading-box">
+          <CircularProgress color="primary" />
+        </Box>
       ) : (
         <>
-          {error && <div className="alert alert-danger text-center">{error}</div>}
+          {error && <Alert severity="error" className="alert">{error}</Alert>}
           <TableContainer component={Paper} className="table-container">
             <Table className="table-custom">
               <TableHead>
@@ -66,7 +77,6 @@ const ScoreboardPage = () => {
                 {scoreboards.length > 0 ? (
                   scoreboards.map((scoreboard) => (
                     <React.Fragment key={scoreboard._id}>
-                      {/* Main Row: Clicking anywhere toggles the details */}
                       <TableRow
                         hover
                         className="main-row"
@@ -81,15 +91,14 @@ const ScoreboardPage = () => {
                         </TableCell>
                       </TableRow>
 
-                      {/* Expandable Details Row */}
                       <TableRow>
                         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={3}>
                           <Collapse in={expandedRows[scoreboard._id]} timeout="auto" unmountOnExit>
-                            <div className="expanded-content">
+                            <Box className="expanded-content">
                               {['first', 'second', 'third'].map((position) => (
-                                <div key={position} className="winner-section">
-                                  <Typography variant="h6" className="winner-title text-capitalize">
-                                    {position} Prize
+                                <Box key={position} className="winner-section">
+                                  <Typography variant="h6" className="winner-title">
+                                    {position.charAt(0).toUpperCase() + position.slice(1)} Prize
                                   </Typography>
                                   <Table className="inner-table">
                                     <TableHead>
@@ -115,9 +124,9 @@ const ScoreboardPage = () => {
                                       ))}
                                     </TableBody>
                                   </Table>
-                                </div>
+                                </Box>
                               ))}
-                            </div>
+                            </Box>
                           </Collapse>
                         </TableCell>
                       </TableRow>
@@ -135,7 +144,7 @@ const ScoreboardPage = () => {
           </TableContainer>
         </>
       )}
-    </div>
+    </Box>
   );
 };
 

@@ -1,140 +1,109 @@
+/* General Container Styling */
 .registrations-container {
-  padding: 30px;
-  background-color: #f8fafc;
+  font-family: Tahoma, sans-serif;
+  background: linear-gradient(132deg, #00577e, #1e293b);
   min-height: 100vh;
-  font-family: 'Roboto', sans-serif;
+  padding: 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 /* Header Styling */
 .header-box {
+  background: linear-gradient(180deg, #04283b, #042641);
+  font-family: Tahoma;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border-radius: 9px;
+  margin: 20px auto;
+  width: 95%;
+  padding: 15px 20px;
+  display: flex;
+  height: 100px;
+  justify-content: center;
+  align-items: center;
   text-align: center;
-  margin-bottom: 40px;
+  color: #ffffff;
 }
 
 .header-title {
-  font-size: 3rem;
-  font-weight: 600;
-  color: #0ea5e9;  /* Using your color pattern */
-  letter-spacing: 1px;
-  margin-bottom: 10px;
+  font-weight: bold;
+  color: white;
+  font-size: 1.5rem;
 }
 
 .header-subtitle {
-  font-size: 1.1rem;
-  font-weight: 400;
-  color: #64748b;  /* Using your color pattern */
-  letter-spacing: 0.5px;
-  margin-bottom: 20px;
+  font-size: 1rem;
+  color: #dbeafe;
+  margin-top: 4px;
+  opacity: 0.8;
 }
 
 /* Event Card Styling */
 .event-card {
-  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
-  background-color: #fff;
+  background: linear-gradient(to bottom, #f8f9fa, #dbeafe);
+  font-family: Tahoma;
   border-radius: 16px;
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-  margin-bottom: 20px;
+  transition: all 0.3s ease-in-out;
 }
 
 .event-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+  transform: scale(1.02);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2);
 }
 
 .event-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 20px;
   cursor: pointer;
-  padding: 15px;
+}
+
+.event-title {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #003366;
 }
 
 .expand-icon {
   transition: transform 0.3s ease, color 0.3s ease;
-  color: #0ea5e9;  /* Using your color pattern */
+  color: #003366;
 }
 
 .expanded {
   transform: rotate(180deg);
-  color: #0d47a1;  /* Slightly darker shade for interaction */
+  color: #002244;
 }
 
 /* Participant List */
-.team-section {
-  margin-bottom: 25px;
-}
-
 .participant-list {
   list-style: none;
-  padding: 0;
-  margin-top: 10px;
+  padding: 15px;
+  margin: 0;
 }
 
 .participant-item {
-  background-color: #f3f4f6;
+  background-color: #e6f2ff;
   padding: 15px;
   border-radius: 12px;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  transition: background-color 0.3s ease, transform 0.3s ease;
-}
-
-.participant-item:hover {
-  background-color: #e0f7fa;
-  transform: translateX(5px);
-}
-
-.participant-box {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
 }
 
 .participant-name {
-  font-weight: 500;
-  color: #333;
   font-size: 1rem;
+  font-weight: 500;
+  color: #003366;
 }
 
 .participant-detail {
   font-size: 0.9rem;
-  color: #64748b;  /* Using your color pattern */
-  word-wrap: break-word;
-}
-
-/* Animated Fade-in for the cards */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.event-card {
-  animation: fadeIn 0.8s ease-out;
-}
-
-/* Loading & Error Box */
-.loading-box, .error-box {
-  text-align: center;
-  margin-top: 50px;
-}
-
-.loading-box {
-  animation: fadeIn 1s ease-out;
-}
-
-.error-box {
-  animation: fadeIn 1s ease-out;
-}
-
-.error-box .MuiAlert-root {
-  margin-top: 20px;
+  color: #00509e;
 }
 
 /* Responsive Adjustments */
@@ -144,7 +113,7 @@
   }
 
   .header-title {
-    font-size: 2.5rem;
+    font-size: 2rem;
   }
 
   .header-subtitle {
@@ -158,31 +127,22 @@
   }
 
   .header-title {
-    font-size: 2rem;
+    font-size: 1.8rem;
   }
 
   .header-subtitle {
     font-size: 0.9rem;
   }
 
-  .event-card {
-    padding: 10px;
+  .event-header {
+    padding: 15px;
   }
 
   .participant-item {
     padding: 12px;
-    font-size: 14px;
   }
 
   .participant-name {
-    font-size: 1rem;
-  }
-
-  .participant-detail {
-    font-size: 0.8rem;
-  }
-
-  .participant-list {
-    margin-bottom: 10px;
+    font-size: 0.95rem;
   }
 }

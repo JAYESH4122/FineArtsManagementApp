@@ -1,65 +1,102 @@
-.student-enrollment {
-    padding: 20px;
-    font-family: Arial, sans-serif;
-  }
-  
-  .title {
-    text-align: center;
-    color: #333;
-    margin-bottom: 20px;
-  }
-  
-  .success-message {
-    color: #28a745;
-    text-align: center;
-  }
-  
-  .error-message {
-    color: #dc3545;
-    text-align: center;
-  }
-  
-  .enrollment-form {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    background: #f9f9f9;
-  }
-  
-  .enrollment-form .form-group {
-    margin-bottom: 15px;
-  }
-  
-  .enrollment-form label {
-    display: block;
-    font-weight: bold;
-    margin-bottom: 5px;
-  }
-  
-  .enrollment-form select,
-  .enrollment-form textarea {
+/* General Container */
+.dashboard-container {
+  font-family: Tahoma, sans-serif;
+  background: linear-gradient(132deg, #00577e, #1e293b);
+  min-height: 100vh;
+  padding: 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Title */
+.dashboard-title {
+  color: #ffffff;
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+/* Form Styling */
+.dashboard-form {
+  background: linear-gradient(181deg, #ffffff, #b1b9ca);
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  width: 90%;
+  max-width: 500px;
+  text-align: left;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+label {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 5px;
+  color: #151414ec;
+}
+
+select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+/* Button Styling */
+.dashboard-button {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(358deg, #080a0d, #132c37);
+  color: white;
+  font-weight: bold;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.dashboard-button:hover {
+  background: #0ea5e9;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Enrolled Events */
+.dashboard-subtitle {
+  font-size: 1.5rem;
+  color: white;
+  margin-top: 30px;
+}
+
+.dashboard-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 auto;
+  max-width: 600px;
+}
+
+.dashboard-list-item {
+  background: linear-gradient(181deg, #ffffff, #b1b9ca);
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .dashboard-form {
     width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    padding: 15px;
+  }
+  
+  .dashboard-button {
     font-size: 14px;
   }
-  
-  .submit-button {
-    display: block;
-    width: 100%;
-    padding: 10px;
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    font-size: 16px;
-    cursor: pointer;
-  }
-  
-  .submit-button:hover {
-    background-color: #0056b3;
-  }
-  
+}

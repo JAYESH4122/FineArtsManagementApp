@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
-const backendUrl = process.env.REACT_APP_API_URL;
+import { FaSignOutAlt } from 'react-icons/fa';  // For Logout Icon
 import '../styles/RepDashboard.css';
 
 const RepDashboard = () => {
@@ -47,63 +47,85 @@ const RepDashboard = () => {
   };
 
   return (
-    <div className="container mt-5">
-      <h1 className="text-center mb-4">Representative Dashboard</h1>
+    <div className="dashboard-container">
+      {/* Navbar */}
+      <nav className="navbar navbar-expand-lg navbar-dark bg-dark p-3">
+        <div className="container">
+          <a className="navbar-brand" href="/deptrep/dashboard">
+            Representative Dashboard
+          </a>
+          <h1 className="text-center mb-4">Welcome, {user?.username}</h1>
+          <p className="text-center mb-4">Department: {user?.departmentName}</p>
+        </div>
+      </nav>
 
-      {user && (
-        <div>
-          <h3 className="text-center mb-4">Welcome, {user.username}</h3>
-          <p className="text-center mb-4">Department: {user.departmentName}</p>
+      {/* Dashboard Content */}
+      <div className="dashboard-main">
 
-          <div className="row g-4">
-            <div className="col-md-4">
-              <a href="/deptrep/manage-student" className="card text-bg-danger text-white text-center p-4 shadow-lg">
-                <h5>Manage Students</h5>
-              </a>
-            </div>
+        <div className="dashboard-grid">
+          {/* Manage Students */}
+          <div className="dashboard-card">
+            <a href="/deptrep/manage-student">
+              <div className="card-icon"><i className="fas fa-user-graduate fa-3x"></i></div>
+              <h3>Manage Students</h3>
+            </a>
+          </div>
 
-            <div className="col-md-4">
-              <a href="/deptrep/register-events" className="card text-bg-primary text-white text-center p-4 shadow-lg">
-                <h5>Add Students to Events</h5>
-              </a>
-            </div>
+          {/* Add Students to Events */}
+          <div className="dashboard-card">
+            <a href="/deptrep/register-events">
+              <div className="card-icon"><i className="fas fa-calendar-plus fa-3x"></i></div>
+              <h3>Add Students to Events</h3>
+            </a>
+          </div>
 
-            <div className="col-md-4">
-              <a href="/deptrep/view-departmentwise-rankings" className="card text-bg-warning text-white text-center p-4 shadow-lg">
-                <h5>View Department-wise Rankings</h5>
-              </a>
-            </div>
+          {/* View Department-wise Rankings */}
+          <div className="dashboard-card">
+            <a href="/deptrep/view-departmentwise-rankings">
+              <div className="card-icon"><i className="fas fa-list-ol fa-3x"></i></div>
+              <h3>View Department-wise Rankings</h3>
+            </a>
+          </div>
 
-            <div className="col-md-4">
-              <a href="/deptrep/view-registrations" className="card text-bg-primary text-white text-center p-4 shadow-lg">
-                <h5>View Registrations</h5>
-              </a>
-            </div>
+          {/* View Registrations */}
+          <div className="dashboard-card">
+            <a href="/deptrep/view-registrations">
+              <div className="card-icon"><i className="fas fa-users fa-3x"></i></div>
+              <h3>View Registrations</h3>
+            </a>
+          </div>
 
-            <div className="col-md-4">
-              <a href="/deptrep/view-announcements" className="card text-bg-success text-white text-center p-4 shadow-lg">
-                <h5>View Announcements</h5>
-              </a>
-            </div>
+          {/* View Announcements */}
+          <div className="dashboard-card">
+            <a href="/deptrep/view-announcements">
+              <div className="card-icon"><i className="fas fa-bullhorn fa-3x"></i></div>
+              <h3>View Announcements</h3>
+            </a>
+          </div>
 
-            <div className="col-md-4">
-              <a href="/deptrep/view-scoreboard" className="card text-bg-warning text-white text-center p-4 shadow-lg">
-                <h5>View Scoreboard</h5>
-              </a>
-            </div>
+          {/* View Scoreboard */}
+          <div className="dashboard-card">
+            <a href="/deptrep/view-scoreboard">
+              <div className="card-icon"><i className="fas fa-trophy fa-3x"></i></div>
+              <h3>View Scoreboard</h3>
+            </a>
+          </div>
 
-            <div className="col-md-4">
-              <a href="/deptrep/reply-complaints" className="card text-bg-warning text-white text-center p-4 shadow-lg">
-                <h5>View Complaints</h5>
-              </a>
-            </div>
-
-            <div className="col-md-12 text-center mt-4">
-              <button className="btn btn-danger btn-lg" onClick={handleLogout}>Logout</button>
-            </div>
+          {/* View Complaints */}
+          <div className="dashboard-card">
+            <a href="/deptrep/reply-complaints">
+              <div className="card-icon"><i className="fas fa-comment fa-3x"></i></div>
+              <h3>View Complaints</h3>
+            </a>
           </div>
         </div>
-      )}
+
+        <div className="text-center mt-4">
+          <button className="btn btn-danger btn-lg" onClick={handleLogout}>
+            <FaSignOutAlt className="logout-icon" /> Logout
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

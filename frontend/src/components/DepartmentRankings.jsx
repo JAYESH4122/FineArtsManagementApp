@@ -27,7 +27,7 @@ const DepartmentRankings = () => {
   return (
     <>
       {/* Header */}
-      <Box sx={{ backgroundColor: '#0ea5e9', py: 4, textAlign: 'center', color: '#fff' }}>
+      <Box className="header" sx={{ py: 4, }}>
         <Typography variant="h3" fontWeight="bold">
           Department Rankings
         </Typography>
@@ -80,11 +80,6 @@ const DepartmentRankings = () => {
           </>
         )}
       </Container>
-
-      {/* Footer */}
-      <Box sx={{ backgroundColor: '#1e3a8a', py: 3, textAlign: 'center', color: '#ffffff', mt: 5, width: '100%',align: 'bottom' }}>
-        <Typography variant="body2" sx={{ fontSize: '14px' }}>© 2025 Fine Arts Festival - All Rights Reserved</Typography>
-      </Box>
     </>
   );
 };

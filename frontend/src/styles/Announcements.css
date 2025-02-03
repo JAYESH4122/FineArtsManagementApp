@@ -1,17 +1,114 @@
+/* General Layout */
 .announcements-container {
+  font-family: Tahoma, sans-serif;
+  background: linear-gradient(132deg, #00577e, #1e293b);
+  min-height: 100vh;
   padding: 20px;
-  background-color: #f0f4f8;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.announcement-list {
+/* Header Styling */
+.header-box {
+  background: linear-gradient(180deg, #04283b, #042641);
+  font-family: Tahoma;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border-radius: 9px;
+  margin: 20px auto;
+  width: 95%;
+  padding: 15px 20px;
+  display: flex;
+  height: 100px;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: #ffffff;
+}
+
+.header-title {
+  font-weight: bold;
+  color: white;
+  font-size: 1.5rem;
+}
+
+.header-subtitle {
+  margin-top: 8px;
+  font-size: 1rem;
+  opacity: 0.85;
+}
+
+/* Loading Indicator */
+.loading-box {
+  display: flex;
+  justify-content: center;
   margin-top: 30px;
 }
 
+/* Alert Messages */
 .alert {
   margin-top: 20px;
   font-size: 1rem;
   padding: 15px;
   border-radius: 8px;
+}
+
+/* Announcements List */
+.announcement-list {
+  margin-top: 30px;
+}
+
+/* Announcement Card */
+.announcement-card {
+  background: linear-gradient(181deg, #ffffff, #b1b9ca);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  text-align: center;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  transition: all 0.3s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.announcement-card:hover {
+  transform: scale(1.03);
+  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Typography */
+.announcement-title {
+  font-size: 1.4rem; /* Medium size */
+  font-weight: bold;
+  color: #052d40;
+}
+
+.announcement-content {
+  margin-top: 12px;
+  font-size: 1.1rem; /* Increased font size */
+  font-weight: 500;
+  color: #2169d4;
+  line-height: 1.4;
+}
+
+.announcement-audience {
+  margin-top: 10px;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #555;
+}
+
+.announcement-date {
+  margin-top: 10px;
+  display: block;
+  font-size: 0.85rem;
+  color: #6b7280;
 }
 
 /* Responsive Design */
@@ -23,42 +120,8 @@
   .announcement-list {
     margin-top: 20px;
   }
-}
 
-/* Card Styling */
-.MuiCard-root {
-  background-color: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease-in-out;
-}
-
-.MuiCard-root:hover {
-  transform: scale(1.03);
-}
-
-.MuiCardContent-root {
-  padding: 20px;
-}
-
-.MuiTypography-root {
-  font-family: 'Poppins', sans-serif;
-}
-
-.MuiTypography-h5 {
-  font-weight: bold;
-  color: #0ea5e9;
-}
-
-.MuiTypography-body1 {
-  margin-top: 10px;
-}
-
-.MuiTypography-body2 {
-  margin-top: 10px;
-  color: #64748b;
-}
-
-.MuiCircularProgress-root {
-  margin-top: 50px;
+  .announcement-card {
+    padding: 15px;
+  }
 }

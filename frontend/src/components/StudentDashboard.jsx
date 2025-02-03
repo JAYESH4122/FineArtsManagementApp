@@ -57,7 +57,7 @@ const StudentDashboard = () => {
           {[
             { icon: <FaRegEdit />, text: "View Registrations", path: "/student/view-registrations" },
             { icon: <FaBullhorn />, text: "View Announcements", path: "/student/view-announcements" },
-            { icon: <FaTrophy />, text: "View Scoreboard", path: "/student/view-scoreboard" },
+            { icon: <FaTrophy />, text: "View Results", path: "/student/view-scoreboard" },
             { icon: <FaUniversity />, text: "Department-wise Rankings", path: "/student/view-departmentwise-rankings" },
             { icon: <FaPen />, text: "Enroll in Events", path: "/student/enroll" },
             { icon: <FaCommentDots />, text: "Add Complaints", path: "/student/view-complaints" },

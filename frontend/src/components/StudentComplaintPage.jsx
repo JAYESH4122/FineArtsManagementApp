@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../styles/StudentComplaintPage.css';
-import { Container, TextField, MenuItem, Button, Card, CardContent, Typography, Grid, Alert, Box } from '@mui/material';
+import { TextField, MenuItem, Button, Typography, Grid, Alert } from '@mui/material';
+import { motion } from 'framer-motion';
+import { FaExclamationTriangle, FaPaperPlane, FaClipboardList } from "react-icons/fa";
 
 const subjects = ["Appeal for an event", "Register a group event", "Other"];
 
@@ -36,16 +38,23 @@ const StudentComplaintPage = () => {
   };
 
   return (
-    <Container maxWidth="md" sx={{ py: 5 }}>
-      <Typography variant="h4" align="center" gutterBottom>
-        Student Complaints
-      </Typography>
-      <Typography variant="subtitle1" color="textSecondary" align="center" gutterBottom>
-        Complaints will be sent to : <br /> Your Association Secretary: <strong>{departmentRepName}</strong>
-      </Typography>
+    <div className="complaint-container">
+      {/* Page Title */}
+      <div className="complaint-header">
+        <FaExclamationTriangle className="complaint-icon" />
+        <Typography variant="h4" className="complaint-title">Student Complaints</Typography>
+        <Typography variant="subtitle1" className="complaint-subtext">
+          Complaints will be sent to your Association Secretary: <strong>{departmentRepName}</strong>
+        </Typography>
+      </div>
 
       {/* Complaint Form */}
-      <Box component="form" onSubmit={handleSubmit} sx={{ backgroundColor: '#f9f9f9', p: 3, borderRadius: 2, boxShadow: 2 }}>
+      <motion.form 
+        className="complaint-form"
+        onSubmit={handleSubmit}
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
+      >
         <TextField
           fullWidth
           select
@@ -53,7 +62,7 @@ const StudentComplaintPage = () => {
           value={form.subject}
           onChange={(e) => setForm({ ...form, subject: e.target.value })}
           required
-          sx={{ mb: 2 }}
+          className="form-input"
         >
           {subjects.map((option) => (
             <MenuItem key={option} value={option}>
@@ -70,55 +79,52 @@ const StudentComplaintPage = () => {
           value={form.description}
           onChange={(e) => setForm({ ...form, description: e.target.value })}
           required
-          sx={{ mb: 2 }}
+          className="form-input"
         />
 
-        <Button type="submit" variant="contained" fullWidth size="large" sx={{ backgroundColor: '#1976d2' }}>
-          Submit Complaint
-        </Button>
-      </Box>
+        <motion.button 
+          type="submit" 
+          className="submit-button"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <FaPaperPlane /> Submit Complaint
+        </motion.button>
+      </motion.form>
 
-      <Typography variant="h5" sx={{ mt: 5 }}>
-        Your Complaints
+      {/* Complaints Section */}
+      <Typography variant="h5" className="complaint-list-title">
+        <FaClipboardList /> Your Complaints
       </Typography>
       {complaints.length === 0 ? (
-        <Typography variant="body1" color="textSecondary">
+        <Typography variant="body1" className="no-complaints">
           No complaints found.
         </Typography>
       ) : (
-        <Grid container spacing={2} sx={{ mt: 2 }}>
+        <Grid container spacing={2} className="complaint-grid">
           {complaints.map((complaint) => (
             <Grid item xs={12} sm={6} key={complaint._id}>
-              <Card sx={{ boxShadow: 3, borderRadius: 2 }}>
-                <CardContent>
-                  <Typography variant="h6" gutterBottom>
-                    <strong>Subject:</strong> {complaint.subject}
-                  </Typography>
-                  <Typography variant="body2" gutterBottom>
-                    <strong>Description:</strong> {complaint.complaintText}
-                  </Typography>
-                  <Typography variant="caption" color="textSecondary">
-                    Submitted on: {new Date(complaint.createdAt).toLocaleDateString()}
-                  </Typography>
+              <motion.div className="complaint-card" whileHover={{ scale: 1.02 }}>
+                <Typography variant="h6"><strong>Subject:</strong> {complaint.subject}</Typography>
+                <Typography variant="body2"><strong>Description:</strong> {complaint.complaintText}</Typography>
+                <Typography variant="caption" className="complaint-date">
+                  Submitted on: {new Date(complaint.createdAt).toLocaleDateString()}
+                </Typography>
 
-                  {complaint.reply ? (
-                    <Alert severity="success" sx={{ mt: 2 }}>
-                      <strong>Reply:</strong> {complaint.reply}
-                      <br />
-                      <small>Replied on: {new Date(complaint.repliedAt).toLocaleDateString()}</small>
-                    </Alert>
-                  ) : (
-                    <Typography variant="body2" color="error" sx={{ mt: 2 }}>
-                      Not replied yet
-                    </Typography>
-                  )}
-                </CardContent>
-              </Card>
+                {complaint.reply ? (
+                  <Alert severity="success" className="complaint-reply">
+                    <strong>Reply:</strong> {complaint.reply} <br />
+                    <small>Replied on: {new Date(complaint.repliedAt).toLocaleDateString()}</small>
+                  </Alert>
+                ) : (
+                  <Typography variant="body2" className="no-reply">Not replied yet</Typography>
+                )}
+              </motion.div>
             </Grid>
           ))}
         </Grid>
       )}
-    </Container>
+    </div>
   );
 };
 

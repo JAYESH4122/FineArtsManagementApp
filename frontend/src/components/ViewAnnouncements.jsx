@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Card, CardContent, Typography, Box, CircularProgress, Alert, Grid, Container } from '@mui/material';
+import { Card, CardContent, Typography, Box, CircularProgress, Alert, Grid, Container, Paper } from '@mui/material';
 import { motion } from 'framer-motion';
+import '../styles/Announcements.css';
 
 const ViewAnnouncements = () => {
   const [announcements, setAnnouncements] = useState([]);
@@ -12,15 +13,12 @@ const ViewAnnouncements = () => {
     const fetchAnnouncements = async () => {
       try {
         const response = await axios.get('/admin/view-announcements');
-        console.log('API Response:', response.data);
-        
         if (response.data && response.data.announcements?.length > 0) {
           setAnnouncements(response.data.announcements);
         } else {
           setError('No announcements found.');
         }
       } catch (err) {
-        console.error('Error fetching announcements:', err);
         setError('Failed to load announcements. Please try again.');
       } finally {
         setLoading(false);
@@ -31,68 +29,53 @@ const ViewAnnouncements = () => {
   }, []);
 
   return (
-    <Container maxWidth="md" sx={{ py: 4 }}>
-      {/* Header Section */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-      >
-        <Box
-          sx={{
-            backgroundColor: '#0ea5e9',
-            padding: '30px',
-            borderRadius: '12px',
-            textAlign: 'center',
-            color: '#ffffff',
-            boxShadow: 2
-          }}
+    <Container maxWidth="md" className="announcements-container">
+      <Box elevation={3} className="header-box">
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
         >
-          <Typography variant="h3" fontWeight="bold">
+          <Typography variant="h4" className="header-title">
             Announcements
           </Typography>
-          <Typography variant="h6" mt={1}>
+          <Typography variant="body1" className="header-subtitle">
             Stay updated with the latest news and events.
           </Typography>
-        </Box>
-      </motion.div>
+        </motion.div>
+      </Box>
 
       {loading ? (
-        <Box display="flex" justifyContent="center" mt={5}>
+        <Box className="loading-box">
           <CircularProgress />
         </Box>
       ) : error ? (
-        <Alert severity="error" sx={{ mt: 4 }}>
+        <Alert severity="error" className="alert">
           {error}
         </Alert>
       ) : (
-        <Grid container spacing={3} mt={4}>
+        <Grid container spacing={3} className="announcement-list">
           {announcements.length > 0 ? (
             announcements.map((announcement) => (
               <Grid item xs={12} sm={6} key={announcement._id}>
                 <motion.div
                   whileHover={{ scale: 1.03 }}
-                  transition={{ type: 'spring', stiffness: 100 }}
+                  transition={{ type: 'spring', stiffness: 120 }}
                 >
-                  <Card
-                    sx={{
-                      borderRadius: '12px',
-                      boxShadow: 3,
-                      backgroundColor: '#ffffff',
-                      transition: '0.3s ease-in-out'
-                    }}
-                  >
+                  <Card className="announcement-card">
                     <CardContent>
-                      <Typography variant="h5" fontWeight="bold" color="primary">
+                      <div className='title-content'>
+                      <Typography variant="h5" className="announcement-title">
                         {announcement.title}
                       </Typography>
-                      <Typography variant="body1" mt={1}>
-                        <strong>Audience:</strong> {announcement.audience}
-                      </Typography>
-                      <Typography variant="body2" mt={1}>
+                      <Typography variant="body1" className="announcement-content">
                         {announcement.content}
                       </Typography>
-                      <Typography variant="caption" color="textSecondary" mt={2} display="block">
+                      </div>
+                      <Typography variant="body2" className="announcement-audience">
+                        <strong>Audience:</strong> {announcement.audience}
+                      </Typography>
+                      <Typography variant="caption" className="announcement-date">
                         {new Date(announcement.datePosted).toDateString()}
                       </Typography>
                     </CardContent>
@@ -101,7 +84,7 @@ const ViewAnnouncements = () => {
               </Grid>
             ))
           ) : (
-            <Alert severity="info" sx={{ mt: 4, width: '100%' }}>
+            <Alert severity="info" className="alert">
               No announcements available.
             </Alert>
           )}

@@ -1,47 +1,82 @@
-/* ScoreboardPage.css */
-
-/* General Styling */
+/* General Styles */
 .scoreboard-container {
-  padding: 2rem;
-  background-color: #f8f9fa;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  max-width: 1200px;
-  margin: auto;
+  font-family: Tahoma, sans-serif;
+  background: linear-gradient(132deg, #00577e, #1e293b);
+  min-height: 100vh;
+  padding: 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
+.scoreboard-header {
+  background: linear-gradient(180deg, #04283b, #042641);
+  font-family: Tahoma;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border-radius: 9px;
+  margin: 20px auto;
+  width: 95%;
+  padding: 15px 20px;
+  display: flex;
+  height: 100px;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+/* Title */
 .scoreboard-title {
-  font-size: 2.5rem;
-  color: #343a40;
-  margin-bottom: 1.5rem;
-  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 1200px;
   font-weight: bold;
+  color: white;
+  font-size: 1.5rem;
 }
 
-/* Table Styling */
+.scoreboard-subtitle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 1200px;
+  font-size: 1rem;
+  color: #dbeafe;
+  margin-top: 4px;
+}
+
+/* Table Container */
 .table-container {
-  margin-top: 2rem;
+  margin-top: 1.5rem;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
 }
 
+/* Table */
 .table-custom {
-  background-color: #ffffff;
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  background: linear-gradient(181deg, #ffffff, #b1b9ca);
+  border-radius: 12px;
 }
 
 .table-custom th {
-  background-color: #343a40;
-  color: #ffffff;
-  text-align: center;
+  background-color: #17a2b8;
+  color: white;
   padding: 1rem;
+  text-align: center;
+  font-size: 1.1rem;
 }
 
 .table-custom td {
   text-align: center;
   padding: 0.75rem;
-  vertical-align: middle;
-  border-bottom: 1px solid #dee2e6;
+  border-bottom: 1px solid #e0e0e0;
+  font-size: 1rem;
 }
 
 .main-row {
@@ -58,44 +93,64 @@
   color: #007bff;
 }
 
-/* Expanded Content & Animations */
+/* Expanded Content */
 .expanded-content {
   background-color: #f8f9fa;
   padding: 1rem;
-  border-radius: 5px;
+  border-radius: 8px;
   animation: fadeIn 0.5s ease-in-out;
 }
 
+/* Fade-in Animation */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
+/* Winner Section */
 .winner-section {
-  margin-bottom: 2rem;
+  margin-top: 1.5rem;
 }
 
 .winner-title {
-  margin-bottom: 1rem;
-  color: #007bff;
+  font-size: 1.3rem;
   font-weight: bold;
+  color: #0ea5e9;
+  margin-bottom: 1rem;
 }
 
-/* Inner Table Styling */
+/* Inner Table */
 .inner-table {
   width: 100%;
   background: white;
-  border-radius: 5px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* Alert Styling */
+.inner-table th {
+  background-color: #17a2b8;
+  color: white;
+  padding: 0.75rem;
+}
+
+.inner-table td {
+  text-align: center;
+  padding: 0.5rem;
+}
+
+/* Alerts */
 .alert {
   font-size: 1.1rem;
   font-weight: bold;
   margin-bottom: 1.5rem;
-  border-radius: 8px;
   padding: 1rem;
+  border-radius: 8px;
 }
 
 .alert-danger {
@@ -110,14 +165,20 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
+  .scoreboard-container {
+    padding: 1rem;
+  }
+
   .scoreboard-title {
     font-size: 2rem;
   }
+
   .table-custom th,
   .table-custom td {
     padding: 0.5rem;
     font-size: 0.9rem;
   }
+
   .winner-title {
     font-size: 1.2rem;
   }
