@@ -499,9 +499,21 @@ exports.getDepartmentRankings = async (req, res) => {
   try {
     const departmentRankings = await Scoreboard.aggregate([
       {
+        $project: {
+          departmentname: 1,
+          totalPoints: {
+            $add: [
+              { $ifNull: ["$winners.first.points", 0] },
+              { $ifNull: ["$winners.second.points", 0] },
+              { $ifNull: ["$winners.third.points", 0] }
+            ]
+          }
+        }
+      },
+      {
         $group: {
           _id: "$departmentname",
-          totalPoints: { $sum: "$points" }
+          totalPoints: { $sum: "$totalPoints" }
         }
       },
       {
@@ -512,26 +524,23 @@ exports.getDepartmentRankings = async (req, res) => {
           as: "department"
         }
       },
-      {
-        $unwind: "$department"
-      },
+      { $unwind: "$department" },
       {
         $project: {
           departmentName: "$department.departmentname",
           totalPoints: 1
         }
       },
-      {
-        $sort: { totalPoints: -1 }
-      }
+      { $sort: { totalPoints: -1 } }
     ]);
 
     res.status(200).json({ departmentRankings });
   } catch (error) {
-    console.error('Error fetching department rankings:', error);
-    res.status(500).json({ error: 'Failed to load department rankings.' });
+    console.error("Error fetching department rankings:", error);
+    res.status(500).json({ error: "Failed to load department rankings." });
   }
 };
+
 
 
 exports.viewRegistrations = async (req, res) => {
