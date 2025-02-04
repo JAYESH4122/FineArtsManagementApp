@@ -27,6 +27,7 @@ import StudentComplaintPage from './components/StudentComplaintPage';
 import DeptRepComplaintPage from './components/DeptRepComplaintPage';
 import FeedbackForm from './components/FeedbackForm';
 import StudentProfile from './components/StudentProfile';
+import EventsList from './components/EventsList';
 
 const App = () => {
   return (
@@ -69,6 +70,7 @@ const App = () => {
         <Route path="/student/view-complaints" element={<StudentComplaintPage />} />
         <Route path="/student/manage-profile" element={<StudentProfile />} />
         <Route path="/student/view-feedback" element={<FeedbackForm />} />
+        <Route path="/student/event-list" element={<EventsList />} />
         
 
       </Routes>

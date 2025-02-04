@@ -100,3 +100,23 @@ select {
     font-size: 14px;
   }
 }
+
+/* Button Styling for Unregister */
+.unregister-button {
+  background: linear-gradient(358deg, #ff4f58, #ff1c36);
+  color: white;
+  font-weight: bold;
+  font-size: 14px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 6px 12px;
+  margin-left: 10px;
+  transition: all 0.3s ease;
+}
+
+.unregister-button:hover {
+  background: #ff5858;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+

@@ -1,84 +1,58 @@
+/* Page Layout */
 .manage-students {
-    width: 80%;
-    margin: 20px auto;
-    padding: 20px;
-    background-color: #f9f9f9;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  .title {
-    text-align: center;
-    color: #333;
-  }
-  
-  .success-message {
-    color: green;
-    text-align: center;
-    margin-bottom: 10px;
-  }
-  
-  .error-message {
-    color: red;
-    text-align: center;
-    margin-bottom: 10px;
-  }
-  
-  .student-form {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  .form-group {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .form-group label {
-    font-weight: bold;
-  }
-  
-  .form-group input,
-  .form-group select {
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-  }
-  
-  .submit-button {
-    background-color: #4caf50;
-    color: white;
-    padding: 10px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-top: 10px;
-  }
-  
-  .students-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-  }
-  
-  .students-table th,
-  .students-table td {
-    padding: 10px;
-    text-align: left;
-    border: 1px solid #ddd;
-  }
-  
-  .students-table th {
-    background-color: #f2f2f2;
-  }
-  
-  .remove-button {
-    background-color: red;
-    color: white;
-    padding: 5px 10px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
+  font-family: Tahoma, sans-serif;
+  background: linear-gradient(132deg, #00577e, #1e293b);
+  min-height: 100vh;
+  padding: 20px;
+  text-align: center;
+}
+
+/* Header */
+.students-header {
+  background: linear-gradient(180deg, #04283b, #042641);
+  padding: 15px 20px;
+  border-radius: 9px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.header-icon {
+  font-size: 3rem;
+  color: white;
+}
+
+.header-title {
+  color: white;
+  font-size: 1.8rem;
+  font-weight: bold;
+}
+
+/* Form */
+.student-form-card {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  max-width: 600px;
+  width: 100%;
+  text-align: center;
+  margin: auto;
+}
+
+.form-input {
+  margin-bottom: 15px;
+}
+
+/* Buttons */
+.submit-button, .remove-button {
+  background: #132c37;
+  color: white;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.submit-button:hover, .remove-button:hover {
+  background: #0ea5e9;
+}

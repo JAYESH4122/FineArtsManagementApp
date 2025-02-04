@@ -4,7 +4,6 @@
   background: linear-gradient(132deg, #00577e, #1e293b);
   min-height: 100vh;
   padding: 20px;
-  text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -13,41 +12,37 @@
 /* Header Styling */
 .header-box {
   background: linear-gradient(180deg, #04283b, #042641);
-  font-family: Tahoma;
   backdrop-filter: blur(10px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   border-radius: 9px;
   margin: 20px auto;
   width: 95%;
-  padding: 15px 20px;
+  padding: 20px;
   display: flex;
-  height: 100px;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
-  text-align: center;
-  color: #ffffff;
+  color: white;
+}
+
+.header-icon {
+  font-size: 2rem;
+  margin-bottom: 10px;
 }
 
 .header-title {
+  font-size: 1.8rem;
   font-weight: bold;
-  color: white;
-  font-size: 1.5rem;
 }
 
 .header-subtitle {
   font-size: 1rem;
-  color: #dbeafe;
-  margin-top: 4px;
   opacity: 0.8;
 }
 
 /* Event Card Styling */
 .event-card {
   background: linear-gradient(to bottom, #f8f9fa, #dbeafe);
-  font-family: Tahoma;
   border-radius: 16px;
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
   transition: all 0.3s ease-in-out;
 }
 
@@ -98,51 +93,16 @@
 .participant-name {
   font-size: 1rem;
   font-weight: 500;
-  color: #003366;
 }
 
-.participant-detail {
-  font-size: 0.9rem;
-  color: #00509e;
+.participant-icon {
+  font-size: 1.5rem;
+  margin-right: 5px;
 }
 
 /* Responsive Adjustments */
-@media (max-width: 960px) {
-  .registrations-container {
-    padding: 20px;
-  }
-
+@media (max-width: 768px) {
   .header-title {
-    font-size: 2rem;
-  }
-
-  .header-subtitle {
-    font-size: 1rem;
-  }
-}
-
-@media (max-width: 600px) {
-  .registrations-container {
-    padding: 15px;
-  }
-
-  .header-title {
-    font-size: 1.8rem;
-  }
-
-  .header-subtitle {
-    font-size: 0.9rem;
-  }
-
-  .event-header {
-    padding: 15px;
-  }
-
-  .participant-item {
-    padding: 12px;
-  }
-
-  .participant-name {
-    font-size: 0.95rem;
+    font-size: 1.5rem;
   }
 }

@@ -76,6 +76,18 @@ const StudentEnrollment = () => {
     }
   };
 
+  const handleUnregister = async (eventId) => {
+    try {
+      const res = await axios.delete(`/student/unregister-event/${eventId}`);
+      setSuccess(res.data.message);
+      setError(null);
+      setEnrolledEvents(enrolledEvents.filter(event => event._id !== eventId));
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to unregister from event');
+      setSuccess(null);
+    }
+  };
+
   const formatToIST = (date) => {
     if (!date) return 'Unknown';
     try {
@@ -123,6 +135,12 @@ const StudentEnrollment = () => {
             <strong>Event:</strong> {event.eventId?.eventname || 'Unknown'} | 
             <strong> Category:</strong> {event.eventId?.category || 'Unknown'} | 
             <strong> Date:</strong> {formatToIST(event.requestedAt)}
+            <button
+              className="unregister-button"
+              onClick={() => handleUnregister(event._id)}
+            >
+              Unregister
+            </button>
           </li>
         ))}
       </ul>

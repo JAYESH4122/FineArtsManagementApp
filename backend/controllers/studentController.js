@@ -7,15 +7,18 @@ const Event = require('../models/eventmodel');
 const EnrollmentRequest = require('../models/EnrollmentRequest');
 const Class = require('../models/classmodel');
 const crypto = require('crypto');
+const multer = require('multer');
+const path = require('path');
 
 
 // Handle Student Login
 exports.handleStudentLogin = async (req, res) => {
-  const { username, password } = req.body;
+  const { admno, password } = req.body;
+
 
   try {
     // Find the student and populate the department details
-    const student = await Student.findOne({ username, password })
+    const student = await Student.findOne({ admno, password })
       .populate('departmentname', '_id departmentname') // Populate department ID and name
       .populate('className', 'className'); // Populate class name if needed
 
@@ -242,11 +245,31 @@ exports.requestEnrollment = async (req, res) => {
   }
 };
 
+exports.unregisterEvent = async (req, res) => {
+  const { eventId } = req.params;
+  const studentId = req.session.user?.id;
 
+  if (!studentId) {
+    return res.status(401).json({ message: 'User not logged in or session expired' });
+  }
 
+  try {
+    // Find the enrollment request by student and event
+    const enrollmentRequest = await EnrollmentRequest.findOneAndDelete({
+      eventId,
+      'participants.admno': req.session.user.admno,
+    });
 
+    if (!enrollmentRequest) {
+      return res.status(404).json({ message: 'Enrollment request not found' });
+    }
 
-
+    return res.status(200).json({ message: 'Successfully unregistered from the event' });
+  } catch (err) {
+    console.error('Error unregistering from event:', err);
+    return res.status(500).json({ message: 'Failed to unregister from event' });
+  }
+};
 
 
 
@@ -426,27 +449,79 @@ exports.getStudentProfile = async (req, res) => {
 
 // POST: Update the student profile
 exports.updateStudentProfile = async (req, res) => {
-  const studentId = req.session.user?.id; // Get student ID from session
-  const { phno, rollno } = req.body;
+  const studentId = req.session.user?.id;
+  const { phno, gmail, password } = req.body; // Include password
 
   if (!studentId) {
-    return res.status(401).json({ message: 'Unauthorized' });
+      return res.status(401).json({ message: 'Unauthorized' });
   }
 
   try {
-    const updatedStudent = await Student.findByIdAndUpdate(
-      studentId,
-      { phno, rollno },
-      { new: true } // Return the updated document
-    );
+      const updateFields = {};
+      if (phno) updateFields.phno = phno;
+      if (gmail) updateFields.gmail = gmail;
+      if (password) updateFields.password = password; // Allow password update
 
-    if (!updatedStudent) {
-      return res.status(404).json({ message: 'Student not found' });
-    }
+      const updatedStudent = await Student.findByIdAndUpdate(
+          studentId,
+          updateFields,
+          { new: true }
+      );
 
-    res.status(200).json({ message: 'Profile updated successfully', student: updatedStudent });
+      if (!updatedStudent) {
+          return res.status(404).json({ message: 'Student not found' });
+      }
+
+      res.status(200).json({ message: 'Profile updated successfully', student: updatedStudent });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error updating profile', error: error.message });
+      console.error(error);
+      res.status(500).json({ message: 'Error updating profile', error: error.message });
+  }
+};
+
+// const storage = multer.diskStorage({
+//   destination: './uploads', // Directory where the images will be saved
+//   filename: (req, file, cb) => {
+//       cb(null, `profile_${req.session.user.id}${path.extname(file.originalname)}`); // Generate filename
+//   }
+// });
+// const upload = multer({ storage }); // Create the upload middleware
+
+// // Profile Image Upload Route
+// exports.uploadProfileImage = async (req, res) => {
+//   const studentId = req.session.user?.id;
+
+//   if (!studentId) {
+//       return res.status(401).json({ message: 'Unauthorized' });
+//   }
+
+//   if (!req.file) {
+//       return res.status(400).json({ message: 'No file uploaded' });
+//   }
+
+//   try {
+//       const imagePath = `/uploads/${req.file.filename}`;
+
+//       const updatedStudent = await Student.findByIdAndUpdate(
+//           studentId,
+//           { profileImage: imagePath },
+//           { new: true }
+//       );
+
+//       res.status(200).json({ message: 'Profile image updated successfully', profileImage: imagePath });
+//   } catch (error) {
+//       console.error(error);
+//       res.status(500).json({ message: 'Error updating profile image' });
+//   }
+// };
+
+
+exports.getEvents = async (req, res) => {
+  try {
+      const events = await Event.find({});
+      res.json(events);
+  } catch (error) {
+      console.error('Error fetching events:', error);
+      res.status(500).json({ message: 'Internal Server Error' });
   }
 };

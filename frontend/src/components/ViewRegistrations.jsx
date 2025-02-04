@@ -1,8 +1,21 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Card, CardContent, Typography, Box, Grid, CircularProgress, Alert, IconButton, Collapse } from "@mui/material";
+import {
+  Card,
+  CardContent,
+  Typography,
+  Box,
+  Grid,
+  CircularProgress,
+  Alert,
+  IconButton,
+  Collapse
+} from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import 'bootstrap/dist/css/bootstrap.min.css';
+import EventIcon from "@mui/icons-material/Event";
+import GroupIcon from "@mui/icons-material/Group";
+import PersonIcon from "@mui/icons-material/Person";
+import "bootstrap/dist/css/bootstrap.min.css";
 import "../styles/Registrations.css";
 
 const ViewRegistrations = () => {
@@ -36,6 +49,7 @@ const ViewRegistrations = () => {
   return (
     <div className="registrations-container">
       <Box className="header-box">
+        <EventIcon className="header-icon" />
         <Typography variant="h6" className="header-title">
           Event Registrations
         </Typography>
@@ -43,12 +57,13 @@ const ViewRegistrations = () => {
           Click on an event to view participants
         </Typography>
       </Box>
+
       {loading ? (
         <Box className="loading-box">
           <CircularProgress />
         </Box>
       ) : errorMessage ? (
-        <Alert severity="error" sx={{ marginBottom: "30px" }}>
+        <Alert severity="error" className="error-alert">
           {errorMessage}
         </Alert>
       ) : (
@@ -72,13 +87,14 @@ const ViewRegistrations = () => {
                           <div key={teamIndex} className="team-section">
                             {team.participants.length > 1 && (
                               <Typography variant="subtitle1" className="team-title">
-                                Team: {team.teamName}
+                                <GroupIcon className="team-icon" /> Team: {team.teamName}
                               </Typography>
                             )}
                             <ul className="participant-list">
                               {team.participants.map((participant, i) => (
                                 <li key={i} className="participant-item">
                                   <Box className="participant-box">
+                                    <PersonIcon className="participant-icon" />
                                     <Typography variant="body1" className="participant-name">
                                       {participant.name}
                                     </Typography>
@@ -103,6 +119,7 @@ const ViewRegistrations = () => {
                             {registration.participants.map((participant, i) => (
                               <li key={i} className="participant-item">
                                 <Box className="participant-box">
+                                  <PersonIcon className="participant-icon" />
                                   <Typography variant="body1" className="participant-name">
                                     {participant.name}
                                   </Typography>

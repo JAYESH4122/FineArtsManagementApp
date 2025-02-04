@@ -1,8 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Card, CardContent, Typography, Box, CircularProgress, Alert, Grid, Container, Paper } from '@mui/material';
+import {
+  Card,
+  CardContent,
+  Typography,
+  Box,
+  CircularProgress,
+  Alert,
+  Grid,
+  Container
+} from '@mui/material';
 import { motion } from 'framer-motion';
-import '../styles/Announcements.css';
+import AnnouncementIcon from '@mui/icons-material/Announcement';
+import InfoIcon from '@mui/icons-material/Info';
+import EventNoteIcon from '@mui/icons-material/EventNote';
+import "bootstrap/dist/css/bootstrap.min.css";
+import "../styles/Announcements.css";
 
 const ViewAnnouncements = () => {
   const [announcements, setAnnouncements] = useState([]);
@@ -35,7 +48,9 @@ const ViewAnnouncements = () => {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
+          className="header-content"
         >
+          <AnnouncementIcon className="header-icon" />
           <Typography variant="h4" className="header-title">
             Announcements
           </Typography>
@@ -64,16 +79,21 @@ const ViewAnnouncements = () => {
                 >
                   <Card className="announcement-card">
                     <CardContent>
-                      <div className='title-content'>
-                      <Typography variant="h5" className="announcement-title">
-                        {announcement.title}
-                      </Typography>
-                      <Typography variant="body1" className="announcement-content">
-                        {announcement.content}
-                      </Typography>
-                      </div>
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.5 }}
+                        className="title-content"
+                      >
+                        <Typography variant="h5" className="announcement-title">
+                          <EventNoteIcon className="title-icon" /> {announcement.title}
+                        </Typography>
+                        <Typography variant="body1" className="announcement-content">
+                          {announcement.content}
+                        </Typography>
+                      </motion.div>
                       <Typography variant="body2" className="announcement-audience">
-                        <strong>Audience:</strong> {announcement.audience}
+                        <InfoIcon className="audience-icon" /> <strong>Audience:</strong> {announcement.audience}
                       </Typography>
                       <Typography variant="caption" className="announcement-date">
                         {new Date(announcement.datePosted).toDateString()}

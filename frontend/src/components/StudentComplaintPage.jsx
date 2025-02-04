@@ -41,10 +41,9 @@ const StudentComplaintPage = () => {
     <div className="complaint-container">
       {/* Page Title */}
       <div className="complaint-header">
-        <FaExclamationTriangle className="complaint-icon" />
-        <Typography variant="h4" className="complaint-title">Student Complaints</Typography>
+        <Typography variant="h4" className="complaint-title">Chat</Typography>
         <Typography variant="subtitle1" className="complaint-subtext">
-          Complaints will be sent to your Association Secretary: <strong>{departmentRepName}</strong>
+          Chat will be sent to your Association Secretary: <strong>{departmentRepName}</strong>
         </Typography>
       </div>
 
@@ -88,13 +87,13 @@ const StudentComplaintPage = () => {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
-          <FaPaperPlane /> Submit Complaint
+          <FaPaperPlane /> Send
         </motion.button>
       </motion.form>
 
       {/* Complaints Section */}
       <Typography variant="h5" className="complaint-list-title">
-        <FaClipboardList /> Your Complaints
+        <FaClipboardList /> Your Requests
       </Typography>
       {complaints.length === 0 ? (
         <Typography variant="body1" className="no-complaints">

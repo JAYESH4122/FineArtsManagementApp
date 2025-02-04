@@ -12,14 +12,14 @@ import '../styles/StudentLogin.css';
 function StudentLogin() {
   const navigate = useNavigate(); // useNavigate hook to navigate programmatically
 
-  const [username, setUsername] = useState('');
+  const [admno, setAdmno] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false); // State for toggling password visibility
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    if (name === 'username') setUsername(value);
+    if (name === 'admno') setAdmno(value);
     else setPassword(value);
   };
 
@@ -32,7 +32,7 @@ function StudentLogin() {
 
     try {
       // Make the login request
-      const response = await axios.post('/student/login', { username, password });
+      const response = await axios.post('/student/login', { admno, password });
 
       if (response.data.message === 'Login successful') {
         // On success, navigate to student dashboard
@@ -59,18 +59,18 @@ function StudentLogin() {
 
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
-            <label htmlFor="username" className="form-label">
-              User Id
-            </label>
-            <input
-              type="text"
-              className="form-control"
-              id="username"
-              name="username"
-              value={username}
-              onChange={handleInputChange}
-              required
-            />
+          <label htmlFor="admno" className="form-label">
+            User Id
+          </label>
+          <input
+            type="text"
+            className="form-control"
+            id="admno"
+            name="admno"
+            value={admno}
+            onChange={handleInputChange}
+            required
+          />
           </div>
 
           <div className="mb-3 position-relative">

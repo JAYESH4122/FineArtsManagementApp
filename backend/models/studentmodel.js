@@ -10,8 +10,10 @@ const StudentSchema = new Schema({
     rollno: { type: String },
     admno: { type: String, unique: true, required: true },
     phno: { type: String },
-    gmail: { type: String}, // Added Gmail field
+    gmail: { type: String },
+    profileImage: { type: String } // New field to store image URL
 });
+
 
 const Student = mongoose.model('StudentDetails', StudentSchema);
 module.exports = Student;

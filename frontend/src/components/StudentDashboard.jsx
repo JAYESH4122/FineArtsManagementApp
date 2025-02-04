@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Typography, Box, Button, Avatar, Grid } from "@mui/material";
-import { FaSignOutAlt, FaRegEdit, FaBullhorn, FaTrophy, FaUniversity, FaPen, FaCommentDots, FaUserCircle, FaPaintBrush } from "react-icons/fa";
+import { FaSignOutAlt, FaCalendarAlt, FaRegEdit, FaBullhorn, FaTrophy, FaUniversity, FaPen, FaCommentDots, FaUserCircle, FaPaintBrush } from "react-icons/fa";
 import { motion } from 'framer-motion';
 import '../styles/StudentDashboard.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -55,12 +55,13 @@ const StudentDashboard = () => {
       <main className="dashboard-main">
         <Grid container spacing={3} className="dashboard-grid">
           {[
+            { icon: <FaCalendarAlt />, text: "Events List", path: "/student/event-list" },
             { icon: <FaRegEdit />, text: "View Registrations", path: "/student/view-registrations" },
             { icon: <FaBullhorn />, text: "View Announcements", path: "/student/view-announcements" },
             { icon: <FaTrophy />, text: "View Results", path: "/student/view-scoreboard" },
             { icon: <FaUniversity />, text: "Department-wise Rankings", path: "/student/view-departmentwise-rankings" },
             { icon: <FaPen />, text: "Enroll in Events", path: "/student/enroll" },
-            { icon: <FaCommentDots />, text: "Add Complaints", path: "/student/view-complaints" },
+            { icon: <FaCommentDots />, text: "Chat to Representative", path: "/student/view-complaints" },
             { icon: <FaUserCircle />, text: "View Profile", path: "/student/manage-profile" },
             { icon: <FaPaintBrush />, text: "Give Feedback", path: "/student/view-feedback" }
           ].map((item, index) => (
