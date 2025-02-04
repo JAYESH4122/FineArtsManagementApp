@@ -21,7 +21,7 @@ const LoginPage = () => {
         </div>
 
         <p className="text-center black-text mb-5">
-          Please select your login type to continuU.
+          Please select your login type to continue.
         </p>
 
         <div className="d-grid gap-3">
