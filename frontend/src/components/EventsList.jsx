@@ -7,6 +7,7 @@ import GroupIcon from '@mui/icons-material/Group';
 import DateRangeIcon from '@mui/icons-material/DateRange';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles/EventsList.css';
+import { format, utcToZonedTime } from 'date-fns-tz';
 
 const EventsList = () => {
     const [events, setEvents] = useState([]);
@@ -28,6 +29,18 @@ const EventsList = () => {
 
         fetchEvents();
     }, []);
+
+    // Function to format date in IST
+    const formatDate = (date) => {
+        if (!date) return 'Unknown';
+        try {
+          return format(new Date(date), 'dd/MM/yyyy, hh:mm:ss a'); // Format: DD/MM/YYYY, HH:MM AM/PM
+        } catch (err) {
+          console.error('Error formatting date:', err);
+          return 'Invalid Date';
+        }
+      };
+  
 
     return (
         <Container maxWidth="lg" className="events-container">
@@ -77,8 +90,8 @@ const EventsList = () => {
                                                 <strong>Participants:</strong> {event.participants}
                                             </Typography>
                                             <Typography variant="body1" className="event-date">
-                                                <DateRangeIcon className="event-icon" /> <strong>Date & Time:</strong> {new Date(event.date).toLocaleString()}
-                                            </Typography>
+  <DateRangeIcon className="event-icon" /> <strong>Date & Time:</strong> {formatDate(event.date)}
+</Typography>
                                         </CardContent>
                                     </Card>
                                 </motion.div>

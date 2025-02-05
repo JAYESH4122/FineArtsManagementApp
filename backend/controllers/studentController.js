@@ -9,6 +9,7 @@ const Class = require('../models/classmodel');
 const crypto = require('crypto');
 const multer = require('multer');
 const path = require('path');
+const mongoose = require("mongoose");
 
 
 // Handle Student Login
@@ -247,29 +248,33 @@ exports.requestEnrollment = async (req, res) => {
 
 exports.unregisterEvent = async (req, res) => {
   const { eventId } = req.params;
-  const studentId = req.session.user?.id;
+  const studentName = req.session.user?.name; // Get logged-in student's name
 
-  if (!studentId) {
-    return res.status(401).json({ message: 'User not logged in or session expired' });
+  if (!studentName) {
+    return res.status(401).json({ message: "User not logged in or session expired" });
   }
 
   try {
-    // Find the enrollment request by student and event
+    // Convert eventId to ObjectId if it's not already
+    const eventObjectId = new mongoose.Types.ObjectId(eventId);
+
+    // Find and delete the enrollment request
     const enrollmentRequest = await EnrollmentRequest.findOneAndDelete({
-      eventId,
-      'participants.admno': req.session.user.admno,
+      eventId: eventObjectId, // Match correctly as ObjectId
+      "participants.name": studentName,
     });
 
     if (!enrollmentRequest) {
-      return res.status(404).json({ message: 'Enrollment request not found' });
+      return res.status(404).json({ message: "Enrollment request not found" });
     }
 
-    return res.status(200).json({ message: 'Successfully unregistered from the event' });
+    return res.status(200).json({ message: "Successfully unregistered from the event" });
   } catch (err) {
-    console.error('Error unregistering from event:', err);
-    return res.status(500).json({ message: 'Failed to unregister from event' });
+    console.error("Error unregistering from event:", err);
+    return res.status(500).json({ message: "Failed to unregister from event" });
   }
 };
+
 
 
 

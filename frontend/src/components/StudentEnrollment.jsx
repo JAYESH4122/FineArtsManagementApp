@@ -18,14 +18,25 @@ const StudentEnrollment = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const eventsRes = await axios.get('/student/get-events');
+try {
+      const eventsRes = await axios.get('/student/get-events');
+      console.log("Full API Response:", eventsRes.data);
+
+      // Directly use eventsRes.data since the response is an array
+      const fetchedEvents = Array.isArray(eventsRes.data) ? eventsRes.data : [];
+      setEvents(fetchedEvents);
+
+    } catch (err) {
+      console.error('Error fetching data:', err);
+      setEvents([]); // Ensure state is always an array
+    }
+  
         const enrolledRes = await axios.get('/student/enrollment-requests');
+        setEnrolledEvents(enrolledRes.data?.requests || []);
+  
         const sessionUserRes = await axios.get('/student/session-user');
-
-        setEvents(eventsRes.data.events);
-        setEnrolledEvents(enrolledRes.data.requests);
-        setSessionUser(sessionUserRes.data);
-
+        setSessionUser(sessionUserRes.data || null);
+  
         if (sessionUserRes.data) {
           setFormData({
             eventId: '',
@@ -37,11 +48,13 @@ const StudentEnrollment = () => {
         }
       } catch (err) {
         console.error('Error fetching data:', err);
+        setEvents([]); // Ensure events is always an array
       }
     };
     fetchData();
   }, []);
-
+  
+  
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -77,16 +90,25 @@ const StudentEnrollment = () => {
   };
 
   const handleUnregister = async (eventId) => {
+    console.log("Attempting to unregister from event ID:", eventId); // Debugging
+  
     try {
       const res = await axios.delete(`/student/unregister-event/${eventId}`);
+      console.log("Unregister Response:", res.data); // Debugging
+  
       setSuccess(res.data.message);
       setError(null);
+  
+      // Update state to remove the unregistered event from the list
       setEnrolledEvents(enrolledEvents.filter(event => event._id !== eventId));
+  
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to unregister from event');
+      console.error("Error unregistering:", err.response?.data || err.message);
+      setError(err.response?.data?.message || "Failed to unregister from event");
       setSuccess(null);
     }
   };
+  
 
   const formatToIST = (date) => {
     if (!date) return 'Unknown';
@@ -109,13 +131,18 @@ const StudentEnrollment = () => {
         <div className="form-group">
           <label>Event:</label>
           <select name="eventId" value={formData.eventId} onChange={handleChange} required>
-            <option value="">Select Event</option>
-            {events.map((event) => (
-              <option key={event._id} value={event._id}>
-                {event.eventname} ({event.participants} participants) | {event.category}
-              </option>
-            ))}
-          </select>
+  <option value="">Select Event</option>
+  {events && events.length > 0 ? (
+    events.map((event) => (
+      <option key={event._id} value={event._id}>
+        {event.eventname} ({event.participants} participants) | {event.category}
+      </option>
+    ))
+  ) : (
+    <option disabled>No events available</option>
+  )}
+</select>
+
         </div>
         {formData.eventId && (
           <div className="form-group">
@@ -136,11 +163,12 @@ const StudentEnrollment = () => {
             <strong> Category:</strong> {event.eventId?.category || 'Unknown'} | 
             <strong> Date:</strong> {formatToIST(event.requestedAt)}
             <button
-              className="unregister-button"
-              onClick={() => handleUnregister(event._id)}
-            >
-              Unregister
-            </button>
+  className="unregister-button"
+  onClick={() => handleUnregister(event.eventId?._id)} // Pass the correct eventId
+>
+  Unregister
+</button>
+
           </li>
         ))}
       </ul>
