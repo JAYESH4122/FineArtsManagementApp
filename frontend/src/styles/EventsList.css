@@ -10,62 +10,54 @@
     align-items: center;
 }
 
-/* Header Styling */
-.header-box {
-    background: linear-gradient(180deg, #04283b, #042641);
-    backdrop-filter: blur(10px);
-    border-radius: 9px;
-    margin: 20px auto;
+/* Stage Section Styling */
+.stage-section {
     width: 95%;
-    padding: 15px 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    margin-top: 30px;
+    padding: 20px;
+    border-radius: 12px;
     text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Offstage Events */
+.offstage-section {
+    background: linear-gradient(135deg, #ff9800, #ff5722);
     color: white;
 }
 
-.header-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.header-icon {
-    font-size: 3rem;
-    color: #ffcc00;
-}
-
-.header-title {
+.offstage-title {
+    font-size: 2rem;
+    color: white;
     font-weight: bold;
-    font-size: 1.8rem;
-    margin-top: 10px;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
 }
 
-.header-subtitle {
-    margin-top: 5px;
-    font-size: 1rem;
-    opacity: 0.85;
+.offstage-divider {
+    border: 2px solid #fff;
+    width: 50%;
+    margin: 10px auto;
+    opacity: 0.7;
 }
 
-/* Loading Indicator */
-.loading-box {
-    display: flex;
-    justify-content: center;
-    margin-top: 30px;
+/* Onstage Events */
+.onstage-section {
+    background: linear-gradient(135deg, #4caf50, #2e7d32);
+    color: white;
 }
 
-/* Error Alert */
-.error-alert {
-    margin-top: 20px;
-    font-size: 1rem;
-    padding: 15px;
-    border-radius: 8px;
+.onstage-title {
+    font-size: 2rem;
+    font-weight: bold;
+    color: white;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
 }
 
-/* Events Grid */
-.events-grid {
-    margin-top: 30px;
+.onstage-divider {
+    border: 2px solid #fff;
+    width: 50%;
+    margin: 10px auto;
+    opacity: 0.7;
 }
 
 /* Event Card */
@@ -96,8 +88,7 @@
 }
 
 .event-category,
-.event-participants,
-.event-date {
+.event-participants {
     margin-top: 12px;
     font-size: 1.1rem;
     font-weight: 500;
@@ -117,6 +108,10 @@
 @media (max-width: 768px) {
     .events-container {
         padding: 10px;
+    }
+
+    .stage-section {
+        padding: 15px;
     }
 
     .events-grid {

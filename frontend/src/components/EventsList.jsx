@@ -4,10 +4,8 @@ import { Card, CardContent, Typography, Container, Grid, CircularProgress, Alert
 import { motion } from 'framer-motion';
 import EventIcon from '@mui/icons-material/Event';
 import GroupIcon from '@mui/icons-material/Group';
-import DateRangeIcon from '@mui/icons-material/DateRange';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles/EventsList.css';
-import { format, utcToZonedTime } from 'date-fns-tz';
 
 const EventsList = () => {
     const [events, setEvents] = useState([]);
@@ -18,7 +16,7 @@ const EventsList = () => {
         const fetchEvents = async () => {
             try {
                 const response = await axios.get('/student/events');
-                setEvents(response.data);
+                setEvents(Array.isArray(response.data) ? response.data : []);
                 setLoading(false);
             } catch (error) {
                 console.error('Error fetching events:', error);
@@ -30,17 +28,10 @@ const EventsList = () => {
         fetchEvents();
     }, []);
 
-    // Function to format date in IST
-    const formatDate = (date) => {
-        if (!date) return 'Unknown';
-        try {
-          return format(new Date(date), 'dd/MM/yyyy, hh:mm:ss a'); // Format: DD/MM/YYYY, HH:MM AM/PM
-        } catch (err) {
-          console.error('Error formatting date:', err);
-          return 'Invalid Date';
-        }
-      };
-  
+    const categorizedEvents = {
+        offstage: (events || []).filter(event => event.stage === 'offstage'),
+        onstage: (events || []).filter(event => event.stage === 'onstage')
+    };
 
     return (
         <Container maxWidth="lg" className="events-container">
@@ -70,36 +61,44 @@ const EventsList = () => {
                     {error}
                 </Alert>
             ) : (
-                <Grid container spacing={3} className="events-grid">
-                    {events.length > 0 ? (
-                        events.map(event => (
-                            <Grid item xs={12} sm={6} md={4} key={event._id}>
-                                <motion.div
-                                    whileHover={{ scale: 1.05 }}
-                                    transition={{ type: 'spring', stiffness: 100 }}
-                                >
-                                    <Card className="event-card">
-                                        <CardContent>
-                                            <Typography variant="h5" className="event-title">
-                                                <EventIcon className="event-icon" /> {event.eventname}
-                                            </Typography>
-                                            <Typography variant="body1" className="event-category">
-                                                <GroupIcon className="event-icon" /> <strong>Category:</strong> {event.category}
-                                            </Typography>
-                                            <Typography variant="body1" className="event-participants">
-                                                <strong>Participants:</strong> {event.participants}
-                                            </Typography>
-                                        </CardContent>
-                                    </Card>
-                                </motion.div>
-                            </Grid>
-                        ))
-                    ) : (
-                        <Alert severity="info" className="alert">
-                            No upcoming events available.
-                        </Alert>
-                    )}
-                </Grid>
+                ['offstage', 'onstage'].map(stage => (
+                    <Box key={stage} className="stage-section">
+                        <Typography variant="h4" className="stage-title">
+                            {stage.charAt(0).toUpperCase() + stage.slice(1)} Events
+                        </Typography>
+                        <hr className="stage-divider" />
+                        <Grid container spacing={3} className="events-grid">
+                            {categorizedEvents[stage].length > 0 ? (
+                                categorizedEvents[stage].map(event => (
+                                    <Grid item xs={12} sm={6} md={4} key={event._id}>
+                                        <motion.div
+                                            whileHover={{ scale: 1.05 }}
+                                            transition={{ type: 'spring', stiffness: 100 }}
+                                        >
+                                            <Card className="event-card">
+                                                <CardContent>
+                                                    <Typography variant="h5" className="event-title">
+                                                        <EventIcon className="event-icon" /> {event.eventname}
+                                                    </Typography>
+                                                    <Typography variant="body1" className="event-category">
+                                                        <GroupIcon className="event-icon" /> <strong>Category:</strong> {event.category}
+                                                    </Typography>
+                                                    <Typography variant="body1" className="event-participants">
+                                                        <strong>Participants:</strong> {event.participants}
+                                                    </Typography>
+                                                </CardContent>
+                                            </Card>
+                                        </motion.div>
+                                    </Grid>
+                                ))
+                            ) : (
+                                <Alert severity="info" className="alert">
+                                    No {stage} events available.
+                                </Alert>
+                            )}
+                        </Grid>
+                    </Box>
+                ))
             )}
         </Container>
     );
