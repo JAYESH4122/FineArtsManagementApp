@@ -194,7 +194,7 @@ exports.requestEnrollment = async (req, res) => {
         match: { stage: "offstage" }, // Only count offstage events
       });
 
-      if (offstageEventCount >= 3) {
+      if (offstageEventCount >= 4) {
         return res.status(400).json({
           message: `You have already registered for the maximum of 3 offstage events.`,
         });
@@ -255,34 +255,34 @@ exports.requestEnrollment = async (req, res) => {
 };
 
 
-exports.unregisterEvent = async (req, res) => {
-  const { eventId } = req.params;
-  const studentName = req.session.user?.name; // Get logged-in student's name
+// exports.unregisterEvent = async (req, res) => {
+//   const { eventId } = req.params;
+//   const studentName = req.session.user?.name; // Get logged-in student's name
 
-  if (!studentName) {
-    return res.status(401).json({ message: "User not logged in or session expired" });
-  }
+//   if (!studentName) {
+//     return res.status(401).json({ message: "User not logged in or session expired" });
+//   }
 
-  try {
-    // Convert eventId to ObjectId if it's not already
-    const eventObjectId = new mongoose.Types.ObjectId(eventId);
+//   try {
+//     // Convert eventId to ObjectId if it's not already
+//     const eventObjectId = new mongoose.Types.ObjectId(eventId);
 
-    // Find and delete the enrollment request
-    const enrollmentRequest = await EnrollmentRequest.findOneAndDelete({
-      eventId: eventObjectId, // Match correctly as ObjectId
-      "participants.name": studentName,
-    });
+//     // Find and delete the enrollment request
+//     const enrollmentRequest = await EnrollmentRequest.findOneAndDelete({
+//       eventId: eventObjectId, // Match correctly as ObjectId
+//       "participants.name": studentName,
+//     });
 
-    if (!enrollmentRequest) {
-      return res.status(404).json({ message: "Enrollment request not found" });
-    }
+//     if (!enrollmentRequest) {
+//       return res.status(404).json({ message: "Enrollment request not found" });
+//     }
 
-    return res.status(200).json({ message: "Successfully unregistered from the event" });
-  } catch (err) {
-    console.error("Error unregistering from event:", err);
-    return res.status(500).json({ message: "Failed to unregister from event" });
-  }
-};
+//     return res.status(200).json({ message: "Successfully unregistered from the event" });
+//   } catch (err) {
+//     console.error("Error unregistering from event:", err);
+//     return res.status(500).json({ message: "Failed to unregister from event" });
+//   }
+// };
 
 
 
