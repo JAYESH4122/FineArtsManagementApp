@@ -9,7 +9,7 @@ import {
   CircularProgress,
   Alert,
   IconButton,
-  Collapse
+  Collapse,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import EventIcon from "@mui/icons-material/Event";
@@ -54,7 +54,7 @@ const ViewRegistrations = () => {
           Event Registrations
         </Typography>
         <Typography variant="body2" className="header-subtitle">
-          Click on an event to view participants
+          Click on an event to view participants grouped by department
         </Typography>
       </Box>
 
@@ -68,79 +68,87 @@ const ViewRegistrations = () => {
         </Alert>
       ) : (
         <Grid container spacing={3} justifyContent="center">
-          {registrations.map((registration, index) => (
-            <Grid item xs={12} sm={6} md={4} key={index}>
-              <Card className="event-card">
-                <CardContent>
-                  <Box className="event-header" onClick={() => handleExpandClick(registration.eventname)}>
-                    <Typography variant="h6" className="event-title">
-                      {registration.eventname}
-                    </Typography>
-                    <IconButton className={expanded[registration.eventname] ? "expand-icon expanded" : "expand-icon"}>
-                      <ExpandMoreIcon />
-                    </IconButton>
-                  </Box>
-                  <Collapse in={expanded[registration.eventname]} timeout="auto" unmountOnExit>
-                    <Box className="participant-container">
-                      {registration.teams.length > 0 ? (
-                        registration.teams.map((team, teamIndex) => (
-                          <div key={teamIndex} className="team-section">
-                            {team.participants.length > 1 && (
-                              <Typography variant="subtitle1" className="team-title">
-                                <GroupIcon className="team-icon" /> Team: {team.teamName}
-                              </Typography>
-                            )}
-                            <ul className="participant-list">
-                              {team.participants.map((participant, i) => (
-                                <li key={i} className="participant-item">
-                                  <Box className="participant-box">
-                                    <PersonIcon className="participant-icon" />
-                                    <Typography variant="body1" className="participant-name">
-                                      {participant.name}
-                                    </Typography>
-                                    <Typography variant="body2" className="participant-detail">
-                                      Class: {participant.className}
-                                    </Typography>
-                                    <Typography variant="body2" className="participant-detail">
-                                      Department: {participant.department}
-                                    </Typography>
-                                  </Box>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        ))
-                      ) : (
-                        <div className="individual-registration">
-                          <Typography variant="subtitle1" className="individual-title">
-                            Individual Participant
-                          </Typography>
-                          <ul className="participant-list">
-                            {registration.participants.map((participant, i) => (
-                              <li key={i} className="participant-item">
-                                <Box className="participant-box">
-                                  <PersonIcon className="participant-icon" />
-                                  <Typography variant="body1" className="participant-name">
-                                    {participant.name}
-                                  </Typography>
-                                  <Typography variant="body2" className="participant-detail">
-                                    Class: {participant.className}
-                                  </Typography>
-                                  <Typography variant="body2" className="participant-detail">
-                                    Department: {participant.departmentname}
-                                  </Typography>
-                                </Box>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
+          {registrations.map((registration, index) => {
+            // Group participants by department
+            const departmentWiseParticipants = {};
+
+            registration.teams.forEach((team) => {
+              team.participants.forEach((participant) => {
+                const deptName = participant.department || "Unknown Department";
+                if (!departmentWiseParticipants[deptName]) {
+                  departmentWiseParticipants[deptName] = [];
+                }
+                departmentWiseParticipants[deptName].push(participant);
+              });
+            });
+
+            return (
+              <Grid item xs={12} sm={6} md={4} key={index}>
+                <Card className="event-card">
+                  <CardContent>
+                    <Box
+                      className="event-header"
+                      onClick={() => handleExpandClick(registration.eventname)}
+                    >
+                      <Typography variant="h6" className="event-title">
+                        {registration.eventname}
+                      </Typography>
+                      <IconButton
+                        className={
+                          expanded[registration.eventname]
+                            ? "expand-icon expanded"
+                            : "expand-icon"
+                        }
+                      >
+                        <ExpandMoreIcon />
+                      </IconButton>
                     </Box>
-                  </Collapse>
-                </CardContent>
-              </Card>
-            </Grid>
-          ))}
+                    <Collapse
+                      in={expanded[registration.eventname]}
+                      timeout="auto"
+                      unmountOnExit
+                    >
+                      <Box className="participant-container">
+                        {Object.entries(departmentWiseParticipants).map(
+                          ([deptName, participants], deptIndex) => (
+                            <div key={deptIndex} className="department-section">
+                              <Typography
+                                variant="h6"
+                                className="department-title"
+                              >
+                                {deptName}
+                              </Typography>
+                              <ul className="participant-list">
+                                {participants.map((participant, i) => (
+                                  <li key={i} className="participant-item">
+                                    <Box className="participant-box">
+                                      <PersonIcon className="participant-icon" />
+                                      <Typography
+                                        variant="body1"
+                                        className="participant-name"
+                                      >
+                                        {participant.name}
+                                      </Typography>
+                                      <Typography
+                                        variant="body2"
+                                        className="participant-detail"
+                                      >
+                                        Class: {participant.className}
+                                      </Typography>
+                                    </Box>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )
+                        )}
+                      </Box>
+                    </Collapse>
+                  </CardContent>
+                </Card>
+              </Grid>
+            );
+          })}
         </Grid>
       )}
     </div>
