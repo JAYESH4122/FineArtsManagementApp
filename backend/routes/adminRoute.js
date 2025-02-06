@@ -58,14 +58,15 @@ router.get('/view-department-rankings', adminController.getDepartmentRankings);
 //view feedback
 router.get('/feedback', adminController.viewFeedback);
 
-
-// Route to fetch enrollment requests grouped by event
+// Fetch structured enrollment data grouped by event → department → class
 router.get('/view-enrollment-requests', adminController.getEnrollmentsForAttendance);
 
-// Route to submit attendance for a single event
+// Submit attendance for a single event
 router.post('/submit-attendance/:eventId', adminController.submitAttendanceForEvent);
 
-module.exports = router;
+// Download attendance as PDF
+router.get('/download-attendance/:eventId', adminController.downloadAttendanceAsPDF);
+
 
 
 

@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Card, CardContent, Typography, Checkbox, FormControlLabel, Button, Box, Grid, CircularProgress, Alert } from '@mui/material';
+import { Card, CardContent, Typography, Checkbox, FormControlLabel, Button, Box, Grid, CircularProgress, Alert, Divider } from '@mui/material';
 import { motion } from 'framer-motion';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import DownloadIcon from '@mui/icons-material/Download';
+import EditIcon from '@mui/icons-material/Edit';
 import '../styles/AdminMarkAttendance.css';
 
 const AdminMarkAttendance = () => {
@@ -10,6 +12,7 @@ const AdminMarkAttendance = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [attendance, setAttendance] = useState({});
+  const [editMode, setEditMode] = useState({});
 
   useEffect(() => {
     const fetchEnrollments = async () => {
@@ -37,10 +40,11 @@ const AdminMarkAttendance = () => {
       ...prevAttendance,
       [eventId]: {
         ...prevAttendance[eventId],
-        [participantId]: !prevAttendance[eventId]?.[participantId]
+        [participantId]: prevAttendance[eventId]?.[participantId] ? false : true
       }
     }));
   };
+  
 
   const handleSubmitAttendance = async (eventId) => {
     try {
@@ -50,6 +54,7 @@ const AdminMarkAttendance = () => {
 
       if (response.data.success) {
         alert(`Attendance for event '${eventId}' marked successfully!`);
+        setEditMode({ ...editMode, [eventId]: false });
       } else {
         alert('Failed to update attendance.');
       }
@@ -57,6 +62,10 @@ const AdminMarkAttendance = () => {
       console.error('Error submitting attendance:', error);
       alert('Server error. Please try again.');
     }
+  };
+
+  const handleDownloadPDF = async (eventId) => {
+    window.open(`/admin/download-attendance/${eventId}`, '_blank');
   };
 
   return (
@@ -92,30 +101,62 @@ const AdminMarkAttendance = () => {
                       <ExpandMoreIcon className="expand-icon" />
                     </Box>
 
-                    <Box className="participant-list">
-                      {event.participants.map((participant) => (
-                        <FormControlLabel
-                          key={participant._id}
-                          control={
-                            <Checkbox
-                              checked={attendance[event.eventId]?.[participant._id] || false}
-                              onChange={() => handleAttendanceChange(event.eventId, participant._id)}
-                            />
-                          }
-                          label={`${participant.name} (Adm No: ${participant.admno}, Class: ${participant.className.className})`}
-                          className="participant-checkbox"
-                        />
-                      ))}
-                    </Box>
+                    {Object.entries(event.departments).map(([deptName, classes]) => (
+                      <Box key={deptName} className="department-box">
+                        <Typography variant="h6" className="department-title">
+                          {deptName}
+                        </Typography>
+                        <Divider />
+                        {Object.entries(classes).map(([className, students]) => (
+                          <Box key={className} className="class-box">
+                            <Typography variant="subtitle1" className="class-title">
+                              {className}
+                            </Typography>
+                            {students.map((participant) => (
+                              <FormControlLabel
+                                key={participant.participantId}
+                                control={
+                                  <Checkbox
+  checked={attendance[event.eventId]?.[participant.participantId] !== undefined 
+            ? attendance[event.eventId][participant.participantId] 
+            : participant.attended}
+  disabled={!editMode[event.eventId]}
+  onChange={() => handleAttendanceChange(event.eventId, participant.participantId)}
+/>
+                                }
+                                label={`${participant.name} (Adm No: ${participant.admno})`}
+                                className="participant-checkbox"
+                              />
+                            ))}
+                          </Box>
+                        ))}
+                      </Box>
+                    ))}
 
-                    {/* Submit Button for Each Event */}
                     <Box className="submit-box">
                       <Button
                         variant="contained"
                         color="primary"
                         onClick={() => handleSubmitAttendance(event.eventId)}
+                        disabled={!editMode[event.eventId]}
                       >
                         Submit Attendance
+                      </Button>
+                      <Button
+                        variant="outlined"
+                        color="secondary"
+                        startIcon={<EditIcon />}
+                        onClick={() => setEditMode({ ...editMode, [event.eventId]: !editMode[event.eventId] })}
+                      >
+                        {editMode[event.eventId] ? "Cancel Edit" : "Edit Attendance"}
+                      </Button>
+                      <Button
+                        variant="contained"
+                        color="success"
+                        startIcon={<DownloadIcon />}
+                        onClick={() => handleDownloadPDF(event.eventId)}
+                      >
+                        Download PDF
                       </Button>
                     </Box>
                   </CardContent>

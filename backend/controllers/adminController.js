@@ -9,6 +9,7 @@ const Student = require('../models/studentmodel');
 const Feedback = require('../models/feedback');
 const Class = require('../models/classmodel');
 const EnrollmentRequest = require('../models/EnrollmentRequest');
+const PDFDocument = require('pdfkit');
 
 
 
@@ -587,7 +588,10 @@ exports.viewFeedback = async (req, res) => {
   }
 };
 
-// Fetch enrollment requests grouped by events
+
+/**
+ * Fetch structured enrollment requests grouped by Event → Department → Class
+ */
 exports.getEnrollmentsForAttendance = async (req, res) => {
   try {
     const enrollments = await EnrollmentRequest.find()
@@ -595,25 +599,42 @@ exports.getEnrollmentsForAttendance = async (req, res) => {
       .populate('participants.className', 'className')
       .populate('department', 'departmentname');
 
-    // Group students under a single event
-    const groupedEvents = {};
+    const structuredData = {};
 
     enrollments.forEach((enrollment) => {
-      const eventName = enrollment.eventId.eventname;
+      const { eventId, department, participants } = enrollment;
+      const eventName = eventId.eventname;
+      const departmentName = department.departmentname;
 
-      if (!groupedEvents[eventName]) {
-        groupedEvents[eventName] = {
-          eventId: enrollment.eventId._id,
+      if (!structuredData[eventName]) {
+        structuredData[eventName] = {
+          eventId: eventId._id,
           eventname: eventName,
-          participants: [],
+          departments: {},
         };
       }
 
-      // Add students to the event group
-      groupedEvents[eventName].participants.push(...enrollment.participants);
+      if (!structuredData[eventName].departments[departmentName]) {
+        structuredData[eventName].departments[departmentName] = {};
+      }
+
+      participants.forEach((participant) => {
+        const className = participant.className.className;
+
+        if (!structuredData[eventName].departments[departmentName][className]) {
+          structuredData[eventName].departments[departmentName][className] = [];
+        }
+
+        structuredData[eventName].departments[departmentName][className].push({
+          participantId: participant._id,
+          name: participant.name,
+          admno: participant.admno,
+          attended: participant.attended, // Track if already marked
+        });
+      });
     });
 
-    res.json({ success: true, events: Object.values(groupedEvents) });
+    res.json({ success: true, events: Object.values(structuredData) });
   } catch (error) {
     console.error('Error fetching enrollment requests:', error);
     res.status(500).json({ success: false, message: 'Server error' });
@@ -621,7 +642,7 @@ exports.getEnrollmentsForAttendance = async (req, res) => {
 };
 
 /**
- * Mark attendance for a single event
+ * Submit attendance for a specific event
  */
 exports.submitAttendanceForEvent = async (req, res) => {
   try {
@@ -635,7 +656,6 @@ exports.submitAttendanceForEvent = async (req, res) => {
     for (const participantId in attendance) {
       const isPresent = attendance[participantId];
 
-      // Update the participant's attendance status
       await EnrollmentRequest.updateOne(
         { "eventId": eventId, "participants._id": participantId },
         { $set: { "participants.$.attended": isPresent } }
@@ -648,6 +668,55 @@ exports.submitAttendanceForEvent = async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };
+
+/**
+ * Generate PDF of attendance for an event
+ */
+exports.downloadAttendanceAsPDF = async (req, res) => {
+  try {
+    const { eventId } = req.params;
+
+    const enrollments = await EnrollmentRequest.find({ eventId })
+      .populate('eventId', 'eventname')
+      .populate('participants.className', 'className')
+      .populate('department', 'departmentname');
+
+    if (!enrollments.length) {
+      return res.status(404).json({ success: false, message: 'No attendance records found' });
+    }
+
+    const doc = new PDFDocument();
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="attendance_${eventId}.pdf"`);
+
+    doc.pipe(res);
+    doc.fontSize(18).text(`Attendance for ${enrollments[0].eventId.eventname}`, { align: 'center' });
+    doc.moveDown();
+
+    enrollments.forEach((enrollment) => {
+      const { department, participants } = enrollment;
+      const attendedStudents = participants.filter(p => p.attended); // Only attended students
+
+      if (attendedStudents.length > 0) {
+        doc.fontSize(14).text(`Department: ${department.departmentname}`, { underline: true });
+        doc.moveDown();
+      }
+
+      attendedStudents.forEach((participant) => {
+        doc.fontSize(12).text(`- ${participant.name} (Adm No: ${participant.admno}, Class: ${participant.className.className})`);
+      });
+
+      doc.moveDown();
+    });
+
+    doc.end();
+  } catch (error) {
+    console.error('Error generating PDF:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+
 
 
 

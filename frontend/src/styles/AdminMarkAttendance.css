@@ -32,41 +32,27 @@
   opacity: 0.85;
 }
 
-/* Loading Indicator */
-.loading-box {
-  display: flex;
-  justify-content: center;
-  margin-top: 30px;
-}
-
 /* Event Card */
 .event-card {
-  background: linear-gradient(to bottom, #ffffff, #dbeafe);
-  border-radius: 16px;
+  background: #ffffff;
+  border-radius: 12px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   padding: 20px;
   transition: all 0.3s ease;
 }
 
-.event-card:hover {
-  transform: scale(1.03);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+.department-box {
+  margin-top: 20px;
 }
 
-.event-title {
-  font-size: 1.4rem;
-  font-weight: bold;
-  color: #052d40;
+.class-box {
+  margin-left: 20px;
+  margin-top: 10px;
 }
 
-/* Checkbox */
-.participant-checkbox {
-  margin: 8px 0;
-}
-
-/* Submit Button */
+/* Buttons */
 .submit-box {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   margin-top: 20px;
 }
