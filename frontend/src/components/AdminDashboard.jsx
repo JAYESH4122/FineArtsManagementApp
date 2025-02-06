@@ -62,6 +62,14 @@ const AdminDashboard = () => {
             </Link>
           </div>
 
+                    {/* View Scoreboard */}
+          <div className="dashboard-card">
+            <Link to="/admin/mark-atendence">
+              <div className="card-icon"><i className="fas fa-trophy fa-3x"></i></div>
+              <h3>Attendence Mark</h3>
+            </Link>
+          </div>
+
           {/* View Scoreboard */}
           <div className="dashboard-card">
             <Link to="/admin/view-scoreboard">

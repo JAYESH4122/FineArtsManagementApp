@@ -8,6 +8,8 @@ const Scoreboard = require('../models/scoreboardmodel');
 const Student = require('../models/studentmodel');
 const Feedback = require('../models/feedback');
 const Class = require('../models/classmodel');
+const EnrollmentRequest = require('../models/EnrollmentRequest');
+
 
 
 
@@ -584,3 +586,70 @@ exports.viewFeedback = async (req, res) => {
     res.status(500).json({ message: "Error fetching feedback" });
   }
 };
+
+// Fetch enrollment requests grouped by events
+exports.getEnrollmentsForAttendance = async (req, res) => {
+  try {
+    const enrollments = await EnrollmentRequest.find()
+      .populate('eventId', 'eventname')
+      .populate('participants.className', 'className')
+      .populate('department', 'departmentname');
+
+    // Group students under a single event
+    const groupedEvents = {};
+
+    enrollments.forEach((enrollment) => {
+      const eventName = enrollment.eventId.eventname;
+
+      if (!groupedEvents[eventName]) {
+        groupedEvents[eventName] = {
+          eventId: enrollment.eventId._id,
+          eventname: eventName,
+          participants: [],
+        };
+      }
+
+      // Add students to the event group
+      groupedEvents[eventName].participants.push(...enrollment.participants);
+    });
+
+    res.json({ success: true, events: Object.values(groupedEvents) });
+  } catch (error) {
+    console.error('Error fetching enrollment requests:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+/**
+ * Mark attendance for a single event
+ */
+exports.submitAttendanceForEvent = async (req, res) => {
+  try {
+    const { eventId } = req.params;
+    const { attendance } = req.body;
+
+    if (!attendance || typeof attendance !== 'object') {
+      return res.status(400).json({ success: false, message: 'Invalid data format' });
+    }
+
+    for (const participantId in attendance) {
+      const isPresent = attendance[participantId];
+
+      // Update the participant's attendance status
+      await EnrollmentRequest.updateOne(
+        { "eventId": eventId, "participants._id": participantId },
+        { $set: { "participants.$.attended": isPresent } }
+      );
+    }
+
+    res.json({ success: true, message: `Attendance for event '${eventId}' updated successfully!` });
+  } catch (error) {
+    console.error('Error updating attendance:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+
+
+
+

@@ -13,13 +13,13 @@ router.get('/dashboard', studentController.dashboard);
 router.post('/logout', studentController.logout);
 
 //Student enrollment
-router.get('/get-events', studentController.getEvents);
+router.get('/get-events', studentController.getEventsStudent);
 router.get('/get-classes', studentController.getClasses);
 router.post('/request-enrollment', studentController.requestEnrollment);
 router.get('/enrollment-requests', studentController.getEnrollmentRequests);
 router.get('/session-user', studentController.getSessionUserData);
 // In your routes file (e.g., studentRoutes.js)
-router.delete('/unregister-event/:eventId', studentController.unregisterEvent);
+// router.delete('/unregister-event/:eventId', studentController.unregisterEvent);
 
 
 // Student Routes

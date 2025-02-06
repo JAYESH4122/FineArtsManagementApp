@@ -28,6 +28,7 @@ import DeptRepComplaintPage from './components/DeptRepComplaintPage';
 import FeedbackForm from './components/FeedbackForm';
 import StudentProfile from './components/StudentProfile';
 import EventsList from './components/EventsList';
+import AdminMarkAttendance from './components/AdminMarkAttendance';
 
 const App = () => {
   return (
@@ -48,6 +49,7 @@ const App = () => {
         <Route path="/admin/manage-representatives" element={<ManageRepresentatives />} />
         <Route path="/admin/manage-student" element={<AdminManageStudents />} />
         <Route path="/admin/feedback" element={<AdminViewFeedback />} />
+        <Route path="/admin/mark-atendence" element={<AdminMarkAttendance />} />
 
         <Route path="/deptrep/login" element={<DeptRepLogin />} />
         <Route path="/deptrep/view-dashboard" element={<RepDashboard />} />

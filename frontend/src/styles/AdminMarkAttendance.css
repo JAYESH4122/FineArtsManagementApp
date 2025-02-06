@@ -1,0 +1,72 @@
+/* General Layout */
+.attendance-container {
+  font-family: Tahoma, sans-serif;
+  background: linear-gradient(132deg, #00577e, #1e293b);
+  min-height: 100vh;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Header */
+.header-box {
+  background: linear-gradient(180deg, #04283b, #042641);
+  backdrop-filter: blur(10px);
+  border-radius: 9px;
+  margin: 20px auto;
+  width: 95%;
+  padding: 15px;
+  text-align: center;
+  color: white;
+}
+
+.header-title {
+  font-weight: bold;
+  font-size: 1.8rem;
+}
+
+.header-subtitle {
+  margin-top: 5px;
+  font-size: 1rem;
+  opacity: 0.85;
+}
+
+/* Loading Indicator */
+.loading-box {
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+/* Event Card */
+.event-card {
+  background: linear-gradient(to bottom, #ffffff, #dbeafe);
+  border-radius: 16px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  transition: all 0.3s ease;
+}
+
+.event-card:hover {
+  transform: scale(1.03);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.event-title {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #052d40;
+}
+
+/* Checkbox */
+.participant-checkbox {
+  margin: 8px 0;
+}
+
+/* Submit Button */
+.submit-box {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}

@@ -7,7 +7,12 @@ const EventSchema = new Schema({
     category : {type : String, required : true},
     participants : {type : Number, required : true},
     description : {type : String},
-})
+    stage: {
+        type: String,
+        enum: ["onstage", "offstage"],
+        required: true
+      }
+    }, { timestamps: true });
 
 const Event = mongoose.model('EventDetails', EventSchema)
 module.exports = Event;

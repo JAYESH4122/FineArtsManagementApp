@@ -92,7 +92,7 @@ exports.logout = (req, res) => {
 
 // Student Enrollment
 // Controller to get events with single participants only
-exports.getEvents = async (req, res) => {
+exports.getEventsStudent = async (req, res) => {
   try {
     // Fetch events where participants count is exactly 1 (students can only register for these)
     const events = await Event.find({ participants: 1 }, 'eventname participants category description date');
@@ -156,7 +156,7 @@ exports.getClasses = async (req, res) => {
 
 
 // Controller to handle student enrollment requests
-exports.requestEnrollment = async (req, res) => {
+exports.requestEnrollment = async (req, res) => { 
   const { eventId, participantDetails } = req.body;
 
   if (!eventId || !participantDetails || participantDetails.length === 0) {
@@ -179,18 +179,26 @@ exports.requestEnrollment = async (req, res) => {
       return res.status(404).json({ message: `Student with name "${studentName}" not found.` });
     }
 
-    // Check if the student has already registered for 3 single events
-    const singleEventCount = await EnrollmentRequest.countDocuments({
-      'participants.admno': student.admno,
-    }).populate({
-      path: 'eventId',
-      match: { participants: 1 }, // Only count events where participants = 1
-    });
+    // Fetch event details to check the stage type
+    const event = await Event.findById(eventId);
+    if (!event) {
+      return res.status(404).json({ message: 'Event not found.' });
+    }
 
-    if (singleEventCount >= 3) {
-      return res.status(400).json({
-        message: `You have already registered for the maximum of 3 single events.`,
+    // Apply limit only for offstage events
+    if (event.stage === "offstage") {
+      const offstageEventCount = await EnrollmentRequest.countDocuments({
+        'participants.admno': student.admno,
+      }).populate({
+        path: 'eventId',
+        match: { stage: "offstage" }, // Only count offstage events
       });
+
+      if (offstageEventCount >= 3) {
+        return res.status(400).json({
+          message: `You have already registered for the maximum of 3 offstage events.`,
+        });
+      }
     }
 
     // Check if the student has already submitted a request for this specific event
@@ -217,12 +225,12 @@ exports.requestEnrollment = async (req, res) => {
       participants: [
         {
           name: student.name,
-          admno: student.admno, // Automatically include admission number
-          className: classRecord._id, // Use the ObjectId for class
+          admno: student.admno,
+          className: classRecord._id, 
         },
       ],
-      participantHash: `${eventId}-${student.admno}`, // Generate unique hash using event ID and admission number
-      department: student.departmentname, // Use student's department
+      participantHash: `${eventId}-${student.admno}`, 
+      department: student.departmentname,
     });
 
     // Save the request
@@ -231,10 +239,10 @@ exports.requestEnrollment = async (req, res) => {
     // Populate event details after saving
     await savedRequest.populate({
       path: 'eventId',
-      select: 'eventname participants date',
+      select: 'eventname participants date stage',
     });
 
-    console.log('savedRequest', savedRequest); // Debugging
+    console.log('savedRequest', savedRequest);
 
     return res.status(200).json({
       message: 'Enrollment request sent successfully!',
@@ -245,6 +253,7 @@ exports.requestEnrollment = async (req, res) => {
     return res.status(500).json({ message: 'Server Error' });
   }
 };
+
 
 exports.unregisterEvent = async (req, res) => {
   const { eventId } = req.params;
