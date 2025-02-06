@@ -18,18 +18,20 @@ const StudentEnrollment = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-try {
-      const eventsRes = await axios.get('/student/get-events');
-      console.log("Full API Response:", eventsRes.data);
-
-      // Directly use eventsRes.data since the response is an array
-      const fetchedEvents = Array.isArray(eventsRes.data) ? eventsRes.data : [];
-      setEvents(fetchedEvents);
-
-    } catch (err) {
-      console.error('Error fetching data:', err);
-      setEvents([]); // Ensure state is always an array
-    }
+        try {
+          const eventsRes = await axios.get('/student/get-events');
+          console.log("Full API Response:", eventsRes.data);
+        
+          if (Array.isArray(eventsRes.data.events)) {
+            setEvents(eventsRes.data.events);
+          } else {
+            console.error("API Response is not an array:", eventsRes.data.events);
+            setEvents([]); // Set empty array if data is incorrect
+          }
+        } catch (err) {
+          console.error('Error fetching data:', err);
+        }
+        
   
         const enrolledRes = await axios.get('/student/enrollment-requests');
         setEnrolledEvents(enrolledRes.data?.requests || []);
@@ -132,16 +134,17 @@ try {
           <label>Event:</label>
           <select name="eventId" value={formData.eventId} onChange={handleChange} required>
   <option value="">Select Event</option>
-  {events && events.length > 0 ? (
+  {events.length > 0 ? (
     events.map((event) => (
       <option key={event._id} value={event._id}>
-        {event.eventname} ({event.participants} participants) | {event.category}
+        {event.eventname} ({event.participants} participants) | {event.category} | {event.stage}
       </option>
     ))
   ) : (
     <option disabled>No events available</option>
   )}
 </select>
+
 
         </div>
         {formData.eventId && (
@@ -162,13 +165,6 @@ try {
             <strong>Event:</strong> {event.eventId?.eventname || 'Unknown'} | 
             <strong> Category:</strong> {event.eventId?.category || 'Unknown'} | 
             <strong> Date:</strong> {formatToIST(event.requestedAt)}
-            <button
-  className="unregister-button"
-  onClick={() => handleUnregister(event.eventId?._id)} // Pass the correct eventId
->
-  Unregister
-</button>
-
           </li>
         ))}
       </ul>
