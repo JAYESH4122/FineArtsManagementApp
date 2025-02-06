@@ -89,9 +89,6 @@ const EventsList = () => {
                                             <Typography variant="body1" className="event-participants">
                                                 <strong>Participants:</strong> {event.participants}
                                             </Typography>
-                                            <Typography variant="body1" className="event-date">
-  <DateRangeIcon className="event-icon" /> <strong>Date & Time:</strong> {formatDate(event.date)}
-</Typography>
                                         </CardContent>
                                     </Card>
                                 </motion.div>
