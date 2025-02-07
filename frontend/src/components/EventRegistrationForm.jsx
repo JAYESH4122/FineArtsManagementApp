@@ -12,11 +12,23 @@ const RegisterEvent = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const eventsResponse = await axios.get("/deptrep/events");
-        setEvents(eventsResponse.data.events);
 
-        const studentsResponse = await axios.get("/deptrep/get-students-reg");
-        setStudents(studentsResponse.data.students);
+        try {
+          const eventsResponse = await axios.get("/deptrep/events");
+          console.log("Fetched Events:", eventsResponse.data); // Debugging
+          setEvents(eventsResponse.data.events || []);
+        } catch (error) {
+          console.error("Error fetching events:", error);
+        }
+
+        try {
+          const studentsResponse = await axios.get("/deptrep/get-students-reg");
+          console.log("Fetched Students:", studentsResponse.data); // Debugging
+          setStudents(studentsResponse.data.students || []);
+        } catch (error) {
+          console.error("Error fetching students:", error);
+        }
+
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -72,13 +84,18 @@ const RegisterEvent = () => {
       <div>
         <label>Select Event</label>
         <select onChange={(e) => handleEventChange(e.target.value)} required>
-          <option value="">Select an event</option>
-          {events.map((event) => (
-            <option key={event._id} value={event._id}>
-              {event.eventname}
-            </option>
-          ))}
-        </select>
+  <option value="">Select an event</option>
+  {events.length > 0 ? (
+    events.map((event) => (
+      <option key={event._id} value={event._id}>
+        {event.eventname}
+      </option>
+    ))
+  ) : (
+    <option disabled>No events available</option>
+  )}
+</select>
+
       </div>
 
       {selectedEvent && (

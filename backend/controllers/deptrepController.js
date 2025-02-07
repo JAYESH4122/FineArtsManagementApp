@@ -237,37 +237,50 @@ exports.registerEvent = async (req, res) => {
 // Controller to fetch students for autocomplete
 exports.getAllStudents = async (req, res) => {
   try {
-    const { departmentId } = req.session.user; // Assuming departmentId comes from the session
+    if (!req.session.user || !req.session.user.departmentId) {
+      return res.status(400).json({ error: "User session expired or invalid." });
+    }
+
+    const { departmentId } = req.session.user;
+    console.log("Fetching students for department:", departmentId); // Debugging
 
     const students = await Student.find({ departmentname: departmentId })
-      .populate('departmentname', 'departmentname') // Populate department name
-      .populate('className', 'className') // Populate className
-      .select('name className'); // Select only relevant fields
+      .populate('departmentname', 'departmentname')
+      .populate('className', 'className')
+      .select('name className admno');
 
-    // Map className to a string
+    if (!students.length) {
+      return res.status(404).json({ error: "No students found in this department." });
+    }
+
     const formattedStudents = students.map((student) => ({
       ...student.toObject(),
-      className: student.className.className, // Ensure it's the class name, not the ObjectId
+      className: student.className.className, // Ensure it's a string, not ObjectId
     }));
 
     res.json({ students: formattedStudents });
   } catch (err) {
-    console.error('Error fetching students:', err);
-    res.status(500).json({ message: 'Failed to fetch students' });
+    console.error("Error fetching students:", err);
+    res.status(500).json({ error: "Failed to fetch students." });
   }
 };
 
 
 
+
 exports.getAllEvents = async (req, res) => {
   try {
-    const events = await Event.find();
+    const events = await Event.find().select('_id eventname participants'); // Fetch only required fields
+    if (!events.length) {
+      return res.status(404).json({ error: "No events found." });
+    }
     res.status(200).json({ events });
   } catch (error) {
     console.error("Error fetching events:", error);
     res.status(500).json({ error: "An error occurred while fetching events." });
   }
 };
+
 
 
 // Get complaints for department representative
