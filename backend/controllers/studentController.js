@@ -185,20 +185,28 @@ exports.requestEnrollment = async (req, res) => {
       return res.status(404).json({ message: 'Event not found.' });
     }
 
-    // Apply limit only for offstage events
-    if (event.stage === "offstage") {
-      const offstageEventCount = await EnrollmentRequest.countDocuments({
-        'participants.admno': student.admno,
-      }).populate({
-        path: 'eventId',
-        match: { stage: "offstage" }, // Only count offstage events
-      });
+    // Separate count for offstage and onstage events **(Fixed query)**
+    const offstageEventCount = await EnrollmentRequest.countDocuments({
+      'participants.admno': student.admno,
+      eventId: { $in: await Event.find({ stage: "offstage" }).distinct('_id') }
+    });
 
-      if (offstageEventCount >= 4) {
-        return res.status(400).json({
-          message: `You have already registered for the maximum of 3 offstage events.`,
-        });
-      }
+    const onstageEventCount = await EnrollmentRequest.countDocuments({
+      'participants.admno': student.admno,
+      eventId: { $in: await Event.find({ stage: "onstage" }).distinct('_id') }
+    });
+
+    // ✅ Now correctly enforce separate limits for each stage
+    if (event.stage === "offstage" && offstageEventCount >= 4) {
+      return res.status(400).json({
+        message: `You have already registered for the maximum of 4 offstage events.`,
+      });
+    }
+
+    if (event.stage === "onstage" && onstageEventCount >= 3) {
+      return res.status(400).json({
+        message: `You have already registered for the maximum of 3 onstage events.`,
+      });
     }
 
     // Check if the student has already submitted a request for this specific event
@@ -253,6 +261,8 @@ exports.requestEnrollment = async (req, res) => {
     return res.status(500).json({ message: 'Server Error' });
   }
 };
+
+
 
 
 // exports.unregisterEvent = async (req, res) => {

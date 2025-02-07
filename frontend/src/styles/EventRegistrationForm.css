@@ -70,7 +70,7 @@ input:focus {
 }
 
 /* 🚀 Buttons */
-button {
+.button {
   width: 100%;
   padding: 12px;
   font-size: 16px;

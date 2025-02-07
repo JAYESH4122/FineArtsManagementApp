@@ -72,7 +72,6 @@
 
 .expanded {
   transform: rotate(180deg);
-  color: #ffffff;
 }
 
 /* Participant List */

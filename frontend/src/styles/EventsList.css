@@ -20,6 +20,11 @@
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
+.stage-title{
+    background: linear-gradient(135deg, #111211, #272927);
+    color: white;
+}
+
 /* Offstage Events */
 .offstage-section {
     background: linear-gradient(135deg, #ff9800, #ff5722);
