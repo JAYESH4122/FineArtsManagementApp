@@ -67,12 +67,12 @@
 
 .expand-icon {
   transition: transform 0.3s ease, color 0.3s ease;
-  color: #003366;
+  color: #ffffff;
 }
 
 .expanded {
   transform: rotate(180deg);
-  color: #002244;
+  color: #ffffff;
 }
 
 /* Participant List */
