@@ -501,24 +501,7 @@ exports.getViewScoreboard = async (req, res) => {
 exports.getDepartmentRankings = async (req, res) => {
   try {
     const departmentRankings = await Scoreboard.aggregate([
-      {
-        $project: {
-          departmentname: 1,
-          totalPoints: {
-            $add: [
-              { $ifNull: ["$winners.first.points", 0] },
-              { $ifNull: ["$winners.second.points", 0] },
-              { $ifNull: ["$winners.third.points", 0] }
-            ]
-          }
-        }
-      },
-      {
-        $group: {
-          _id: "$departmentname",
-          totalPoints: { $sum: "$totalPoints" }
-        }
-      },
+      // First, join with department details to get all departments
       {
         $lookup: {
           from: "departmentdetails",
@@ -528,9 +511,30 @@ exports.getDepartmentRankings = async (req, res) => {
         }
       },
       { $unwind: "$department" },
+      // Calculate total points, ensuring missing values default to 0
       {
         $project: {
           departmentName: "$department.departmentname",
+          totalPoints: {
+            $add: [
+              { $ifNull: ["$winners.first.points", 0] },
+              { $ifNull: ["$winners.second.points", 0] },
+              { $ifNull: ["$winners.third.points", 0] }
+            ]
+          }
+        }
+      },
+      // Group by department name to ensure all departments are considered
+      {
+        $group: {
+          _id: "$departmentName",
+          totalPoints: { $sum: "$totalPoints" }
+        }
+      },
+      // Ensure departments with no points still appear
+      {
+        $project: {
+          departmentName: "$_id",
           totalPoints: 1
         }
       },
@@ -672,12 +676,15 @@ exports.submitAttendanceForEvent = async (req, res) => {
 /**
  * Generate PDF of attendance for an event
  */
+const fs = require('fs');
+const path = require('path');
+
 exports.downloadAttendanceAsPDF = async (req, res) => {
   try {
     const { eventId } = req.params;
 
     const enrollments = await EnrollmentRequest.find({ eventId })
-      .populate('eventId', 'eventname')
+      .populate('eventId', 'eventname malayalamname') // Ensure `malayalamname` is stored in DB
       .populate('participants.className', 'className')
       .populate('department', 'departmentname');
 
@@ -690,31 +697,62 @@ exports.downloadAttendanceAsPDF = async (req, res) => {
     res.setHeader('Content-Disposition', `attachment; filename="attendance_${eventId}.pdf"`);
 
     doc.pipe(res);
-    doc.fontSize(18).text(`Attendance for ${enrollments[0].eventId.eventname}`, { align: 'center' });
-    doc.moveDown();
+
+    // **Load Custom Malayalam Font**
+    const malayalamFontPath = path.join(__dirname, '../fonts/NotoSansMalayalam-VariableFont_wdth,wght.ttf'); 
+    if (fs.existsSync(malayalamFontPath)) {
+      doc.registerFont('malayalam', malayalamFontPath);
+    } else {
+      console.error("⚠️ Font file not found! Malayalam text may not render correctly.");
+    }
+
+    // **Event Name (English & Malayalam)**
+    const event = enrollments[0].eventId;
+    doc.fontSize(18).text(event.eventname, { align: 'center', underline: true });
+
+    if (event.malayalamname) {
+      doc.moveDown(0.5);
+      const utf8MalayalamText = Buffer.from(event.malayalamname, 'utf-8').toString();
+      doc.font('malayalam').fontSize(16).text(utf8MalayalamText, { align: 'center' });      
+      doc.font('Helvetica'); // Reset to default font after Malayalam text
+    }
+
+    doc.moveDown(1.5);
+
+    // **Group Students by Department**
+    const departmentMap = new Map();
 
     enrollments.forEach((enrollment) => {
-      const { department, participants } = enrollment;
-      const attendedStudents = participants.filter(p => p.attended); // Only attended students
+      const deptName = enrollment.department.departmentname;
+      const attendedStudents = enrollment.participants.filter(p => p.attended);
 
       if (attendedStudents.length > 0) {
-        doc.fontSize(14).text(`Department: ${department.departmentname}`, { underline: true });
-        doc.moveDown();
+        if (!departmentMap.has(deptName)) {
+          departmentMap.set(deptName, []);
+        }
+        departmentMap.get(deptName).push(...attendedStudents);
       }
+    });
 
-      attendedStudents.forEach((participant) => {
-        doc.fontSize(12).text(`- ${participant.name} (Adm No: ${participant.admno}, Class: ${participant.className.className})`);
+    // **Render Departments and Students**
+    departmentMap.forEach((students, deptName) => {
+      doc.fontSize(14).text(`Department: ${deptName}`, { underline: true });
+      doc.moveDown(0.5);
+
+      students.forEach((participant, index) => {
+        doc.fontSize(12).text(`${index + 1}. ${participant.name} (Adm No: ${participant.admno}, Class: ${participant.className.className})`, { indent: 20 });
       });
 
-      doc.moveDown();
+      doc.moveDown(1);
     });
 
     doc.end();
   } catch (error) {
-    console.error('Error generating PDF:', error);
+    console.error('❌ Error generating PDF:', error);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };
+
 
 
 
