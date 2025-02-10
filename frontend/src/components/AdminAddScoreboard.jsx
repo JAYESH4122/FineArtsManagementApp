@@ -171,26 +171,37 @@ function AdminAddScoreboard() {
   // Submit the form.
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Validate that every team member for each position is selected.
+  
+    // Validate that each position has either a full set of data or is left empty.
     const positions = ['first', 'second', 'third'];
     for (const pos of positions) {
       if (
-        participantInputs[pos].length !== teamSize ||
-        participantInputs[pos].some((input) => !input.selected)
+        winners[pos] && (
+          participantInputs[pos].length !== teamSize ||
+          participantInputs[pos].some((input) => !input.selected)
+        )
       ) {
         setError(`Ensure that all winners are selected for the ${pos} position.`);
         return;
       }
     }
-
+  
     try {
+      // Only include positions that are filled with data.
+      const filteredWinners = {};
+      positions.forEach((pos) => {
+        if (winners[pos] && winners[pos].studentNames.length > 0) {
+          filteredWinners[pos] = winners[pos];
+        }
+      });
+  
       const payload = {
         eventName: formData.eventName,
         category: formData.category,
-        winners: formData.winners,
+        winners: filteredWinners,
         departmentname: formData.departmentname,
       };
+  
       const response = await axios.post('/admin/add-scoreboard', payload);
       if (response.data.success) {
         setSuccess(response.data.success);
@@ -213,6 +224,7 @@ function AdminAddScoreboard() {
       setError(err.response?.data?.error || 'Error adding scoreboard entry');
     }
   };
+  
 
   return (
     <div className="container mt-5">

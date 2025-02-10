@@ -12,6 +12,8 @@ router.get('/dashboard', studentController.dashboard);
 // Logout Route
 router.post('/logout', studentController.logout);
 
+router.get('/get-listevents', studentController.getEventsStudent);
+
 //Student enrollment
 router.get('/get-events', studentController.getEventsStudent);
 router.get('/get-classes', studentController.getClasses);

@@ -28,9 +28,6 @@ const AdminDashboard = () => {
           <Link className="navbar-brand">
             Admin Panel
           </Link>
-          <button className="btn btn-outline-light ms-auto" onClick={handleLogout}>
-            Logout
-          </button>
         </div>
       </nav>
 

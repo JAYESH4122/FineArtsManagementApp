@@ -346,25 +346,37 @@ exports.addScoreboard = async (req, res) => {
 
     const positions = ['first', 'second', 'third'];
     for (const pos of positions) {
-      if (!winners[pos] || !winners[pos].studentNames || !winners[pos].classNames || !winners[pos].grade || winners[pos].points === undefined) {
-        return res.status(400).json({ error: `Incomplete data for ${pos} winner.` });
+      // Skip validation for empty positions (if not available or not won)
+      if (winners[pos]) {
+        if (!winners[pos].studentNames || !winners[pos].classNames || !winners[pos].grade || winners[pos].points === undefined) {
+          return res.status(400).json({ error: `Incomplete data for ${pos} winner.` });
+        }
+
+        // Fetch and validate department IDs for each student
+        const departmentIds = await Promise.all(
+          winners[pos].studentNames.map(async (studentName) => {
+            const student = await Student.findOne({ name: studentName }).populate('departmentname', '_id');
+            if (!student || !student.departmentname) {
+              throw new Error(`Department not found for student: ${studentName}`);
+            }
+            return student.departmentname._id;
+          })
+        );
+
+        winners[pos].departmentNames = departmentIds; // Store department IDs
       }
-
-      // Fetch and validate department IDs for each student
-      const departmentIds = await Promise.all(
-        winners[pos].studentNames.map(async (studentName) => {
-          const student = await Student.findOne({ name: studentName }).populate('departmentname', '_id');
-          if (!student || !student.departmentname) {
-            throw new Error(`Department not found for student: ${studentName}`);
-          }
-          return student.departmentname._id;
-        })
-      );
-
-      winners[pos].departmentNames = departmentIds; // Store department IDs
     }
 
-    const scoreboard = new Scoreboard({ eventName, category, winners });
+    // Create scoreboard with optional positions
+    const scoreboard = new Scoreboard({
+      eventName,
+      category,
+      winners: {
+        first: winners.first || null,
+        second: winners.second || null,
+        third: winners.third || null
+      }
+    });
 
     await scoreboard.save();
 
@@ -377,6 +389,7 @@ exports.addScoreboard = async (req, res) => {
     return res.status(500).json({ error: err.message || 'Server error while adding scoreboard entry.' });
   }
 };
+
 
 
 
@@ -485,66 +498,105 @@ exports.getDepartmentRankings = async (req, res) => {
     console.log("Fetching department rankings...");
 
     const departmentRankings = await Scoreboard.aggregate([
-      // Unwind each winner's departmentNames separately
-      { $unwind: "$winners.first.departmentNames" },
-      { $unwind: "$winners.second.departmentNames" },
-      { $unwind: "$winners.third.departmentNames" },
+      // Unwind winners to get all department placements
+      {
+        $project: {
+          eventName: 1,
+          firstPlaceDepartments: {
+            $cond: { if: { $gt: [{ $size: "$winners.first.departmentNames" }, 0] }, then: "$winners.first.departmentNames", else: [] }
+          },
+          secondPlaceDepartments: {
+            $cond: { if: { $gt: [{ $size: "$winners.second.departmentNames" }, 0] }, then: "$winners.second.departmentNames", else: [] }
+          },
+          thirdPlaceDepartments: {
+            $cond: { if: { $gt: [{ $size: "$winners.third.departmentNames" }, 0] }, then: "$winners.third.departmentNames", else: [] }
+          },
+          firstPlacePoints: "$winners.first.points",
+          secondPlacePoints: "$winners.second.points",
+          thirdPlacePoints: "$winners.third.points"
+        }
+      },
 
-      // Lookup to get department names
+      // Lookup event details to check if it's a team event
+      {
+        $lookup: {
+          from: "eventdetails",
+          localField: "eventName",
+          foreignField: "eventname",
+          as: "eventDetails"
+        }
+      },
+      { $unwind: { path: "$eventDetails", preserveNullAndEmptyArrays: true } },
+
+      // Flatten department arrays while ensuring team events count only once per department
+      { $unwind: { path: "$firstPlaceDepartments", preserveNullAndEmptyArrays: true } },
+      { $unwind: { path: "$secondPlaceDepartments", preserveNullAndEmptyArrays: true } },
+      { $unwind: { path: "$thirdPlaceDepartments", preserveNullAndEmptyArrays: true } },
+
+      // Lookup department names for correct mapping
       {
         $lookup: {
           from: "departmentdetails",
-          localField: "winners.first.departmentNames",
+          localField: "firstPlaceDepartments",
           foreignField: "_id",
           as: "firstDepartment"
         }
       },
-      { $unwind: "$firstDepartment" },
+      { $unwind: { path: "$firstDepartment", preserveNullAndEmptyArrays: true } },
 
       {
         $lookup: {
           from: "departmentdetails",
-          localField: "winners.second.departmentNames",
+          localField: "secondPlaceDepartments",
           foreignField: "_id",
           as: "secondDepartment"
         }
       },
-      { $unwind: "$secondDepartment" },
+      { $unwind: { path: "$secondDepartment", preserveNullAndEmptyArrays: true } },
 
       {
         $lookup: {
           from: "departmentdetails",
-          localField: "winners.third.departmentNames",
+          localField: "thirdPlaceDepartments",
           foreignField: "_id",
           as: "thirdDepartment"
         }
       },
-      { $unwind: "$thirdDepartment" },
+      { $unwind: { path: "$thirdDepartment", preserveNullAndEmptyArrays: true } },
 
-      // Ensure we correctly assign department names and points
+      // Assign points, ensuring team events count only once per department
       {
-        $project: {
-          departmentName: {
-            $cond: {
-              if: {
-                $or: [
-                  { $eq: ["$firstDepartment.departmentname", "Physics"] },
-                  { $eq: ["$firstDepartment.departmentname", "Chemistry"] }
-                ]
-              },
-              then: "Physics & Chemistry",
-              else: "$firstDepartment.departmentname"
-            }
+        $group: {
+          _id: {
+            department: "$firstDepartment.departmentname",
+            event: "$eventName",
+            isTeamEvent: { $gt: ["$eventDetails.participants", 1] }
           },
-          points: "$winners.first.points"
+          points: { $max: "$firstPlacePoints" } // Prevent duplicates by taking max
+        }
+      },
+      {
+        $group: {
+          _id: "$_id.department",
+          totalPoints: { $sum: "$points" }
         }
       },
 
+      // Merge second and third place rankings in the same way
       {
         $unionWith: {
           coll: "scoreboards",
           pipeline: [
-            { $unwind: "$winners.second.departmentNames" },
+            { $unwind: { path: "$winners.second.departmentNames", preserveNullAndEmptyArrays: true } },
+            {
+              $lookup: {
+                from: "eventdetails",
+                localField: "eventName",
+                foreignField: "eventname",
+                as: "eventDetails"
+              }
+            },
+            { $unwind: { path: "$eventDetails", preserveNullAndEmptyArrays: true } },
             {
               $lookup: {
                 from: "departmentdetails",
@@ -553,22 +605,21 @@ exports.getDepartmentRankings = async (req, res) => {
                 as: "secondDepartment"
               }
             },
-            { $unwind: "$secondDepartment" },
+            { $unwind: { path: "$secondDepartment", preserveNullAndEmptyArrays: true } },
             {
-              $project: {
-                departmentName: {
-                  $cond: {
-                    if: {
-                      $or: [
-                        { $eq: ["$secondDepartment.departmentname", "Physics"] },
-                        { $eq: ["$secondDepartment.departmentname", "Chemistry"] }
-                      ]
-                    },
-                    then: "Physics & Chemistry",
-                    else: "$secondDepartment.departmentname"
-                  }
+              $group: {
+                _id: {
+                  department: "$secondDepartment.departmentname",
+                  event: "$eventName",
+                  isTeamEvent: { $gt: ["$eventDetails.participants", 1] }
                 },
-                points: "$winners.second.points"
+                points: { $max: "$winners.second.points" }
+              }
+            },
+            {
+              $group: {
+                _id: "$_id.department",
+                totalPoints: { $sum: "$points" }
               }
             }
           ]
@@ -579,7 +630,16 @@ exports.getDepartmentRankings = async (req, res) => {
         $unionWith: {
           coll: "scoreboards",
           pipeline: [
-            { $unwind: "$winners.third.departmentNames" },
+            { $unwind: { path: "$winners.third.departmentNames", preserveNullAndEmptyArrays: true } },
+            {
+              $lookup: {
+                from: "eventdetails",
+                localField: "eventName",
+                foreignField: "eventname",
+                as: "eventDetails"
+              }
+            },
+            { $unwind: { path: "$eventDetails", preserveNullAndEmptyArrays: true } },
             {
               $lookup: {
                 from: "departmentdetails",
@@ -588,37 +648,36 @@ exports.getDepartmentRankings = async (req, res) => {
                 as: "thirdDepartment"
               }
             },
-            { $unwind: "$thirdDepartment" },
+            { $unwind: { path: "$thirdDepartment", preserveNullAndEmptyArrays: true } },
             {
-              $project: {
-                departmentName: {
-                  $cond: {
-                    if: {
-                      $or: [
-                        { $eq: ["$thirdDepartment.departmentname", "Physics"] },
-                        { $eq: ["$thirdDepartment.departmentname", "Chemistry"] }
-                      ]
-                    },
-                    then: "Physics & Chemistry",
-                    else: "$thirdDepartment.departmentname"
-                  }
+              $group: {
+                _id: {
+                  department: "$thirdDepartment.departmentname",
+                  event: "$eventName",
+                  isTeamEvent: { $gt: ["$eventDetails.participants", 1] }
                 },
-                points: "$winners.third.points"
+                points: { $max: "$winners.third.points" }
+              }
+            },
+            {
+              $group: {
+                _id: "$_id.department",
+                totalPoints: { $sum: "$points" }
               }
             }
           ]
         }
       },
 
-      // Group by department name and sum their points correctly
+      // Final aggregation to sum points per department
       {
         $group: {
-          _id: "$departmentName",
-          totalPoints: { $sum: "$points" }
+          _id: "$_id",
+          totalPoints: { $sum: "$totalPoints" }
         }
       },
 
-      // Final projection
+      // Project final results
       {
         $project: {
           departmentName: "$_id",
@@ -642,7 +701,6 @@ exports.getDepartmentRankings = async (req, res) => {
     res.status(500).json({ error: "Failed to load department rankings." });
   }
 };
-
 
 
 

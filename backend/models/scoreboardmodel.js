@@ -38,7 +38,11 @@ const scoreboardSchema = new Schema({
     required: true
   },
   winners: {
+<<<<<<< HEAD
     first: { type: WinnerSchema, required: true },
+=======
+    first: { type: WinnerSchema, required: false },
+>>>>>>> b990d53 (Initial commit)
     second: { type: WinnerSchema, required: false },
     third: { type: WinnerSchema, required: false }
   },
