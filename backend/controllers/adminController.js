@@ -337,84 +337,44 @@ exports.getStudents = async (req, res) => {
 
 // Add a scoreboard entry with nested winners
 exports.addScoreboard = async (req, res) => {
-  const { eventName, category, winners, departmentname } = req.body;
+  const { eventName, category, winners } = req.body;
 
   try {
-    // Validate required fields
-    if (!eventName || !category || !winners || !departmentname) {
+    if (!eventName || !category || !winners) {
       return res.status(400).json({ error: 'All fields are required.' });
     }
 
-    // Validate that winners object has all three positions
     const positions = ['first', 'second', 'third'];
     for (const pos of positions) {
-      if (
-        !winners[pos] ||
-        !winners[pos].studentNames ||
-        !winners[pos].classNames ||
-        !winners[pos].grade ||
-        winners[pos].points === undefined
-      ) {
-        return res
-          .status(400)
-          .json({ error: `Missing or incomplete data for ${pos} winner.` });
+      if (!winners[pos] || !winners[pos].studentNames || !winners[pos].classNames || !winners[pos].grade || winners[pos].points === undefined) {
+        return res.status(400).json({ error: `Incomplete data for ${pos} winner.` });
       }
 
-      // Validate that studentNames and classNames arrays match in length.
-      if (winners[pos].studentNames.length !== winners[pos].classNames.length) {
-        return res
-          .status(400)
-          .json({ error: `Mismatch between students and classes for ${pos} winner.` });
-      }
+      // Fetch and validate department IDs for each student
+      const departmentIds = await Promise.all(
+        winners[pos].studentNames.map(async (studentName) => {
+          const student = await Student.findOne({ name: studentName }).populate('departmentname', '_id');
+          if (!student || !student.departmentname) {
+            throw new Error(`Department not found for student: ${studentName}`);
+          }
+          return student.departmentname._id;
+        })
+      );
+
+      winners[pos].departmentNames = departmentIds; // Store department IDs
     }
 
-    // Validate department ObjectId
-    if (!mongoose.Types.ObjectId.isValid(departmentname)) {
-      return res.status(400).json({ error: 'Invalid department ID.' });
-    }
-
-    // Validate each classId for every position using a loop instead of forEach
-    for (const pos of positions) {
-      for (const classId of winners[pos].classNames) {
-        if (!mongoose.Types.ObjectId.isValid(classId)) {
-          return res
-            .status(400)
-            .json({ error: `Invalid class ID(s) provided for ${pos} winner.` });
-        }
-      }
-    }
-
-    // Validate and transform points to a number for each position
-    for (const pos of positions) {
-      winners[pos].points = parseInt(winners[pos].points, 10);
-      if (isNaN(winners[pos].points)) {
-        return res.status(400).json({ error: `Invalid points value for ${pos} winner.` });
-      }
-    }
-
-    // Optionally, you could validate that the department exists or that classes belong to that department
-
-    // Create and save the scoreboard entry
-    const scoreboard = new Scoreboard({
-      eventName,
-      category,
-      winners,
-      departmentname,
-    });
-
-    console.log('Scoreboard object created:', scoreboard);
+    const scoreboard = new Scoreboard({ eventName, category, winners });
 
     await scoreboard.save();
 
     return res.status(201).json({
       success: 'Scoreboard entry added successfully.',
-      data: scoreboard,
+      data: scoreboard
     });
   } catch (err) {
     console.error('Error adding scoreboard:', err);
-    return res
-      .status(500)
-      .json({ error: 'Server error while adding scoreboard entry.' });
+    return res.status(500).json({ error: err.message || 'Server error while adding scoreboard entry.' });
   }
 };
 
