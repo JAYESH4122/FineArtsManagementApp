@@ -337,86 +337,47 @@ exports.getStudents = async (req, res) => {
 
 // Add a scoreboard entry with nested winners
 exports.addScoreboard = async (req, res) => {
-  const { eventName, category, winners, departmentname } = req.body;
+  const { eventName, category, winners } = req.body;
 
   try {
-    // Validate required fields
-    if (!eventName || !category || !winners || !departmentname) {
+    if (!eventName || !category || !winners) {
       return res.status(400).json({ error: 'All fields are required.' });
     }
 
-    // Validate that winners object has all three positions
     const positions = ['first', 'second', 'third'];
     for (const pos of positions) {
-      if (
-        !winners[pos] ||
-        !winners[pos].studentNames ||
-        !winners[pos].classNames ||
-        !winners[pos].grade ||
-        winners[pos].points === undefined
-      ) {
-        return res
-          .status(400)
-          .json({ error: `Missing or incomplete data for ${pos} winner.` });
+      if (!winners[pos] || !winners[pos].studentNames || !winners[pos].classNames || !winners[pos].grade || winners[pos].points === undefined) {
+        return res.status(400).json({ error: `Incomplete data for ${pos} winner.` });
       }
 
-      // Validate that studentNames and classNames arrays match in length.
-      if (winners[pos].studentNames.length !== winners[pos].classNames.length) {
-        return res
-          .status(400)
-          .json({ error: `Mismatch between students and classes for ${pos} winner.` });
-      }
+      // Fetch and validate department IDs for each student
+      const departmentIds = await Promise.all(
+        winners[pos].studentNames.map(async (studentName) => {
+          const student = await Student.findOne({ name: studentName }).populate('departmentname', '_id');
+          if (!student || !student.departmentname) {
+            throw new Error(`Department not found for student: ${studentName}`);
+          }
+          return student.departmentname._id;
+        })
+      );
+
+      winners[pos].departmentNames = departmentIds; // Store department IDs
     }
 
-    // Validate department ObjectId
-    if (!mongoose.Types.ObjectId.isValid(departmentname)) {
-      return res.status(400).json({ error: 'Invalid department ID.' });
-    }
-
-    // Validate each classId for every position using a loop instead of forEach
-    for (const pos of positions) {
-      for (const classId of winners[pos].classNames) {
-        if (!mongoose.Types.ObjectId.isValid(classId)) {
-          return res
-            .status(400)
-            .json({ error: `Invalid class ID(s) provided for ${pos} winner.` });
-        }
-      }
-    }
-
-    // Validate and transform points to a number for each position
-    for (const pos of positions) {
-      winners[pos].points = parseInt(winners[pos].points, 10);
-      if (isNaN(winners[pos].points)) {
-        return res.status(400).json({ error: `Invalid points value for ${pos} winner.` });
-      }
-    }
-
-    // Optionally, you could validate that the department exists or that classes belong to that department
-
-    // Create and save the scoreboard entry
-    const scoreboard = new Scoreboard({
-      eventName,
-      category,
-      winners,
-      departmentname,
-    });
-
-    console.log('Scoreboard object created:', scoreboard);
+    const scoreboard = new Scoreboard({ eventName, category, winners });
 
     await scoreboard.save();
 
     return res.status(201).json({
       success: 'Scoreboard entry added successfully.',
-      data: scoreboard,
+      data: scoreboard
     });
   } catch (err) {
     console.error('Error adding scoreboard:', err);
-    return res
-      .status(500)
-      .json({ error: 'Server error while adding scoreboard entry.' });
+    return res.status(500).json({ error: err.message || 'Server error while adding scoreboard entry.' });
   }
 };
+
 
 
 
@@ -426,65 +387,85 @@ exports.getViewScoreboard = async (req, res) => {
   try {
     console.log("Fetching scoreboard data...");
 
-    // Populate department and the nested winners' classNames.
+    // Populate only classNames inside winners, since departmentname is not in Scoreboard
     const scoreboards = await Scoreboard.find()
-      .populate('departmentname', 'departmentname')
-      .populate({ 
-        path: 'winners.first.classNames', 
-        model: 'Class', 
-        select: 'className' 
-      })
-      .populate({ 
-        path: 'winners.second.classNames', 
-        model: 'Class', 
-        select: 'className' 
-      })
-      .populate({ 
-        path: 'winners.third.classNames', 
-        model: 'Class', 
-        select: 'className' 
-      })
-      .sort({ lastUpdated: -1 });
+  .populate({
+    path: 'winners.first.classNames',
+    model: 'Class',
+    select: 'className'
+  })
+  .populate({
+    path: 'winners.second.classNames',
+    model: 'Class',
+    select: 'className'
+  })
+  .populate({
+    path: 'winners.third.classNames',
+    model: 'Class',
+    select: 'className'
+  })
+  .populate({
+    path: 'winners.first.departmentNames',
+    model: 'DepartmentDetails',
+    select: 'departmentname'
+  })
+  .populate({
+    path: 'winners.second.departmentNames',
+    model: 'DepartmentDetails',
+    select: 'departmentname'
+  })
+  .populate({
+    path: 'winners.third.departmentNames',
+    model: 'DepartmentDetails',
+    select: 'departmentname'
+  })
+  .sort({ lastUpdated: -1 });
 
-    // Helper function to safely format a winner object.
+    // Helper function to format winners correctly
     const formatWinner = (winner) => {
       if (!winner || !winner.studentNames || !Array.isArray(winner.studentNames)) {
         return [];
       }
       return winner.studentNames.map((studentName, index) => {
         let className = "";
+        let departmentName = "N/A";  // Default if no department is found
+    
+        // Fetch class name
         if (winner.classNames && winner.classNames[index] && typeof winner.classNames[index] === 'object') {
           className = winner.classNames[index].className;
         } else if (winner.classNames && winner.classNames[index]) {
           className = winner.classNames[index].toString();
         }
+    
+        // Fetch department name
+        if (winner.departmentNames && winner.departmentNames[index] && typeof winner.departmentNames[index] === 'object') {
+          departmentName = winner.departmentNames[index].departmentname;
+        }
+    
         return {
           studentName,
           grade: winner.grade,
           points: winner.points,
           className,
+          departmentName
         };
       });
     };
+    
 
-    // Format each scoreboard document so that winners are grouped and formatted.
-    const formattedScoreboards = scoreboards.map(scoreboard => {
-      return {
-        _id: scoreboard._id,
-        eventName: scoreboard.eventName,
-        category: scoreboard.category,
-        lastUpdated: scoreboard.lastUpdated,
-        winners: {
-          first: formatWinner(scoreboard.winners ? scoreboard.winners.first : null),
-          second: formatWinner(scoreboard.winners ? scoreboard.winners.second : null),
-          third: formatWinner(scoreboard.winners ? scoreboard.winners.third : null)
-        },
-        // Ensure department is an object with departmentname
-        department: typeof scoreboard.departmentname === 'string'
-          ? { departmentname: scoreboard.departmentname }
-          : scoreboard.departmentname,
-      };
-    });
+    // Format each scoreboard document
+    const formattedScoreboards = scoreboards.map(scoreboard => ({
+      _id: scoreboard._id,
+      eventName: scoreboard.eventName,
+      category: scoreboard.category,
+      lastUpdated: scoreboard.lastUpdated,
+      winners: {
+        first: formatWinner(scoreboard.winners ? scoreboard.winners.first : null),
+        second: formatWinner(scoreboard.winners ? scoreboard.winners.second : null),
+        third: formatWinner(scoreboard.winners ? scoreboard.winners.third : null)
+      }
+    }));
+    
 
     res.status(200).json({ scoreboards: formattedScoreboards });
   } catch (error) {
@@ -495,13 +476,34 @@ exports.getViewScoreboard = async (req, res) => {
 
 
 
+
 //Department wise Rankings
 
 //get department-wise rankings
 exports.getDepartmentRankings = async (req, res) => {
   try {
     const departmentRankings = await Scoreboard.aggregate([
-      // First, join with department details to get all departments
+      { $unwind: "$winners.first.departmentNames" },
+      { $unwind: "$winners.second.departmentNames" },
+      { $unwind: "$winners.third.departmentNames" },
+      {
+        $group: {
+          _id: "$winners.first.departmentNames",
+          totalPoints: { $sum: "$winners.first.points" }
+        }
+      },
+      {
+        $group: {
+          _id: "$winners.second.departmentNames",
+          totalPoints: { $sum: "$winners.second.points" }
+        }
+      },
+      {
+        $group: {
+          _id: "$winners.third.departmentNames",
+          totalPoints: { $sum: "$winners.third.points" }
+        }
+      },
       {
         $lookup: {
           from: "departmentdetails",
@@ -511,30 +513,9 @@ exports.getDepartmentRankings = async (req, res) => {
         }
       },
       { $unwind: "$department" },
-      // Calculate total points, ensuring missing values default to 0
       {
         $project: {
           departmentName: "$department.departmentname",
-          totalPoints: {
-            $add: [
-              { $ifNull: ["$winners.first.points", 0] },
-              { $ifNull: ["$winners.second.points", 0] },
-              { $ifNull: ["$winners.third.points", 0] }
-            ]
-          }
-        }
-      },
-      // Group by department name to ensure all departments are considered
-      {
-        $group: {
-          _id: "$departmentName",
-          totalPoints: { $sum: "$totalPoints" }
-        }
-      },
-      // Ensure departments with no points still appear
-      {
-        $project: {
-          departmentName: "$_id",
           totalPoints: 1
         }
       },
@@ -547,6 +528,7 @@ exports.getDepartmentRankings = async (req, res) => {
     res.status(500).json({ error: "Failed to load department rankings." });
   }
 };
+
 
 
 

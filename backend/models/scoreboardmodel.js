@@ -4,12 +4,17 @@ const Schema = mongoose.Schema;
 // Sub-schema for each winning position
 const WinnerSchema = new Schema({
   studentNames: {
-    type: [String], // Array of student names for this winning team/position
+    type: [String], // Array of student names
     required: true
   },
   classNames: {
-    type: [mongoose.Schema.Types.ObjectId], // Array of class IDs for each student
+    type: [mongoose.Schema.Types.ObjectId], // Array of class IDs
     ref: 'Class',
+    required: true
+  },
+  departmentNames: {
+    type: [mongoose.Schema.Types.ObjectId], // Store department ID per student
+    ref: 'DepartmentDetails',
     required: true
   },
   grade: {
@@ -34,29 +39,16 @@ const scoreboardSchema = new Schema({
     required: true
   },
   winners: {
-    first: {
-      type: WinnerSchema,
-      required: true
-    },
-    second: {
-      type: WinnerSchema,
-      required: true
-    },
-    third: {
-      type: WinnerSchema,
-      required: true
-    }
-  },
-  departmentname: {
-    type: mongoose.Schema.Types.ObjectId, // Reference to the Department model
-    ref: 'DepartmentDetails',
-    required: true
+    first: { type: WinnerSchema, required: true },
+    second: { type: WinnerSchema, required: true },
+    third: { type: WinnerSchema, required: true }
   },
   lastUpdated: {
     type: Date,
-    default: Date.now // Automatically tracks the last update time
+    default: Date.now
   }
 });
+
 
 const Scoreboard = mongoose.model('Scoreboard', scoreboardSchema);
 module.exports = Scoreboard;

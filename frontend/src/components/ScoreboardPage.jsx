@@ -118,8 +118,9 @@ const ScoreboardPage = () => {
                                           <TableCell align="center">{winner.className}</TableCell>
                                           <TableCell align="center">{winner.points}</TableCell>
                                           <TableCell align="center">
-                                            {scoreboard.department.departmentname || 'N/A'}
+                                              {winner.departmentName || 'N/A'}
                                           </TableCell>
+
                                         </TableRow>
                                       ))}
                                     </TableBody>
