@@ -39,8 +39,8 @@ const scoreboardSchema = new Schema({
   },
   winners: {
     first: { type: WinnerSchema, required: true },
-    second: { type: WinnerSchema, required: true },
-    third: { type: WinnerSchema, required: true }
+    second: { type: WinnerSchema, required: false },
+    third: { type: WinnerSchema, required: false }
   },
   lastUpdated: {
     type: Date,
