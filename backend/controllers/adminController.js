@@ -482,45 +482,159 @@ exports.getViewScoreboard = async (req, res) => {
 //get department-wise rankings
 exports.getDepartmentRankings = async (req, res) => {
   try {
+    console.log("Fetching department rankings...");
+
     const departmentRankings = await Scoreboard.aggregate([
+      // Unwind each winner's departmentNames separately
       { $unwind: "$winners.first.departmentNames" },
       { $unwind: "$winners.second.departmentNames" },
       { $unwind: "$winners.third.departmentNames" },
-      {
-        $group: {
-          _id: "$winners.first.departmentNames",
-          totalPoints: { $sum: "$winners.first.points" }
-        }
-      },
-      {
-        $group: {
-          _id: "$winners.second.departmentNames",
-          totalPoints: { $sum: "$winners.second.points" }
-        }
-      },
-      {
-        $group: {
-          _id: "$winners.third.departmentNames",
-          totalPoints: { $sum: "$winners.third.points" }
-        }
-      },
+
+      // Lookup to get department names
       {
         $lookup: {
           from: "departmentdetails",
-          localField: "_id",
+          localField: "winners.first.departmentNames",
           foreignField: "_id",
-          as: "department"
+          as: "firstDepartment"
         }
       },
-      { $unwind: "$department" },
+      { $unwind: "$firstDepartment" },
+
+      {
+        $lookup: {
+          from: "departmentdetails",
+          localField: "winners.second.departmentNames",
+          foreignField: "_id",
+          as: "secondDepartment"
+        }
+      },
+      { $unwind: "$secondDepartment" },
+
+      {
+        $lookup: {
+          from: "departmentdetails",
+          localField: "winners.third.departmentNames",
+          foreignField: "_id",
+          as: "thirdDepartment"
+        }
+      },
+      { $unwind: "$thirdDepartment" },
+
+      // Ensure we correctly assign department names and points
       {
         $project: {
-          departmentName: "$department.departmentname",
+          departmentName: {
+            $cond: {
+              if: {
+                $or: [
+                  { $eq: ["$firstDepartment.departmentname", "Physics"] },
+                  { $eq: ["$firstDepartment.departmentname", "Chemistry"] }
+                ]
+              },
+              then: "Physics & Chemistry",
+              else: "$firstDepartment.departmentname"
+            }
+          },
+          points: "$winners.first.points"
+        }
+      },
+
+      {
+        $unionWith: {
+          coll: "scoreboards",
+          pipeline: [
+            { $unwind: "$winners.second.departmentNames" },
+            {
+              $lookup: {
+                from: "departmentdetails",
+                localField: "winners.second.departmentNames",
+                foreignField: "_id",
+                as: "secondDepartment"
+              }
+            },
+            { $unwind: "$secondDepartment" },
+            {
+              $project: {
+                departmentName: {
+                  $cond: {
+                    if: {
+                      $or: [
+                        { $eq: ["$secondDepartment.departmentname", "Physics"] },
+                        { $eq: ["$secondDepartment.departmentname", "Chemistry"] }
+                      ]
+                    },
+                    then: "Physics & Chemistry",
+                    else: "$secondDepartment.departmentname"
+                  }
+                },
+                points: "$winners.second.points"
+              }
+            }
+          ]
+        }
+      },
+
+      {
+        $unionWith: {
+          coll: "scoreboards",
+          pipeline: [
+            { $unwind: "$winners.third.departmentNames" },
+            {
+              $lookup: {
+                from: "departmentdetails",
+                localField: "winners.third.departmentNames",
+                foreignField: "_id",
+                as: "thirdDepartment"
+              }
+            },
+            { $unwind: "$thirdDepartment" },
+            {
+              $project: {
+                departmentName: {
+                  $cond: {
+                    if: {
+                      $or: [
+                        { $eq: ["$thirdDepartment.departmentname", "Physics"] },
+                        { $eq: ["$thirdDepartment.departmentname", "Chemistry"] }
+                      ]
+                    },
+                    then: "Physics & Chemistry",
+                    else: "$thirdDepartment.departmentname"
+                  }
+                },
+                points: "$winners.third.points"
+              }
+            }
+          ]
+        }
+      },
+
+      // Group by department name and sum their points correctly
+      {
+        $group: {
+          _id: "$departmentName",
+          totalPoints: { $sum: "$points" }
+        }
+      },
+
+      // Final projection
+      {
+        $project: {
+          departmentName: "$_id",
           totalPoints: 1
         }
       },
+
+      // Sort by total points
       { $sort: { totalPoints: -1 } }
     ]);
+
+    console.log("Final Department Rankings:", departmentRankings);
+
+    if (!departmentRankings || departmentRankings.length === 0) {
+      return res.status(404).json({ message: "No department rankings found" });
+    }
 
     res.status(200).json({ departmentRankings });
   } catch (error) {
@@ -528,6 +642,12 @@ exports.getDepartmentRankings = async (req, res) => {
     res.status(500).json({ error: "Failed to load department rankings." });
   }
 };
+
+
+
+
+
+
 
 
 

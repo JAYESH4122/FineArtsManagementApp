@@ -29,6 +29,7 @@ import FeedbackForm from './components/FeedbackForm';
 import StudentProfile from './components/StudentProfile';
 import EventsList from './components/EventsList';
 import AdminMarkAttendance from './components/AdminMarkAttendance';
+import RegistrationClosed from './components/Registration Closed';
 
 const App = () => {
   return (
@@ -68,7 +69,7 @@ const App = () => {
         <Route path="/student/view-announcements" element={<ViewAnnouncements />} />
         <Route path="/student/view-scoreboard" element={<ScoreboardPage />} />
         <Route path="/student/view-departmentwise-rankings" element={<DepartmentRankings />} />
-        <Route path="/student/enroll" element={<StudentEnrollment />} />
+        <Route path="/student/closed" element={<RegistrationClosed />} />
         <Route path="/student/view-complaints" element={<StudentComplaintPage />} />
         <Route path="/student/manage-profile" element={<StudentProfile />} />
         <Route path="/student/view-feedback" element={<FeedbackForm />} />

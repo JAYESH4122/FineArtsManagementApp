@@ -13,72 +13,113 @@
 /* Header */
 .rankings-header {
   background: linear-gradient(180deg, #04283b, #042641);
-  padding: 15px 20px;
+  padding: 20px;
   width: 95%;
   max-width: 1200px;
-  border-radius: 9px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border-radius: 12px;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.4);
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 25px;
+  color: white;
+  animation: fadeIn 1s ease-in-out;
 }
 
 .header-icon {
-  font-size: 2.5rem;
-  color: white;
-  margin-bottom: 10px;
+  font-size: 3rem;
+  color: gold;
+  margin-bottom: 12px;
 }
 
 .header-title {
-  color: white;
-  font-size: 1.8rem;
+  font-size: 2rem;
   font-weight: bold;
 }
 
 .header-subtext {
   color: #dbeafe;
-  font-size: 1rem;
+  font-size: 1.1rem;
 }
 
 /* Table Wrapper */
 .table-wrapper {
   width: 95%;
-  max-width: 800px;
+  max-width: 900px;
   margin-top: 20px;
 }
 
 /* Table Styling */
 .table-container {
   background: white;
-  border-radius: 12px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  border-radius: 15px;
+  box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.3);
   overflow-x: auto;
+  padding: 10px;
 }
 
 .table-header {
-  background-color: #1e3a8a;
+  background: linear-gradient(135deg, #1e3a8a, #0f172a);
 }
 
 .table-header-cell {
   color: white !important;
   font-weight: bold !important;
-  padding: 15px;
+  padding: 18px;
   text-align: center;
+  font-size: 1.1rem;
 }
 
 .table-row {
   background: white;
-  transition: all 0.3s ease;
+  transition: all 0.3s ease-in-out;
+}
+
+.table-row:hover {
+  transform: scale(1.02);
+  background: rgba(0, 87, 126, 0.1);
 }
 
 .table-cell {
-  padding: 12px;
+  padding: 15px;
   font-size: 1rem;
   text-align: center;
+  font-weight: 500;
+}
+
+.rank-cell {
+  font-weight: bold;
+  font-size: 1.2rem;
 }
 
 .table-points {
   font-weight: bold;
   color: #0ea5e9;
+  font-size: 1.1rem;
+}
+
+/* Trophy Icons */
+.trophy {
+  font-size: 1.5rem;
+  margin-right: 8px;
+}
+
+.trophy-0 { color: gold; }
+.trophy-1 { color: silver; }
+.trophy-2 { color: #cd7f32; }
+
+/* Ranking Highlights */
+.gold-rank {
+  background: rgba(255, 215, 0, 0.2);
+  font-weight: bold;
+}
+
+.silver-rank {
+  background: rgba(192, 192, 192, 0.2);
+  font-weight: bold;
+}
+
+.bronze-rank {
+  background: rgba(205, 127, 50, 0.2);
+  font-weight: bold;
 }
 
 /* Loading Spinner */
@@ -86,7 +127,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100px;
+  height: 120px;
 }
 
 /* Error Message */
@@ -94,22 +135,36 @@
   background: #ff4d4d;
   color: white;
   padding: 15px;
-  border-radius: 8px;
+  border-radius: 10px;
   font-weight: bold;
+  font-size: 1.1rem;
 }
 
 /* No Data Message */
 .no-data {
-  font-size: 1rem;
+  font-size: 1.2rem;
   color: #ff5252;
   font-weight: bold;
+  padding: 15px;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Responsive Styles */
 @media (max-width: 768px) {
   .rankings-header {
     width: 100%;
-    padding: 10px;
+    padding: 15px;
     border-radius: 0;
   }
 
@@ -120,6 +175,18 @@
 
   .table-header-cell, .table-cell {
     font-size: 0.9rem;
-    padding: 10px;
+    padding: 12px;
+  }
+
+  .header-title {
+    font-size: 1.8rem;
+  }
+
+  .header-subtext {
+    font-size: 1rem;
+  }
+
+  .trophy {
+    font-size: 1.3rem;
   }
 }
