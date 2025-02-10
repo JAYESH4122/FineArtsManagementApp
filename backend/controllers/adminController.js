@@ -461,7 +461,27 @@ exports.getViewScoreboard = async (req, res) => {
 exports.getDepartmentRankings = async (req, res) => {
   try {
     const departmentRankings = await Scoreboard.aggregate([
-      // First, join with department details to get all departments
+      { $unwind: "$winners.first.departmentNames" },
+      { $unwind: "$winners.second.departmentNames" },
+      { $unwind: "$winners.third.departmentNames" },
+      {
+        $group: {
+          _id: "$winners.first.departmentNames",
+          totalPoints: { $sum: "$winners.first.points" }
+        }
+      },
+      {
+        $group: {
+          _id: "$winners.second.departmentNames",
+          totalPoints: { $sum: "$winners.second.points" }
+        }
+      },
+      {
+        $group: {
+          _id: "$winners.third.departmentNames",
+          totalPoints: { $sum: "$winners.third.points" }
+        }
+      },
       {
         $lookup: {
           from: "departmentdetails",
@@ -471,30 +491,9 @@ exports.getDepartmentRankings = async (req, res) => {
         }
       },
       { $unwind: "$department" },
-      // Calculate total points, ensuring missing values default to 0
       {
         $project: {
           departmentName: "$department.departmentname",
-          totalPoints: {
-            $add: [
-              { $ifNull: ["$winners.first.points", 0] },
-              { $ifNull: ["$winners.second.points", 0] },
-              { $ifNull: ["$winners.third.points", 0] }
-            ]
-          }
-        }
-      },
-      // Group by department name to ensure all departments are considered
-      {
-        $group: {
-          _id: "$departmentName",
-          totalPoints: { $sum: "$totalPoints" }
-        }
-      },
-      // Ensure departments with no points still appear
-      {
-        $project: {
-          departmentName: "$_id",
           totalPoints: 1
         }
       },
@@ -507,7 +506,6 @@ exports.getDepartmentRankings = async (req, res) => {
     res.status(500).json({ error: "Failed to load department rankings." });
   }
 };
-
 
 
 exports.viewRegistrations = async (req, res) => {
