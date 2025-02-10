@@ -18,7 +18,7 @@ const StudentEnrollment = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const eventsRes = await axios.get('/student/get-events');
+        const eventsRes = await axios.get('/studen/get-events');
         setEvents(eventsRes.data.events || []);
         
         const enrolledRes = await axios.get('/student/enrollment-requests');
