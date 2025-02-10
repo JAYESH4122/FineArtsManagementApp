@@ -47,10 +47,5 @@ const scoreboardSchema = new Schema({
     default: Date.now
   }
 });
-<<<<<<< HEAD
-
-
-=======
->>>>>>> 1b9cb52f3bb6f90acd5e15ab6bfe4880b85c3e51
 const Scoreboard = mongoose.model('Scoreboard', scoreboardSchema);
 module.exports = Scoreboard;
