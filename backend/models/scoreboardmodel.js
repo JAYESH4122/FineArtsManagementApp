@@ -27,7 +27,6 @@ const WinnerSchema = new Schema({
     min: 0
   }
 });
-
 // Main scoreboard schema with nested winners
 const scoreboardSchema = new Schema({
   eventName: {
@@ -48,7 +47,10 @@ const scoreboardSchema = new Schema({
     default: Date.now
   }
 });
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 1b9cb52f3bb6f90acd5e15ab6bfe4880b85c3e51
 const Scoreboard = mongoose.model('Scoreboard', scoreboardSchema);
 module.exports = Scoreboard;
