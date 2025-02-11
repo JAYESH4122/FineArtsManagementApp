@@ -31,7 +31,8 @@ const WinnerSchema = new Schema({
 const scoreboardSchema = new Schema({
   eventName: {
     type: String,
-    required: true
+    required: true,
+    unique: true
   },
   category: {
     type: String,
