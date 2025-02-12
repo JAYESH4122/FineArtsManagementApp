@@ -73,7 +73,7 @@ const RepDashboard = () => {
 
           {/* Add Students to Events */}
           <div className="dashboard-card">
-            <a href="/deptrep/register-events">
+            <a href="">
               <div className="card-icon"><i className="fas fa-calendar-plus fa-3x"></i></div>
               <h3>Add Students to Events</h3>
             </a>
