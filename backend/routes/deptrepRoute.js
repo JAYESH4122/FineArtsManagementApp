@@ -16,7 +16,7 @@ router.get('/:departmentId/classes', deptrepController.getClassesByDepartment);
 router.get("/events", deptrepController.getAllEvents);
 
 // Route to register event
-router.post("/register", deptrepController.registerEvent);
+router.post("", deptrepController.registerEvent);
 
 // Route to fetch students by department
 router.get("/get-students-reg", deptrepController.getAllStudents);
