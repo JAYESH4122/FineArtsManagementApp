@@ -394,6 +394,7 @@ exports.addScoreboard = async (req, res) => {
 
 
 
+
 //View scoreboard
 // controllers/adminController.js
 exports.getViewScoreboard = async (req, res) => {

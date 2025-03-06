@@ -108,12 +108,12 @@ const AdminDashboard = () => {
           </div>
 
           {/* Manage Students */}
-          <div className="dashboard-card">
+          {/* <div className="dashboard-card">
             <Link to="/admin/manage-student">
               <div className="card-icon"><i className="fas fa-user-graduate fa-3x"></i></div>
               <h3>Manage Students</h3>
             </Link>
-          </div>
+          </div> */}
 
           {/* View Feedback */}
           <div className="dashboard-card">

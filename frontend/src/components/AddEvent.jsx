@@ -1,5 +1,17 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import {
+  Box,
+  Typography,
+  TextField,
+  Button,
+  Alert,
+  Container,
+  Grid,
+  Paper,
+} from '@mui/material';
+import { motion } from 'framer-motion';
+import '../styles/AddEvent.css';
 
 const AddEvent = () => {
   const [eventName, setEventName] = useState('');
@@ -14,19 +26,17 @@ const AddEvent = () => {
     e.preventDefault();
 
     try {
-      // Send the form data to the backend via POST request
       const response = await axios.post('/admin/add-event', {
         eventname: eventName,
         category: category,
         participants: participants,
         date: date,
-        description: description
+        description: description,
       });
 
       if (response.data.success) {
         setSuccess('Event added successfully');
         setError(null);
-        // Optionally reset the form
         setEventName('');
         setCategory('');
         setParticipants('');
@@ -44,114 +54,88 @@ const AddEvent = () => {
   };
 
   return (
-    <div className="container mt-5">
-      <h1 className="text-center mb-4">Add Event</h1>
-
-      {error && (
-        <div className="alert alert-danger text-center" role="alert">
-          {error}
-        </div>
-      )}
-
-      {success && (
-        <div className="alert alert-success text-center" role="alert">
-          {success}
-        </div>
-      )}
-
-      <form
-        onSubmit={handleSubmit}
-        className="mx-auto shadow-lg p-4 rounded"
-        style={{ maxWidth: '600px', backgroundColor: '#f8f9fa' }}
-      >
-        <div className="mb-3">
-          <label htmlFor="eventname" className="form-label">
-            Event Name:
-          </label>
-          <input
-            type="text"
-            id="eventname"
-            name="eventname"
-            className="form-control"
-            value={eventName}
-            onChange={(e) => setEventName(e.target.value)}
-            placeholder="Enter event name"
-            required
-          />
-        </div>
-
-        <div className="mb-3">
-          <label htmlFor="category" className="form-label">
-            Event Category:
-          </label>
-          <input
-            type="text"
-            id="category"
-            name="category"
-            className="form-control"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            placeholder="Enter event category"
-            required
-          />
-        </div>
-
-        <div className="mb-3">
-          <label htmlFor="participants" className="form-label">
-            No. of Participants:
-          </label>
-          <input
-            type="number"
-            id="participants"
-            name="participants"
-            className="form-control"
-            value={participants}
-            onChange={(e) => setParticipants(e.target.value)}
-            placeholder="Number of Participants"
-            required
-            min="0"
-            max="20"
-          />
-        </div>
-
-        <div className="mb-3">
-          <label htmlFor="date" className="form-label">
-            Date and Time:
-          </label>
-          <input
-            type="datetime-local"
-            id="date"
-            name="date"
-            className="form-control"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            required
-          />
-        </div>
-
-        <div className="mb-3">
-          <label htmlFor="description" className="form-label">
-            Description:
-          </label>
-          <textarea
-            id="description"
-            name="description"
-            className="form-control"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            rows="4"
-            placeholder="Provide a brief description of the event"
-            required
-          ></textarea>
-        </div>
-
-        <div className="d-grid">
-          <button type="submit" className="btn btn-primary btn-block">
+    <Container maxWidth="md" className="add-event-container">
+      <Box className="header-box">
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          <Typography variant="h4" className="header-title">
             Add Event
-          </button>
-        </div>
-      </form>
-    </div>
+          </Typography>
+        </motion.div>
+      </Box>
+
+      {error && <Alert severity="error" className="alert">{error}</Alert>}
+      {success && <Alert severity="success" className="alert">{success}</Alert>}
+
+      <Paper elevation={6} className="form-box">
+        <form onSubmit={handleSubmit}>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Event Name"
+                name="eventname"
+                value={eventName}
+                onChange={(e) => setEventName(e.target.value)}
+                required
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Event Category"
+                name="category"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                required
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="No. of Participants"
+                type="number"
+                name="participants"
+                value={participants}
+                onChange={(e) => setParticipants(e.target.value)}
+                required
+                inputProps={{ min: 0, max: 20 }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Date and Time"
+                type="datetime-local"
+                name="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                required
+                InputLabelProps={{ shrink: true }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Description"
+                name="description"
+                multiline
+                rows={4}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                required
+              />
+            </Grid>
+          </Grid>
+          <Button type="submit" variant="contained" className="submit-btn">
+            Add Event
+          </Button>
+        </form>
+      </Paper>
+    </Container>
   );
 };
 

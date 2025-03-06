@@ -1,0 +1,47 @@
+.add-event-container {
+    padding: 20px;
+    background: linear-gradient(135deg, #0b3954, #082a44);
+    min-height: 100vh;
+  }
+  
+  .header-box {
+    background: linear-gradient(180deg, #0b3954, #1e293b);
+    padding: 25px;
+    border-radius: 12px;
+    text-align: center;
+    color: #ffffff;
+    box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.2);
+  }
+  
+  .header-title {
+    font-weight: bold;
+  }
+  
+  .alert {
+    margin-top: 20px;
+    font-size: 1rem;
+  }
+  
+  .form-box {
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.15);
+    margin-top: 30px;
+  }
+  
+  .submit-btn {
+    background-color: #0ea5e9;
+    color: white;
+    width: 100%;
+    margin-top: 15px;
+    padding: 12px;
+    font-size: 1rem;
+  }
+  
+  @media (max-width: 768px) {
+    .add-event-container {
+      padding: 10px;
+    }
+  }
+  

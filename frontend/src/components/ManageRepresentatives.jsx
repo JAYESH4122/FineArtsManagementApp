@@ -1,5 +1,27 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import {
+  Box,
+  Typography,
+  TextField,
+  Button,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Alert,
+  Container,
+  Grid,
+} from '@mui/material';
+import { motion } from 'framer-motion';
+import '../styles/ManageRepresentatives.css';
 
 const ManageRepresentatives = () => {
   const [departments, setDepartments] = useState([]);
@@ -13,7 +35,6 @@ const ManageRepresentatives = () => {
   const [success, setSuccess] = useState(null);
   const [error, setError] = useState(null);
 
-  // Fetch departments and representatives on component load
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -42,8 +63,6 @@ const ManageRepresentatives = () => {
       setSuccess(response.data.message);
       setError(null);
       setFormData({ username: '', password: '', name: '', departmentname: '' });
-
-      // Refresh representatives list
       setRepresentatives(response.data.representatives);
     } catch (err) {
       console.error('Error adding representative:', err);
@@ -56,8 +75,6 @@ const ManageRepresentatives = () => {
       const response = await axios.post(`/admin/remove-rep/${id}`);
       setSuccess(response.data.message);
       setError(null);
-
-      // Refresh representatives list
       setRepresentatives(response.data.representatives);
     } catch (err) {
       console.error('Error removing representative:', err);
@@ -66,92 +83,116 @@ const ManageRepresentatives = () => {
   };
 
   return (
-    <div className="container mt-5">
-      <h1>Manage Representatives</h1>
+    <Container maxWidth="md" className="manage-rep-container">
+      <Box className="header-box">
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          <Typography variant="h4" className="header-title">
+            Manage Representatives
+          </Typography>
+        </motion.div>
+      </Box>
 
-      {success && <p style={{ color: 'green' }}>{success}</p>}
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {success && <Alert severity="success" className="alert">{success}</Alert>}
+      {error && <Alert severity="error" className="alert">{error}</Alert>}
 
-      <h2>Add Representative</h2>
-      <form onSubmit={handleAddRep}>
-        <div>
-          <label>Username:</label>
-          <input
-            type="text"
-            name="username"
-            value={formData.username}
-            onChange={handleInputChange}
-            required
-          />
-        </div>
-        <div>
-          <label>Password:</label>
-          <input
-            type="text"
-            name="password"
-            value={formData.password}
-            onChange={handleInputChange}
-            required
-          />
-        </div>
-        <div>
-          <label>Name:</label>
-          <input
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleInputChange}
-            required
-          />
-        </div>
-        <div>
-          <label>Department:</label>
-          <select
-            name="departmentname"
-            value={formData.departmentname}
-            onChange={handleInputChange}
-            required
-          >
-            <option value="">Select Department</option>
-            {departments.map((department) => (
-              <option key={department._id} value={department._id}>
-                {department.departmentname}
-              </option>
-            ))}
-          </select>
-        </div>
-        <button type="submit">Add Representative</button>
-      </form>
-
-      <h2>Existing Representatives</h2>
-      <table border="1">
-        <thead>
-          <tr>
-            <th>Username</th>
-            <th>Name</th>
-            <th>Department</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {representatives.map((rep) => (
-            <tr key={rep._id}>
-              <td>{rep.username}</td>
-              <td>{rep.name}</td>
-              <td>{rep.departmentname?.departmentname || 'No Department'}</td>
-              <td>
-                <button
-                  style={{ color: 'red' }}
-                  onClick={() => handleRemoveRep(rep._id)}
+      <Box className="form-box">
+        <Typography variant="h5" className="form-title">Add Representative</Typography>
+        <form onSubmit={handleAddRep}>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Username"
+                name="username"
+                value={formData.username}
+                onChange={handleInputChange}
+                required
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Password"
+                type="password"
+                name="password"
+                value={formData.password}
+                onChange={handleInputChange}
+                required
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Name"
+                name="name"
+                value={formData.name}
+                onChange={handleInputChange}
+                required
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <FormControl fullWidth>
+                <InputLabel>Department</InputLabel>
+                <Select
+                  name="departmentname"
+                  value={formData.departmentname}
+                  onChange={handleInputChange}
+                  required
                 >
-                  Remove
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+                  <MenuItem value="">Select Department</MenuItem>
+                  {departments.map((department) => (
+                    <MenuItem key={department._id} value={department._id}>
+                      {department.departmentname}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+          </Grid>
+          <Button type="submit" variant="contained" className="submit-btn">
+            Add Representative
+          </Button>
+        </form>
+      </Box>
+
+      <Box className="table-box">
+        <Typography variant="h5" className="table-title">Existing Representatives</Typography>
+        <TableContainer component={Paper} className="table-container">
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell><strong>Username</strong></TableCell>
+                <TableCell><strong>Name</strong></TableCell>
+                <TableCell><strong>Department</strong></TableCell>
+                <TableCell><strong>Action</strong></TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {representatives.map((rep) => (
+                <TableRow key={rep._id}>
+                  <TableCell>{rep.username}</TableCell>
+                  <TableCell>{rep.name}</TableCell>
+                  <TableCell>{rep.departmentname?.departmentname || 'No Department'}</TableCell>
+                  <TableCell>
+                    <Button
+                      variant="contained"
+                      color="error"
+                      onClick={() => handleRemoveRep(rep._id)}
+                    >
+                      Remove
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Box>
+    </Container>
   );
 };
 
