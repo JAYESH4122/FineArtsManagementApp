@@ -8,25 +8,22 @@ const Event = require('../models/eventmodel');
 const Class = require('../models/classmodel');
 const Complaint = require('../models/compaintmodel');
 const EnrollmentRequest = require("../models/EnrollmentRequest");
-const crypto = require("crypto");
-const mongoose = require('mongoose');
-const { v4: uuidv4 } = require("uuid"); // Import UUID for unique team names
+const jwt = require('jsonwebtoken');
 
 
 
 
-// Department Representative Login Page
 exports.loginRepPage = async (req, res) => {
   try {
-    const departments = await Department.find({}, 'departmentname _id'); // Fetch department name and ID
-    res.json(departments); // Send departments data as JSON to the frontend
+    const departments = await Department.find({}, 'departmentname _id'); 
+    res.json(departments); 
   } catch (error) {
     console.error(error);
     res.status(500).send('Error loading login page');
   }
 };
 
-// Handle Login
+
 exports.handleRepLogin = async (req, res) => {
   const { username, password, department } = req.body;
 
@@ -44,6 +41,7 @@ exports.handleRepLogin = async (req, res) => {
       username: deptRep.username,
       departmentId: deptRep.departmentname._id,
       departmentName: deptRep.departmentname.departmentname,
+      role: 'deptrep'
     };
 
     return res.status(200).json({ message: 'Login successful' }); // Login successful response
