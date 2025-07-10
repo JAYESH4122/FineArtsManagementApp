@@ -14,18 +14,17 @@ const PDFDocument = require('pdfkit');
 
 
 
-// Admin Login
+
 exports.adminLogin = async (req, res) => {
   const { username, password } = req.body;
 
   try {
-    // Find the admin by username and password
+
     const admin = await Admin.findOne({ username, password });
     if (!admin) {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
-    // Set session after successful login
     req.session.user = {
       id: admin._id,
       username: admin.username,
