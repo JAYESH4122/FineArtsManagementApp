@@ -1,25 +1,22 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import 'bootstrap-icons/font/bootstrap-icons.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import  { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import "bootstrap-icons/font/bootstrap-icons.css";
+import "bootstrap/dist/css/bootstrap.min.css";
 
-const backendUrl = import.meta.env.VITE_API_URL;
-import '../styles/StudentLogin.css';
-
-
+import "../styles/StudentLogin.css";
 
 function StudentLogin() {
-  const navigate = useNavigate(); // useNavigate hook to navigate programmatically
+  const navigate = useNavigate();
 
-  const [admno, setAdmno] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [showPassword, setShowPassword] = useState(false); // State for toggling password visibility
+  const [admno, setAdmno] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    if (name === 'admno') setAdmno(value);
+    if (name === "admno") setAdmno(value);
     else setPassword(value);
   };
 
@@ -31,15 +28,17 @@ function StudentLogin() {
     e.preventDefault();
 
     try {
-      // Make the login request
-      const response = await axios.post('/student/login', { admno, password });
+      const response = await axios.post(
+        "/student/login",
+        { admno, password },
+        { withCredentials: true }
+      );
 
-      if (response.data.message === 'Login successful') {
-        // On success, navigate to student dashboard
-        navigate('/student/view-dashboard');
+      if (response.data.message === "Login successful") {
+        navigate("/student/view-dashboard");
       }
     } catch (err) {
-      setError('Invalid credentials or server error!');
+      setError("Invalid credentials or server error!",err.message);
     }
   };
 
@@ -48,7 +47,9 @@ function StudentLogin() {
       <div className="card login-card shadow-lg p-4 rounded-4">
         <div className="text-center mb-4">
           <h2 className="text-success fw-bold">Student Login</h2>
-          <p className="text-muted">Enter your credentials to access your dashboard.</p>
+          <p className="text-muted">
+            Enter your credentials to access your dashboard.
+          </p>
         </div>
 
         {error && (
@@ -59,18 +60,18 @@ function StudentLogin() {
 
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
-          <label htmlFor="admno" className="form-label">
-            User Id
-          </label>
-          <input
-            type="text"
-            className="form-control"
-            id="admno"
-            name="admno"
-            value={admno}
-            onChange={handleInputChange}
-            required
-          />
+            <label htmlFor="admno" className="form-label">
+              User Id
+            </label>
+            <input
+              type="text"
+              className="form-control"
+              id="admno"
+              name="admno"
+              value={admno}
+              onChange={handleInputChange}
+              required
+            />
           </div>
 
           <div className="mb-3 position-relative">
@@ -78,7 +79,7 @@ function StudentLogin() {
               Password
             </label>
             <input
-              type={showPassword ? 'text' : 'password'}
+              type={showPassword ? "text" : "password"}
               className="form-control"
               id="password"
               name="password"
@@ -89,7 +90,12 @@ function StudentLogin() {
             <span
               onClick={togglePasswordVisibility}
               className="position-absolute end-0 top-50 translate-middle-y me-3"
-              style={{ cursor: 'pointer', color: 'black', fontSize: '1.2rem', zIndex: '10' }}
+              style={{
+                cursor: "pointer",
+                color: "black",
+                fontSize: "1.2rem",
+                zIndex: "10",
+              }}
             >
               {showPassword ? (
                 <i className="bi bi-eye-slash"></i>
@@ -99,7 +105,10 @@ function StudentLogin() {
             </span>
           </div>
 
-          <button type="submit" className="btn btn-success w-100 fw-bold btn-lg mt-3">
+          <button
+            type="submit"
+            className="btn btn-success w-100 fw-bold btn-lg mt-3"
+          >
             Login
           </button>
         </form>

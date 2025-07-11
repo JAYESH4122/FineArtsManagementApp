@@ -1,27 +1,27 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import { FaSignOutAlt } from 'react-icons/fa';  // For Logout Icon
-import '../styles/RepDashboard.css';
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import "bootstrap/dist/css/bootstrap.min.css";
+import { FaSignOutAlt } from "react-icons/fa";
+import "../styles/RepDashboard.css";
 
 const RepDashboard = () => {
   const [user, setUser] = useState(null);
-  const navigate = useNavigate(); // React Router v6 for navigation
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await axios.get('/deptrep/session', {
-          withCredentials: true, // Ensure cookies are included for session
+        const response = await axios.get("/deptrep/session", {
+          withCredentials: true,
         });
 
         if (response.status === 200) {
           setUser(response.data);
         }
       } catch (error) {
-        console.error('Error fetching user data:', error);
-        navigate('/deptrep/login'); // Redirect to login if not logged in
+        console.error("Error fetching user data:", error);
+        navigate("/deptrep/login");
       }
     };
 
@@ -30,19 +30,19 @@ const RepDashboard = () => {
 
   const handleLogout = async () => {
     try {
-      const response = await axios.post('/deptrep/logout', null, {
+      const response = await axios.post("/deptrep/logout", null, {
         withCredentials: true,
       });
 
       if (response.status === 200) {
-        navigate('/deptrep/login');
+        navigate("/deptrep/login");
       } else {
-        console.error('Logout failed');
-        alert('Logout failed. Please try again.');
+        console.error("Logout failed");
+        alert("Logout failed. Please try again.");
       }
     } catch (error) {
-      console.error('Error during logout:', error);
-      alert('An error occurred during logout.');
+      console.error("Error during logout:", error);
+      alert("An error occurred during logout.");
     }
   };
 
@@ -61,12 +61,13 @@ const RepDashboard = () => {
 
       {/* Dashboard Content */}
       <div className="dashboard-main">
-
         <div className="dashboard-grid">
           {/* Manage Students */}
           <div className="dashboard-card">
             <a href="/deptrep/manage-student">
-              <div className="card-icon"><i className="fas fa-user-graduate fa-3x"></i></div>
+              <div className="card-icon">
+                <i className="fas fa-user-graduate fa-3x"></i>
+              </div>
               <h3>Manage Students</h3>
             </a>
           </div>
@@ -74,7 +75,9 @@ const RepDashboard = () => {
           {/* Add Students to Events */}
           <div className="dashboard-card">
             <a href="">
-              <div className="card-icon"><i className="fas fa-calendar-plus fa-3x"></i></div>
+              <div className="card-icon">
+                <i className="fas fa-calendar-plus fa-3x"></i>
+              </div>
               <h3>Add Students to Events</h3>
             </a>
           </div>
@@ -82,7 +85,9 @@ const RepDashboard = () => {
           {/* View Department-wise Rankings */}
           <div className="dashboard-card">
             <a href="/deptrep/view-departmentwise-rankings">
-              <div className="card-icon"><i className="fas fa-list-ol fa-3x"></i></div>
+              <div className="card-icon">
+                <i className="fas fa-list-ol fa-3x"></i>
+              </div>
               <h3>View Department-wise Rankings</h3>
             </a>
           </div>
@@ -90,7 +95,9 @@ const RepDashboard = () => {
           {/* View Registrations */}
           <div className="dashboard-card">
             <a href="/deptrep/view-registrations">
-              <div className="card-icon"><i className="fas fa-users fa-3x"></i></div>
+              <div className="card-icon">
+                <i className="fas fa-users fa-3x"></i>
+              </div>
               <h3>View Registrations</h3>
             </a>
           </div>
@@ -98,7 +105,9 @@ const RepDashboard = () => {
           {/* View Announcements */}
           <div className="dashboard-card">
             <a href="/deptrep/view-announcements">
-              <div className="card-icon"><i className="fas fa-bullhorn fa-3x"></i></div>
+              <div className="card-icon">
+                <i className="fas fa-bullhorn fa-3x"></i>
+              </div>
               <h3>View Announcements</h3>
             </a>
           </div>
@@ -106,7 +115,9 @@ const RepDashboard = () => {
           {/* View Scoreboard */}
           <div className="dashboard-card">
             <a href="/deptrep/view-scoreboard">
-              <div className="card-icon"><i className="fas fa-trophy fa-3x"></i></div>
+              <div className="card-icon">
+                <i className="fas fa-trophy fa-3x"></i>
+              </div>
               <h3>View Scoreboard</h3>
             </a>
           </div>
@@ -114,7 +125,9 @@ const RepDashboard = () => {
           {/* View Complaints */}
           <div className="dashboard-card">
             <a href="/deptrep/reply-complaints">
-              <div className="card-icon"><i className="fas fa-comment fa-3x"></i></div>
+              <div className="card-icon">
+                <i className="fas fa-comment fa-3x"></i>
+              </div>
               <h3>View Complaints</h3>
             </a>
           </div>

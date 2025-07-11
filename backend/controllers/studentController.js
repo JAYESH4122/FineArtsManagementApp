@@ -1,5 +1,5 @@
 const Complaint = require("../models/compaintmodel");
-const Student = require("../models/studentmodel"); // Adjust the path according to your folder structure
+const Student = require("../models/studentmodel"); 
 const Feedback = require("../models/feedback");
 const DeptRep = require("../models/deprepmodel");
 const Department = require("../models/departmentmodel");
@@ -54,13 +54,12 @@ exports.logout = (req, res) => {
       return res.status(500).send("Could not log out.");
     }
     console.log("session destroyed");
-    res.redirect("/student/login"); // Redirect to login page after logout
+    res.redirect("/student/login");
   });
 };
 
-// Student Dashboard
 exports.dashboard = async (req, res) => {
-  const { id, username, role } = req.user; // 🟢 Extract from JWT payload
+  const { id, username, role } = req.user; 
 
   try {
     
@@ -99,7 +98,7 @@ exports.logout = (req, res) => {
 // Controller to get events with single participants only
 exports.getEventsStudent = async (req, res) => {
   try {
-    // Fetch events where participants count is exactly 1 (students can only register for these)
+
     const events = await Event.find(
       { participants: 1 },
       "eventname participants category description date"
@@ -120,16 +119,13 @@ exports.getEventsStudent = async (req, res) => {
   }
 };
 
-// In your studentController.js or a relevant controller file
 exports.getSessionUserData = (req, res) => {
   const user = req.session.user;
 
-  // Check if session data exists
   if (!user) {
     return res.status(401).json({ message: "Not logged in" });
   }
 
-  // Return session data (student's name, class, and other details)
   return res.status(200).json({
     name: user.name,
     className: user.className,
@@ -137,26 +133,21 @@ exports.getSessionUserData = (req, res) => {
   });
 };
 
-// Get classes for the logged-in student’s department
-// Handle fetching classes based on department ID
 exports.getClasses = async (req, res) => {
   try {
-    // Fetch the departmentId from session data
+
     const departmentId = req.session.user?.departmentId;
 
-    // Ensure the departmentId is present in session
     if (!departmentId) {
       return res
         .status(400)
         .json({ message: "Department ID is missing in the session" });
     }
 
-    // Find the department and populate the classes array
     const department = await Department.findById(departmentId).populate(
       "classes"
     );
 
-    // If no department found, return error
     if (!department) {
       return res.status(404).json({ message: "Department not found" });
     }
@@ -287,38 +278,9 @@ exports.requestEnrollment = async (req, res) => {
   }
 };
 
-// exports.unregisterEvent = async (req, res) => {
-//   const { eventId } = req.params;
-//   const studentName = req.session.user?.name; // Get logged-in student's name
 
-//   if (!studentName) {
-//     return res.status(401).json({ message: "User not logged in or session expired" });
-//   }
-
-//   try {
-//     // Convert eventId to ObjectId if it's not already
-//     const eventObjectId = new mongoose.Types.ObjectId(eventId);
-
-//     // Find and delete the enrollment request
-//     const enrollmentRequest = await EnrollmentRequest.findOneAndDelete({
-//       eventId: eventObjectId, // Match correctly as ObjectId
-//       "participants.name": studentName,
-//     });
-
-//     if (!enrollmentRequest) {
-//       return res.status(404).json({ message: "Enrollment request not found" });
-//     }
-
-//     return res.status(200).json({ message: "Successfully unregistered from the event" });
-//   } catch (err) {
-//     console.error("Error unregistering from event:", err);
-//     return res.status(500).json({ message: "Failed to unregister from event" });
-//   }
-// };
-
-// Controller to get all enrollment requests for the student
 exports.getEnrollmentRequests = async (req, res) => {
-  const studentId = req.session.user?.id; // Get logged-in student's ID from session
+  const studentId = req.session.user?.id;
   if (!studentId) {
     return res
       .status(401)

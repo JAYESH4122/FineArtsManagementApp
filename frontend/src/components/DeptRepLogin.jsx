@@ -1,29 +1,27 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../styles/DeptRepLogin.css';
 import { useNavigate } from 'react-router-dom';
-const backendUrl = process.env.REACT_APP_API_URL;
 
 const DeptRepLogin = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [department, setDepartment] = useState('');
-  const [departments, setDepartments] = useState([]); // Departments state
+  const [departments, setDepartments] = useState([]); 
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(true); // Track loading state
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // Fetch department data
+
   useEffect(() => {
     const fetchDepartments = async () => {
       try {
-        setLoading(true); // Set loading state to true while waiting for data
-        const response = await axios.get('/deptrep/login'); // Make API request
+        setLoading(true); 
+        const response = await axios.get('/deptrep/login'); 
         
-        // Log the response for debugging purposes
+
         console.log('Fetched departments:', response.data);
 
-        // Make sure data is an array before setting it
         if (Array.isArray(response.data)) {
           setDepartments(response.data);
         } else {
@@ -33,14 +31,13 @@ const DeptRepLogin = () => {
         console.error('Error fetching departments:', err);
         setError('Failed to load departments');
       } finally {
-        setLoading(false); // Stop loading after fetching
+        setLoading(false);
       }
     };
 
     fetchDepartments();
-  }, []); // Empty dependency array ensures this runs only once after the initial render
+  }, []); 
 
-  // Handle input change for all fields
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     if (name === 'username') setUsername(value);
@@ -48,22 +45,21 @@ const DeptRepLogin = () => {
     if (name === 'department') setDepartment(value);
   };
 
-  // Handle form submission
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
       const response = await axios.post('/deptrep/login', { username, password, department });
 
-      // Check if login was successful (response status 200)
       if (response.status === 200) {
         console.log('Logged in successfully:', response.data);
-        navigate('/deptrep/view-dashboard'); // Redirect after successful login
+        navigate('/deptrep/view-dashboard');
       } else {
         setError(response.data.error || 'Invalid credentials or server error!');
       }
     } catch (err) {
-      setError('Invalid credentials or server error!');
+      setError('Invalid credentials or server error!',err);
     }
   };
 
